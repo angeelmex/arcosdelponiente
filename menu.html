@@ -968,6 +968,23 @@ function iniciarMenu() {
     );
 
 
+  document
+    .getElementById(
+      "linkMisPases"
+    )
+    .href =
+      "mis-pases.html";
+
+
+  document
+    .getElementById(
+      "linkMisPases"
+    )
+    .removeAttribute(
+      "target"
+    );
+
+
   prepararBotonesPrueba();
 
 
@@ -989,7 +1006,6 @@ function iniciarMenu() {
 function prepararBotonesPrueba() {
 
   const ids = [
-    "linkMisPases",
     "linkDirectorio",
     "linkSeguridad",
     "linkMascotas",
