@@ -18,6 +18,7 @@
       box-sizing: border-box;
     }
 
+
     body {
 
       margin: 0;
@@ -35,6 +36,7 @@
 
     }
 
+
     .pagina {
 
       min-height: 100vh;
@@ -49,6 +51,7 @@
 
     }
 
+
     .contenedor {
 
       width: 100%;
@@ -56,6 +59,7 @@
       max-width: 480px;
 
     }
+
 
     .tarjeta {
 
@@ -71,6 +75,7 @@
         rgba(20, 55, 95, 0.12);
 
     }
+
 
     .logo {
 
@@ -89,6 +94,7 @@
 
     }
 
+
     h1 {
 
       margin:
@@ -103,6 +109,7 @@
 
     }
 
+
     .subtitulo {
 
       text-align: center;
@@ -113,6 +120,7 @@
       margin-bottom: 30px;
 
     }
+
 
     .etiqueta {
 
@@ -126,11 +134,13 @@
 
     }
 
+
     .campo {
 
       position: relative;
 
     }
+
 
     input {
 
@@ -152,12 +162,14 @@
 
     }
 
+
     input:focus {
 
       border-color:
         #b7d52b;
 
     }
+
 
     .ojo {
 
@@ -184,6 +196,7 @@
 
     }
 
+
     .privacidad {
 
       margin:
@@ -195,6 +208,7 @@
       font-size: 13px;
 
     }
+
 
     .boton {
 
@@ -219,11 +233,13 @@
 
     }
 
+
     .boton:disabled {
 
       opacity: 0.6;
 
     }
+
 
     .mensaje {
 
@@ -241,6 +257,7 @@
 
     }
 
+
     .mensaje.error {
 
       display: block;
@@ -252,6 +269,7 @@
         #fdecec;
 
     }
+
 
     .mensaje.ok {
 
@@ -265,6 +283,7 @@
 
     }
 
+
     .volver {
 
       margin-top: 19px;
@@ -272,6 +291,7 @@
       text-align: center;
 
     }
+
 
     .volver button {
 
@@ -289,6 +309,7 @@
       cursor: pointer;
 
     }
+
 
     .iframe-post {
 
@@ -461,161 +482,23 @@ let temporizadorLogin =
   null;
 
 
+let intervaloCallback =
+  null;
+
+
 document.addEventListener(
   "DOMContentLoaded",
   function() {
 
     cargarDatosPublicos();
 
-    const tokenExistente =
-      sessionStorage.getItem(
-        "tokenResidente"
-      );
-
-
-    if (
-      tokenExistente
-    ) {
-
-      sessionStorage.removeItem(
-        "tokenResidente"
-      );
-
-      sessionStorage.removeItem(
-        "residente"
-      );
-
-    }
-
-  }
-);
-
-
-window.addEventListener(
-  "message",
-  function(evento) {
-
-    const origenValido =
-      evento.origin ===
-        "https://script.googleusercontent.com" ||
-      evento.origin ===
-        "https://script.google.com";
-
-
-    if (
-      !origenValido
-    ) {
-
-      return;
-
-    }
-
-
-    const datos =
-      evento.data;
-
-
-    if (
-      !datos ||
-      datos.tipo !== "ARCO_V3_LOGIN" ||
-      !datos.requestId ||
-      datos.requestId !== requestLoginActual
-    ) {
-
-      return;
-
-    }
-
-
-    if (
-      temporizadorLogin
-    ) {
-
-      clearTimeout(
-        temporizadorLogin
-      );
-
-      temporizadorLogin =
-        null;
-
-    }
-
-
-    const resultado =
-      datos.resultado;
-
-
-    if (
-      !resultado ||
-      !resultado.ok
-    ) {
-
-      mostrarError(
-        resultado &&
-        resultado.mensaje
-          ? resultado.mensaje
-          : "No fue posible ingresar."
-      );
-
-      restaurarBoton();
-
-      return;
-
-    }
-
-
-    const respuesta =
-      resultado.datos || {};
-
-
-    if (
-      !respuesta.token
-    ) {
-
-      mostrarError(
-        "No fue posible crear la sesión."
-      );
-
-      restaurarBoton();
-
-      return;
-
-    }
-
-
-    sessionStorage.setItem(
-      "tokenResidente",
-      respuesta.token
+    sessionStorage.removeItem(
+      "tokenResidente"
     );
 
-
-    if (
-      respuesta.residente
-    ) {
-
-      sessionStorage.setItem(
-        "residente",
-        JSON.stringify(
-          respuesta.residente
-        )
-      );
-
-    }
-
-
-    mostrarCorrecto(
-      "Acceso correcto. Login externo funcionando."
+    sessionStorage.removeItem(
+      "residente"
     );
-
-
-    const boton =
-      document.getElementById(
-        "btnIngresar"
-      );
-
-
-    boton.textContent =
-      "ACCESO CORRECTO";
 
   }
 );
@@ -791,6 +674,145 @@ function iniciarSesion() {
       requestLoginActual;
 
 
+  iniciarEsperaCallback();
+
+
+  document
+    .getElementById(
+      "formLogin"
+    )
+    .submit();
+
+}
+
+
+function iniciarEsperaCallback() {
+
+  detenerEsperaCallback();
+
+
+  const iframe =
+    document.getElementById(
+      "iframeLogin"
+    );
+
+
+  intervaloCallback =
+    setInterval(
+      function() {
+
+        try {
+
+          const ubicacion =
+            iframe.contentWindow.location;
+
+
+          if (
+            ubicacion.origin !==
+            window.location.origin
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            ubicacion.pathname !==
+            "/arcosdelponiente/login-callback.html"
+          ) {
+
+            return;
+
+          }
+
+
+          const hash =
+            ubicacion.hash || "";
+
+
+          if (
+            !hash.startsWith(
+              "#data="
+            )
+          ) {
+
+            return;
+
+          }
+
+
+          const contenido =
+            hash.substring(
+              6
+            );
+
+
+          const payload =
+            JSON.parse(
+              decodeURIComponent(
+                contenido
+              )
+            );
+
+
+          procesarRespuestaLogin(
+            payload
+          );
+
+        }
+        catch (error) {
+
+          /*
+           * Mientras el iframe está en Apps Script
+           * el navegador impide leer su URL por
+           * seguridad. Es normal y seguimos esperando.
+           */
+
+        }
+
+      },
+      250
+    );
+
+
+  temporizadorLogin =
+    setTimeout(
+      function() {
+
+        detenerEsperaCallback();
+
+
+        mostrarError(
+          "La validación tardó demasiado. Intenta nuevamente."
+        );
+
+
+        restaurarBoton();
+
+      },
+      20000
+    );
+
+}
+
+
+function detenerEsperaCallback() {
+
+  if (
+    intervaloCallback
+  ) {
+
+    clearInterval(
+      intervaloCallback
+    );
+
+    intervaloCallback =
+      null;
+
+  }
+
+
   if (
     temporizadorLogin
   ) {
@@ -799,29 +821,140 @@ function iniciarSesion() {
       temporizadorLogin
     );
 
+    temporizadorLogin =
+      null;
+
+  }
+
+}
+
+
+function procesarRespuestaLogin(
+  payload
+) {
+
+  if (
+    !payload ||
+    !payload.requestId ||
+    payload.requestId !==
+      requestLoginActual
+  ) {
+
+    return;
+
   }
 
 
-  temporizadorLogin =
-    setTimeout(
-      function() {
+  detenerEsperaCallback();
 
-        mostrarError(
-          "La validación tardó demasiado. Intenta nuevamente."
-        );
 
-        restaurarBoton();
+  const resultado =
+    payload.resultado;
 
-      },
-      20000
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    mostrarError(
+      resultado &&
+      resultado.mensaje
+        ? resultado.mensaje
+        : "No fue posible ingresar."
     );
 
 
-  document
-    .getElementById(
-      "formLogin"
-    )
-    .submit();
+    restaurarBoton();
+
+
+    limpiarIframe();
+
+
+    return;
+
+  }
+
+
+  const datos =
+    resultado.datos || {};
+
+
+  if (
+    !datos.token
+  ) {
+
+    mostrarError(
+      "No fue posible crear la sesión."
+    );
+
+
+    restaurarBoton();
+
+
+    limpiarIframe();
+
+
+    return;
+
+  }
+
+
+  sessionStorage.setItem(
+    "tokenResidente",
+    datos.token
+  );
+
+
+  if (
+    datos.residente
+  ) {
+
+    sessionStorage.setItem(
+      "residente",
+      JSON.stringify(
+        datos.residente
+      )
+    );
+
+  }
+
+
+  mostrarCorrecto(
+    "Acceso correcto. Login externo funcionando."
+  );
+
+
+  const boton =
+    document.getElementById(
+      "btnIngresar"
+    );
+
+
+  boton.textContent =
+    "ACCESO CORRECTO";
+
+
+  limpiarIframe();
+
+}
+
+
+function limpiarIframe() {
+
+  const iframe =
+    document.getElementById(
+      "iframeLogin"
+    );
+
+
+  try {
+
+    iframe.src =
+      "about:blank";
+
+  }
+  catch (error) {}
 
 }
 
