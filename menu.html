@@ -985,6 +985,23 @@ function iniciarMenu() {
     );
 
 
+  document
+    .getElementById(
+      "linkDirectorio"
+    )
+    .href =
+      "directorio.html";
+
+
+  document
+    .getElementById(
+      "linkDirectorio"
+    )
+    .removeAttribute(
+      "target"
+    );
+
+
   prepararBotonesPrueba();
 
 
@@ -1006,7 +1023,6 @@ function iniciarMenu() {
 function prepararBotonesPrueba() {
 
   const ids = [
-    "linkDirectorio",
     "linkSeguridad",
     "linkMascotas",
     "linkEncuestas",
