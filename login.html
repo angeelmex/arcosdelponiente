@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <title>Acceso de residente</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+
+      margin: 0;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      background:
+        #f4f7fb;
+
+      color:
+        #204d5d;
+
+    }
+
+    .pagina {
+
+      min-height: 100vh;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 22px 17px;
+
+    }
+
+    .contenedor {
+
+      width: 100%;
+
+      max-width: 480px;
+
+    }
+
+    .tarjeta {
+
+      background: white;
+
+      border-radius: 26px;
+
+      padding:
+        28px 23px;
+
+      box-shadow:
+        0 9px 30px
+        rgba(20, 55, 95, 0.12);
+
+    }
+
+    .logo {
+
+      display: none;
+
+      width: 100%;
+
+      max-width: 330px;
+
+      max-height: 130px;
+
+      object-fit: contain;
+
+      margin:
+        0 auto 22px;
+
+    }
+
+    h1 {
+
+      margin:
+        0 0 6px;
+
+      text-align: center;
+
+      font-size: 27px;
+
+      color:
+        #204d5d;
+
+    }
+
+    .subtitulo {
+
+      text-align: center;
+
+      color:
+        #738398;
+
+      margin-bottom: 30px;
+
+    }
+
+    .etiqueta {
+
+      display: block;
+
+      margin-bottom: 8px;
+
+      font-size: 15px;
+
+      font-weight: 800;
+
+    }
+
+    .campo {
+
+      position: relative;
+
+    }
+
+    input {
+
+      width: 100%;
+
+      height: 64px;
+
+      padding:
+        0 60px 0 18px;
+
+      border:
+        2px solid #dce5ec;
+
+      border-radius: 17px;
+
+      outline: none;
+
+      font-size: 21px;
+
+    }
+
+    input:focus {
+
+      border-color:
+        #b7d52b;
+
+    }
+
+    .ojo {
+
+      position: absolute;
+
+      right: 7px;
+
+      top: 7px;
+
+      width: 50px;
+
+      height: 50px;
+
+      border: none;
+
+      border-radius: 14px;
+
+      background:
+        #edf3f6;
+
+      font-size: 21px;
+
+      cursor: pointer;
+
+    }
+
+    .privacidad {
+
+      margin:
+        10px 2px 24px;
+
+      color:
+        #748398;
+
+      font-size: 13px;
+
+    }
+
+    .boton {
+
+      width: 100%;
+
+      height: 64px;
+
+      border: none;
+
+      border-radius: 18px;
+
+      background:
+        #204d5d;
+
+      color: white;
+
+      font-size: 20px;
+
+      font-weight: 800;
+
+      cursor: pointer;
+
+    }
+
+    .boton:disabled {
+
+      opacity: 0.6;
+
+    }
+
+    .mensaje {
+
+      display: none;
+
+      margin-top: 17px;
+
+      padding: 14px;
+
+      border-radius: 14px;
+
+      text-align: center;
+
+      font-weight: 700;
+
+    }
+
+    .mensaje.error {
+
+      display: block;
+
+      color:
+        #9e2929;
+
+      background:
+        #fdecec;
+
+    }
+
+    .mensaje.ok {
+
+      display: block;
+
+      color:
+        #24652d;
+
+      background:
+        #eaf7ec;
+
+    }
+
+    .volver {
+
+      margin-top: 19px;
+
+      text-align: center;
+
+    }
+
+    .volver button {
+
+      border: none;
+
+      background: none;
+
+      color:
+        #204d5d;
+
+      font-size: 15px;
+
+      font-weight: 800;
+
+      cursor: pointer;
+
+    }
+
+    .iframe-post {
+
+      display: none;
+
+      width: 0;
+
+      height: 0;
+
+      border: 0;
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<div class="pagina">
+
+  <div class="contenedor">
+
+    <div class="tarjeta">
+
+
+      <img
+        id="logo"
+        class="logo"
+        alt="Arcos del Poniente"
+      >
+
+
+      <h1>
+        Acceso de residente
+      </h1>
+
+
+      <div class="subtitulo">
+        Ingresa tu contraseña para continuar
+      </div>
+
+
+      <label
+        class="etiqueta"
+        for="contrasena"
+      >
+        Contraseña
+      </label>
+
+
+      <div class="campo">
+
+
+        <input
+          type="password"
+          id="contrasena"
+          placeholder="Escribe tu contraseña"
+          autocomplete="current-password"
+          onkeydown="detectarEnter(event)"
+        >
+
+
+        <button
+          type="button"
+          class="ojo"
+          onclick="mostrarOcultar()"
+          aria-label="Mostrar u ocultar contraseña"
+        >
+          👁️
+        </button>
+
+
+      </div>
+
+
+      <div class="privacidad">
+        🔒 Por seguridad, tu contraseña
+        se mantiene oculta.
+      </div>
+
+
+      <button
+        id="btnIngresar"
+        class="boton"
+        onclick="iniciarSesion()"
+      >
+        INGRESAR
+      </button>
+
+
+      <div
+        id="mensaje"
+        class="mensaje"
+      ></div>
+
+
+      <div class="volver">
+
+        <button
+          type="button"
+          onclick="volverAvisos()"
+        >
+          ← Volver a avisos
+        </button>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<form
+  id="formLogin"
+  method="post"
+  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
+  target="iframeLogin"
+  style="display:none;"
+>
+
+  <input
+    type="hidden"
+    name="accion"
+    value="login"
+  >
+
+  <input
+    type="hidden"
+    id="postContrasena"
+    name="contrasena"
+    value=""
+  >
+
+  <input
+    type="hidden"
+    id="postRequestId"
+    name="requestId"
+    value=""
+  >
+
+</form>
+
+
+<iframe
+  id="iframeLogin"
+  name="iframeLogin"
+  class="iframe-post"
+  title="Procesando acceso"
+></iframe>
+
+
+<script>
+
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+let requestLoginActual =
+  "";
+
+
+let temporizadorLogin =
+  null;
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    cargarDatosPublicos();
+
+    const tokenExistente =
+      sessionStorage.getItem(
+        "tokenResidente"
+      );
+
+
+    if (
+      tokenExistente
+    ) {
+
+      sessionStorage.removeItem(
+        "tokenResidente"
+      );
+
+      sessionStorage.removeItem(
+        "residente"
+      );
+
+    }
+
+  }
+);
+
+
+window.addEventListener(
+  "message",
+  function(evento) {
+
+    const origenValido =
+      evento.origin ===
+        "https://script.googleusercontent.com" ||
+      evento.origin ===
+        "https://script.google.com";
+
+
+    if (
+      !origenValido
+    ) {
+
+      return;
+
+    }
+
+
+    const datos =
+      evento.data;
+
+
+    if (
+      !datos ||
+      datos.tipo !== "ARCO_V3_LOGIN" ||
+      !datos.requestId ||
+      datos.requestId !== requestLoginActual
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      temporizadorLogin
+    ) {
+
+      clearTimeout(
+        temporizadorLogin
+      );
+
+      temporizadorLogin =
+        null;
+
+    }
+
+
+    const resultado =
+      datos.resultado;
+
+
+    if (
+      !resultado ||
+      !resultado.ok
+    ) {
+
+      mostrarError(
+        resultado &&
+        resultado.mensaje
+          ? resultado.mensaje
+          : "No fue posible ingresar."
+      );
+
+      restaurarBoton();
+
+      return;
+
+    }
+
+
+    const respuesta =
+      resultado.datos || {};
+
+
+    if (
+      !respuesta.token
+    ) {
+
+      mostrarError(
+        "No fue posible crear la sesión."
+      );
+
+      restaurarBoton();
+
+      return;
+
+    }
+
+
+    sessionStorage.setItem(
+      "tokenResidente",
+      respuesta.token
+    );
+
+
+    if (
+      respuesta.residente
+    ) {
+
+      sessionStorage.setItem(
+        "residente",
+        JSON.stringify(
+          respuesta.residente
+        )
+      );
+
+    }
+
+
+    mostrarCorrecto(
+      "Acceso correcto. Login externo funcionando."
+    );
+
+
+    const boton =
+      document.getElementById(
+        "btnIngresar"
+      );
+
+
+    boton.textContent =
+      "ACCESO CORRECTO";
+
+  }
+);
+
+
+function cargarDatosPublicos() {
+
+  window.recibirDatosLogin =
+    function(resultado) {
+
+      if (
+        !resultado ||
+        !resultado.ok ||
+        !resultado.datos
+      ) {
+
+        return;
+
+      }
+
+
+      const urlLogo =
+        resultado.datos.urlLogo;
+
+
+      if (
+        !urlLogo
+      ) {
+
+        return;
+
+      }
+
+
+      const logo =
+        document.getElementById(
+          "logo"
+        );
+
+
+      logo.onload =
+        function() {
+
+          logo.style.display =
+            "block";
+
+        };
+
+
+      logo.src =
+        urlLogo;
+
+    };
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=inicio" +
+    "&callback=recibirDatosLogin" +
+    "&t=" +
+    Date.now();
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function mostrarOcultar() {
+
+  const campo =
+    document.getElementById(
+      "contrasena"
+    );
+
+
+  campo.type =
+    campo.type === "password"
+      ? "text"
+      : "password";
+
+}
+
+
+function detectarEnter(evento) {
+
+  if (
+    evento.key === "Enter"
+  ) {
+
+    iniciarSesion();
+
+  }
+
+}
+
+
+function iniciarSesion() {
+
+  const contrasena =
+    document
+      .getElementById(
+        "contrasena"
+      )
+      .value
+      .trim();
+
+
+  if (
+    !contrasena
+  ) {
+
+    mostrarError(
+      "Ingresa tu contraseña."
+    );
+
+    return;
+
+  }
+
+
+  const boton =
+    document.getElementById(
+      "btnIngresar"
+    );
+
+
+  if (
+    boton.disabled
+  ) {
+
+    return;
+
+  }
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "VERIFICANDO...";
+
+
+  ocultarMensaje();
+
+
+  requestLoginActual =
+    generarRequestId();
+
+
+  document
+    .getElementById(
+      "postContrasena"
+    )
+    .value =
+      contrasena;
+
+
+  document
+    .getElementById(
+      "postRequestId"
+    )
+    .value =
+      requestLoginActual;
+
+
+  if (
+    temporizadorLogin
+  ) {
+
+    clearTimeout(
+      temporizadorLogin
+    );
+
+  }
+
+
+  temporizadorLogin =
+    setTimeout(
+      function() {
+
+        mostrarError(
+          "La validación tardó demasiado. Intenta nuevamente."
+        );
+
+        restaurarBoton();
+
+      },
+      20000
+    );
+
+
+  document
+    .getElementById(
+      "formLogin"
+    )
+    .submit();
+
+}
+
+
+function generarRequestId() {
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+
+  return (
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
+}
+
+
+function volverAvisos() {
+
+  window.location.href =
+    "./";
+
+}
+
+
+function restaurarBoton() {
+
+  const boton =
+    document.getElementById(
+      "btnIngresar"
+    );
+
+
+  boton.disabled =
+    false;
+
+
+  boton.textContent =
+    "INGRESAR";
+
+}
+
+
+function ocultarMensaje() {
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.className =
+    "mensaje";
+
+
+  mensaje.textContent =
+    "";
+
+}
+
+
+function mostrarError(texto) {
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.className =
+    "mensaje error";
+
+
+  mensaje.textContent =
+    texto;
+
+}
+
+
+function mostrarCorrecto(texto) {
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.className =
+    "mensaje ok";
+
+
+  mensaje.textContent =
+    texto;
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
