@@ -934,6 +934,40 @@ function iniciarMenu() {
       RESIDENTE.idQr;
 
 
+  document
+    .getElementById(
+      "linkTemporal"
+    )
+    .href =
+      "crear-pase.html?tipo=TEMPORAL";
+
+
+  document
+    .getElementById(
+      "linkTemporal"
+    )
+    .removeAttribute(
+      "target"
+    );
+
+
+  document
+    .getElementById(
+      "linkFijo"
+    )
+    .href =
+      "crear-pase.html?tipo=PERMANENTE";
+
+
+  document
+    .getElementById(
+      "linkFijo"
+    )
+    .removeAttribute(
+      "target"
+    );
+
+
   prepararBotonesPrueba();
 
 
@@ -955,8 +989,6 @@ function iniciarMenu() {
 function prepararBotonesPrueba() {
 
   const ids = [
-    "linkFijo",
-    "linkTemporal",
     "linkMisPases",
     "linkDirectorio",
     "linkSeguridad",
