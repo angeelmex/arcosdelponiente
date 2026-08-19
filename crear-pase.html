@@ -1,0 +1,2788 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #204d5d;
+    }
+
+    .pagina {
+      min-height: 100vh;
+      padding: 16px 14px 28px;
+    }
+
+    .contenedor {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .encabezado {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .volver {
+      width: 54px;
+      min-width: 54px;
+      height: 54px;
+      border: none;
+      border-radius: 16px;
+      background: white;
+      color: #204d5d;
+      font-size: 27px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 16px rgba(20,55,95,.09);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .titulo {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .subtitulo {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #718198;
+    }
+
+    .tarjeta {
+      background: white;
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 7px 24px rgba(20,55,95,.10);
+    }
+
+    .tipo-acceso {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-bottom: 18px;
+    }
+
+    .tipo-btn {
+      min-height: 64px;
+      border: 2px solid #dce5ec;
+      border-radius: 17px;
+      background: white;
+      color: #64768c;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .tipo-btn.activo {
+      background: #204d5d;
+      border-color: #204d5d;
+      color: white;
+    }
+
+    .vigencia {
+      margin-bottom: 17px;
+      padding: 13px 14px;
+      border-radius: 14px;
+      background: #eef5f7;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .grupo {
+      margin-bottom: 16px;
+    }
+
+    .etiqueta {
+      display: block;
+      margin: 0 0 7px 2px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    input,
+    select {
+      width: 100%;
+      height: 62px;
+      border: 2px solid #dce5ec;
+      border-radius: 16px;
+      padding: 0 16px;
+      background: white;
+      color: #20384f;
+      font-size: 17px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #b7d52b;
+    }
+
+    .ayuda {
+      margin: 6px 2px 0;
+      font-size: 12px;
+      color: #748399;
+      line-height: 1.4;
+    }
+
+    .boton-principal {
+      width: 100%;
+      min-height: 66px;
+      border: none;
+      border-radius: 18px;
+      background: #204d5d;
+      color: white;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .boton-principal:disabled {
+      opacity: .55;
+    }
+
+    .mensaje {
+      display: none;
+      margin-top: 15px;
+      padding: 14px;
+      border-radius: 14px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .mensaje.error {
+      display: block;
+      background: #fdecec;
+      color: #9e2929;
+    }
+
+    .resultado {
+      display: none;
+      background: white;
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 7px 24px rgba(20,55,95,.10);
+      text-align: center;
+    }
+
+    .correcto-icono {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #eaf6ee;
+      font-size: 31px;
+    }
+
+    .resultado h2 {
+      margin: 0 0 7px;
+      font-size: 23px;
+    }
+
+    .resultado-info {
+      margin-bottom: 15px;
+      color: #6e7f95;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .qr {
+      display: block;
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto 10px;
+    }
+
+    .folio {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .estado-compartir {
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 13px;
+      background: #eef5f7;
+      color: #68798e;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .compartir {
+      width: 100%;
+      min-height: 60px;
+      border: none;
+      border-radius: 17px;
+      background: #238c45;
+      color: white;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    .compartir:disabled {
+      opacity: .55;
+      cursor: default;
+    }
+
+    .otro {
+      width: 100%;
+      min-height: 56px;
+      border: none;
+      border-radius: 16px;
+      background: #edf3f6;
+      color: #204d5d;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    #canvasPase {
+      display: none;
+    }
+
+  </style>
+
+  <title>Crear pase</title>
+
+</head>
+
+
+<body>
+
+<div class="pagina">
+
+  <div class="contenedor">
+
+    <div class="encabezado">
+
+      <a
+        class="volver"
+        href="menu.html"
+        aria-label="Volver al menú"
+      >
+        ←
+      </a>
+
+      <div>
+
+        <h1
+          id="titulo"
+          class="titulo"
+        >
+          Crear pase
+        </h1>
+
+        <div
+          id="subtitulo"
+          class="subtitulo"
+        ></div>
+
+      </div>
+
+    </div>
+
+
+
+    <div
+      id="formulario"
+      class="tarjeta"
+    >
+
+
+      <div class="tipo-acceso">
+
+        <button
+          id="btnVehicular"
+          type="button"
+          class="tipo-btn activo"
+          onclick="seleccionarAcceso('VEHICULAR')"
+        >
+          🚗 VEHICULAR
+        </button>
+
+        <button
+          id="btnPeatonal"
+          type="button"
+          class="tipo-btn"
+          onclick="seleccionarAcceso('PEATONAL')"
+        >
+          🚶 PEATONAL
+        </button>
+
+      </div>
+
+
+
+      <div
+        id="vigencia"
+        class="vigencia"
+      ></div>
+
+
+
+      <div class="grupo">
+
+        <label class="etiqueta">
+          Nombre del visitante
+        </label>
+
+        <input
+          id="nombreVisitante"
+          type="text"
+          maxlength="80"
+          placeholder="Ej. Juan Pérez"
+        >
+
+      </div>
+
+
+
+      <div class="grupo">
+
+        <label class="etiqueta">
+          Tipo de visita
+        </label>
+
+        <select id="tipoVisita">
+
+          <option value="">
+            Selecciona una opción
+          </option>
+
+          <option value="FAMILIAR">
+            Familiar
+          </option>
+
+          <option value="UBER / DIDI">
+            Uber / Didi
+          </option>
+
+          <option value="PAQUETERIA">
+            Paquetería
+          </option>
+
+          <option value="SERVICIO">
+            Servicio
+          </option>
+
+          <option value="PROVEEDOR">
+            Proveedor
+          </option>
+
+          <option value="OTRO">
+            Otro
+          </option>
+
+        </select>
+
+      </div>
+
+
+
+      <div
+        id="grupoPlacas"
+        class="grupo"
+      >
+
+        <label class="etiqueta">
+          Placas del vehículo
+        </label>
+
+        <input
+          id="placas"
+          type="text"
+          maxlength="12"
+          placeholder="Ej. ABC123A"
+          autocomplete="off"
+          autocapitalize="characters"
+          oninput="normalizarPlacasCampo(this)"
+        >
+
+        <div class="ayuda">
+          Solo letras y números.
+          Sin espacios ni guiones.
+        </div>
+
+      </div>
+
+
+
+      <button
+        id="btnCrear"
+        type="button"
+        class="boton-principal"
+        onclick="crearPaseCliente()"
+      >
+        CREAR PASE
+      </button>
+
+
+      <div
+        id="mensaje"
+        class="mensaje"
+      ></div>
+
+
+    </div>
+
+
+
+    <div
+      id="resultado"
+      class="resultado"
+    >
+
+
+      <div class="correcto-icono">
+        ✓
+      </div>
+
+
+      <h2>
+        Pase creado
+      </h2>
+
+
+      <div
+        id="resultadoInfo"
+        class="resultado-info"
+      ></div>
+
+
+      <img
+        id="imagenQr"
+        class="qr"
+        alt="Código QR"
+      >
+
+
+      <div
+        id="folio"
+        class="folio"
+      ></div>
+
+
+      <div
+        id="estadoCompartir"
+        class="estado-compartir"
+      >
+        Preparando imagen para compartir...
+      </div>
+
+
+      <button
+        id="btnCompartir"
+        type="button"
+        class="compartir"
+        onclick="compartirPasePreparado()"
+        disabled
+      >
+        PREPARANDO PASE...
+      </button>
+
+
+      <button
+        type="button"
+        class="otro"
+        onclick="crearOtro()"
+      >
+        CREAR OTRO PASE
+      </button>
+
+
+    </div>
+
+
+  </div>
+
+</div>
+
+
+
+
+<form
+  id="formOperacionPase"
+  method="post"
+  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
+  target="iframeOperacionPase"
+  style="display:none;"
+>
+
+  <input type="hidden" id="opAccion" name="accion">
+  <input type="hidden" id="opToken" name="token">
+  <input type="hidden" id="opRequestId" name="requestId">
+
+  <input type="hidden" id="opTipoPase" name="tipoPase">
+  <input type="hidden" id="opTipoAcceso" name="tipoAcceso">
+  <input type="hidden" id="opNombreVisitante" name="nombreVisitante">
+  <input type="hidden" id="opTipoVisita" name="tipoVisita">
+  <input type="hidden" id="opPlacas" name="placas">
+  <input type="hidden" id="opIdPase" name="idPase">
+
+</form>
+
+
+<iframe
+  id="iframeOperacionPase"
+  name="iframeOperacionPase"
+  style="display:none;width:0;height:0;border:0;"
+  title="Procesando pase"
+></iframe>
+
+
+<canvas
+  id="canvasPase"
+  width="1080"
+  height="1350"
+></canvas>
+
+
+
+<script>
+
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+let TOKEN =
+  "";
+
+
+let TIPO_PASE =
+  "TEMPORAL";
+
+
+let tipoAcceso =
+  "VEHICULAR";
+
+
+let paseCreado =
+  null;
+
+
+let archivoPaseCompartible =
+  null;
+
+
+let blobPaseCompartible =
+  null;
+
+
+/*************************************************
+ * LOGO REAL DE ARCOS DEL PONIENTE
+ *
+ * Se incrusta directamente dentro del HTML para
+ * evitar depender de Google Drive o URLs externas.
+ *************************************************/
+
+const LOGO_ARCOS_DATA_URL =
+  "data:image/png;base64,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";
+
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  iniciarVista
+);
+
+
+
+function iniciarVista() {
+
+  TOKEN =
+    sessionStorage.getItem(
+      "tokenResidente"
+    ) || "";
+
+
+  if (
+    !TOKEN
+  ) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  const parametros =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  const tipoSolicitado =
+    String(
+      parametros.get(
+        "tipo"
+      ) || ""
+    )
+      .trim()
+      .toUpperCase();
+
+
+  TIPO_PASE =
+    tipoSolicitado ===
+      "PERMANENTE"
+        ? "PERMANENTE"
+        : "TEMPORAL";
+
+
+  if (
+    TIPO_PASE ===
+    "PERMANENTE"
+  ) {
+
+    document
+      .getElementById(
+        "titulo"
+      )
+      .textContent =
+        "Crear QR fijo";
+
+
+    document
+      .getElementById(
+        "subtitulo"
+      )
+      .textContent =
+        "Pase de acceso permanente";
+
+
+    document
+      .getElementById(
+        "vigencia"
+      )
+      .textContent =
+        "Este pase seguirá activo hasta que tú lo canceles.";
+
+
+    document
+      .getElementById(
+        "btnCrear"
+      )
+      .textContent =
+        "CREAR PASE PERMANENTE";
+
+  }
+  else {
+
+    document
+      .getElementById(
+        "titulo"
+      )
+      .textContent =
+        "Crear QR";
+
+
+    document
+      .getElementById(
+        "subtitulo"
+      )
+      .textContent =
+        "Pase temporal";
+
+
+    document
+      .getElementById(
+        "vigencia"
+      )
+      .textContent =
+        "Este QR puede utilizarse una sola vez. Si no se utiliza, vence automáticamente después de 12 horas.";
+
+  }
+
+}
+
+
+
+/*************************************************
+ * VEHICULAR / PEATONAL
+ *************************************************/
+
+function seleccionarAcceso(
+  tipo
+) {
+
+  tipoAcceso =
+    tipo;
+
+
+  const vehicular =
+    document.getElementById(
+      "btnVehicular"
+    );
+
+
+  const peatonal =
+    document.getElementById(
+      "btnPeatonal"
+    );
+
+
+  const grupoPlacas =
+    document.getElementById(
+      "grupoPlacas"
+    );
+
+
+  if (
+    tipo ===
+    "VEHICULAR"
+  ) {
+
+    vehicular
+      .classList
+      .add(
+        "activo"
+      );
+
+
+    peatonal
+      .classList
+      .remove(
+        "activo"
+      );
+
+
+    grupoPlacas.style.display =
+      "block";
+
+  }
+  else {
+
+    peatonal
+      .classList
+      .add(
+        "activo"
+      );
+
+
+    vehicular
+      .classList
+      .remove(
+        "activo"
+      );
+
+
+    grupoPlacas.style.display =
+      "none";
+
+
+    document
+      .getElementById(
+        "placas"
+      )
+      .value =
+        "";
+
+  }
+
+}
+
+
+
+/*************************************************
+ * PLACAS
+ *************************************************/
+
+function normalizarPlacasCampo(
+  campo
+) {
+
+  campo.value =
+    campo.value
+      .toUpperCase()
+      .replace(
+        /[^A-Z0-9]/g,
+        ""
+      );
+
+}
+
+
+
+/*************************************************
+ * CREAR PASE
+ *************************************************/
+
+function crearPaseCliente() {
+
+  ocultarMensaje();
+
+
+  const nombreVisitante =
+    document
+      .getElementById(
+        "nombreVisitante"
+      )
+      .value
+      .trim();
+
+
+  const tipoVisita =
+    document
+      .getElementById(
+        "tipoVisita"
+      )
+      .value;
+
+
+  const placas =
+    document
+      .getElementById(
+        "placas"
+      )
+      .value
+      .trim();
+
+
+  if (!nombreVisitante) {
+
+    mostrarError(
+      "Ingresa el nombre del visitante."
+    );
+
+    return;
+
+  }
+
+
+  if (!tipoVisita) {
+
+    mostrarError(
+      "Selecciona el tipo de visita."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    tipoAcceso ===
+      "VEHICULAR" &&
+    !placas
+  ) {
+
+    mostrarError(
+      "Ingresa las placas del vehículo."
+    );
+
+    return;
+
+  }
+
+
+  const boton =
+    document.getElementById(
+      "btnCrear"
+    );
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "CREANDO PASE...";
+
+
+  ejecutarOperacionPaseV3(
+    "crearPase",
+    {
+      tipoPase:
+        TIPO_PASE,
+
+      tipoAcceso:
+        tipoAcceso,
+
+      nombreVisitante:
+        nombreVisitante,
+
+      tipoVisita:
+        tipoVisita,
+
+      placas:
+        placas
+    },
+
+    function(resultado) {
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarError(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible crear el pase."
+        );
+
+
+        restaurarBoton();
+
+        return;
+
+      }
+
+
+      paseCreado =
+        resultado.datos;
+
+
+      mostrarResultado();
+
+
+      prepararImagenCompartible();
+
+    },
+
+    function() {
+
+      mostrarError(
+        "Ocurrió un problema al crear el pase."
+      );
+
+
+      restaurarBoton();
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * RESULTADO
+ *************************************************/
+
+function mostrarResultado() {
+
+
+  document
+    .getElementById(
+      "formulario"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "resultado"
+    )
+    .style.display =
+      "block";
+
+
+  document
+    .getElementById(
+      "imagenQr"
+    )
+    .src =
+      paseCreado.imagenQr;
+
+
+  document
+    .getElementById(
+      "folio"
+    )
+    .textContent =
+      "FOLIO: " +
+      paseCreado.idPase;
+
+
+  let informacion =
+    "<strong>" +
+    escaparHtml(
+      paseCreado.nombreVisitante
+    ) +
+    "</strong>";
+
+
+  informacion +=
+    "<br>" +
+    escaparHtml(
+      paseCreado.tipoVisita
+    );
+
+
+  if (
+    paseCreado.placas
+  ) {
+
+    informacion +=
+      "<br>Placas: <strong>" +
+      escaparHtml(
+        paseCreado.placas
+      ) +
+      "</strong>";
+
+  }
+
+
+  if (
+    paseCreado.tipoPase ===
+    "TEMPORAL"
+  ) {
+
+    informacion +=
+      "<br>Válido hasta: " +
+      escaparHtml(
+        paseCreado.fechaExpiracion
+      );
+
+  }
+  else {
+
+    informacion +=
+      "<br>Pase permanente";
+
+  }
+
+
+  document
+    .getElementById(
+      "resultadoInfo"
+    )
+    .innerHTML =
+      informacion;
+
+
+  document
+    .getElementById(
+      "estadoCompartir"
+    )
+    .textContent =
+      "Preparando imagen para compartir...";
+
+
+  const botonCompartir =
+    document.getElementById(
+      "btnCompartir"
+    );
+
+
+  botonCompartir.disabled =
+    true;
+
+
+  botonCompartir.textContent =
+    "PREPARANDO PASE...";
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+
+/*************************************************
+ * PREPARAR IMAGEN
+ *************************************************/
+
+function prepararImagenCompartible() {
+
+  archivoPaseCompartible =
+    null;
+
+
+  blobPaseCompartible =
+    null;
+
+
+  ejecutarOperacionPaseV3(
+    "qrCompartir",
+    {
+      idPase:
+        paseCreado.idPase
+    },
+
+    function(resultado) {
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        marcarErrorCompartir(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible preparar la imagen."
+        );
+
+        return;
+
+      }
+
+
+      generarTarjetaPng(
+        resultado.datos.dataUrl
+      );
+
+    },
+
+    function() {
+
+      marcarErrorCompartir(
+        "No fue posible preparar la imagen."
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * TARJETA PNG
+ *************************************************/
+
+function generarTarjetaPng(
+  dataUrlQr
+) {
+
+
+  const imagenQr =
+    new Image();
+
+
+  imagenQr.onload =
+    function() {
+
+
+      const logoArcos =
+        new Image();
+
+
+      logoArcos.onload =
+        function() {
+
+
+          try {
+
+
+            const canvas =
+              document.getElementById(
+                "canvasPase"
+              );
+
+
+            const ctx =
+              canvas.getContext(
+                "2d"
+              );
+
+
+            ctx.clearRect(
+              0,
+              0,
+              1080,
+              1350
+            );
+
+
+            /*********************************************
+             * FONDO GENERAL
+             *********************************************/
+
+            ctx.fillStyle =
+              "#F4F7FB";
+
+
+            ctx.fillRect(
+              0,
+              0,
+              1080,
+              1350
+            );
+
+
+            /*********************************************
+             * TARJETA PRINCIPAL
+             *********************************************/
+
+            ctx.fillStyle =
+              "#FFFFFF";
+
+
+            redondearRectangulo(
+              ctx,
+              55,
+              45,
+              970,
+              1260,
+              48
+            );
+
+
+            ctx.fill();
+
+
+            /*********************************************
+             * ENCABEZADO
+             *********************************************/
+
+            ctx.fillStyle =
+              "#204D5D";
+
+
+            redondearRectangulo(
+              ctx,
+              55,
+              45,
+              970,
+              210,
+              48
+            );
+
+
+            ctx.fill();
+
+
+            ctx.fillRect(
+              55,
+              155,
+              970,
+              100
+            );
+
+
+            /*********************************************
+             * LOGO REAL SUPERIOR
+             *********************************************/
+
+            dibujarLogoArcosImagen(
+              ctx,
+              logoArcos,
+              540,
+              105,
+              115,
+              92
+            );
+
+
+            ctx.fillStyle =
+              "#FFFFFF";
+
+
+            ctx.font =
+              "bold 43px Arial";
+
+
+            ctx.textAlign =
+              "center";
+
+
+            ctx.fillText(
+              "ARCOS DEL PONIENTE",
+              540,
+              190
+            );
+
+
+            /*********************************************
+             * TIPO DE PASE
+             *********************************************/
+
+            ctx.fillStyle =
+              "#204D5D";
+
+
+            ctx.font =
+              "bold 34px Arial";
+
+
+            ctx.fillText(
+              paseCreado.tipoPase ===
+                "PERMANENTE"
+                  ? "PASE DE ACCESO PERMANENTE"
+                  : "PASE DE ACCESO",
+              540,
+              310
+            );
+
+
+            /*********************************************
+             * NOMBRE DEL VISITANTE
+             *********************************************/
+
+            ctx.font =
+              "bold 38px Arial";
+
+
+            dibujarTextoCentradoLimitado(
+              ctx,
+              paseCreado.nombreVisitante,
+              540,
+              365,
+              820
+            );
+
+
+            /*********************************************
+             * MARCO DEL QR
+             *********************************************/
+
+            ctx.fillStyle =
+              "#F7FAFC";
+
+
+            redondearRectangulo(
+              ctx,
+              185,
+              410,
+              710,
+              650,
+              34
+            );
+
+
+            ctx.fill();
+
+
+            ctx.strokeStyle =
+              "#DDE7ED";
+
+
+            ctx.lineWidth =
+              3;
+
+
+            redondearRectangulo(
+              ctx,
+              185,
+              410,
+              710,
+              650,
+              34
+            );
+
+
+            ctx.stroke();
+
+
+            /*********************************************
+             * QR
+             *********************************************/
+
+            ctx.drawImage(
+              imagenQr,
+              245,
+              455,
+              590,
+              590
+            );
+
+
+            /*********************************************
+             * LOGO REAL EN EL CENTRO DEL QR
+             *********************************************/
+
+            ctx.fillStyle =
+              "#FFFFFF";
+
+
+            redondearRectangulo(
+              ctx,
+              467,
+              683,
+              146,
+              134,
+              26
+            );
+
+
+            ctx.fill();
+
+
+            dibujarLogoArcosImagen(
+              ctx,
+              logoArcos,
+              540,
+              750,
+              112,
+              96
+            );
+
+
+            /*********************************************
+             * FOLIO
+             *********************************************/
+
+            ctx.fillStyle =
+              "#204D5D";
+
+
+            ctx.font =
+              "bold 34px Arial";
+
+
+            ctx.textAlign =
+              "center";
+
+
+            ctx.fillText(
+              "FOLIO " +
+              paseCreado.idPase,
+              540,
+              1110
+            );
+
+
+            /*********************************************
+             * DATOS
+             *********************************************/
+
+            ctx.textAlign =
+              "left";
+
+
+            ctx.fillStyle =
+              "#718198";
+
+
+            ctx.font =
+              "bold 27px Arial";
+
+
+            ctx.fillText(
+              "TIPO",
+              145,
+              1172
+            );
+
+
+            ctx.fillText(
+              "ACCESO",
+              450,
+              1172
+            );
+
+
+            if (
+              paseCreado.placas
+            ) {
+
+              ctx.fillText(
+                "PLACAS",
+                760,
+                1172
+              );
+
+            }
+
+
+            ctx.fillStyle =
+              "#204D5D";
+
+
+            ctx.font =
+              "bold 29px Arial";
+
+
+            ctx.fillText(
+              paseCreado.tipoVisita,
+              145,
+              1212
+            );
+
+
+            ctx.fillText(
+              paseCreado.tipoAcceso,
+              450,
+              1212
+            );
+
+
+            if (
+              paseCreado.placas
+            ) {
+
+              ctx.fillText(
+                paseCreado.placas,
+                760,
+                1212
+              );
+
+            }
+
+
+            /*********************************************
+             * VIGENCIA
+             *********************************************/
+
+            ctx.textAlign =
+              "center";
+
+
+            ctx.fillStyle =
+              "#68798E";
+
+
+            ctx.font =
+              "24px Arial";
+
+
+            if (
+              paseCreado.tipoPase ===
+              "TEMPORAL"
+            ) {
+
+              ctx.fillText(
+                "Válido para un solo ingreso · Expira " +
+                paseCreado.fechaExpiracion,
+                540,
+                1270
+              );
+
+            }
+            else {
+
+              ctx.fillText(
+                "Pase permanente · Activo hasta que el residente lo cancele",
+                540,
+                1270
+              );
+
+            }
+
+
+            /*********************************************
+             * CREAR ARCHIVO PNG
+             *********************************************/
+
+            canvas.toBlob(
+              function(blob) {
+
+
+                if (!blob) {
+
+                  marcarErrorCompartir(
+                    "No fue posible crear la imagen."
+                  );
+
+                  return;
+
+                }
+
+
+                blobPaseCompartible =
+                  blob;
+
+
+                archivoPaseCompartible =
+                  new File(
+                    [blob],
+                    "Pase_" +
+                    paseCreado.idPase +
+                    ".png",
+                    {
+                      type:
+                        "image/png"
+                    }
+                  );
+
+
+                marcarCompartirListo();
+
+              },
+              "image/png",
+              1
+            );
+
+
+          }
+          catch (error) {
+
+            console.error(
+              error
+            );
+
+
+            marcarErrorCompartir(
+              "No fue posible crear la imagen."
+            );
+
+          }
+
+        };
+
+
+      logoArcos.onerror =
+        function() {
+
+          marcarErrorCompartir(
+            "No fue posible cargar el logo de la colonia."
+          );
+
+        };
+
+
+      logoArcos.src =
+        LOGO_ARCOS_DATA_URL;
+
+    };
+
+
+  imagenQr.onerror =
+    function() {
+
+      marcarErrorCompartir(
+        "No fue posible cargar el QR para compartir."
+      );
+
+    };
+
+
+  imagenQr.src =
+    dataUrlQr;
+
+}
+
+
+
+/*************************************************
+ * COMPARTIR
+ *************************************************/
+
+function marcarCompartirListo() {
+
+
+  document
+    .getElementById(
+      "estadoCompartir"
+    )
+    .textContent =
+      "Tu pase está listo para compartir.";
+
+
+  const boton =
+    document.getElementById(
+      "btnCompartir"
+    );
+
+
+  boton.disabled =
+    false;
+
+
+  boton.textContent =
+    "📤 COMPARTIR PASE";
+
+}
+
+
+
+function marcarErrorCompartir(
+  mensaje
+) {
+
+
+  document
+    .getElementById(
+      "estadoCompartir"
+    )
+    .textContent =
+      mensaje;
+
+
+  const boton =
+    document.getElementById(
+      "btnCompartir"
+    );
+
+
+  if (
+    blobPaseCompartible
+  ) {
+
+    boton.disabled =
+      false;
+
+
+    boton.textContent =
+      "GUARDAR IMAGEN";
+
+  }
+  else {
+
+    boton.disabled =
+      true;
+
+
+    boton.textContent =
+      "NO DISPONIBLE";
+
+  }
+
+}
+
+
+
+async function compartirPasePreparado() {
+
+
+  if (
+    !archivoPaseCompartible
+  ) {
+
+    if (
+      blobPaseCompartible
+    ) {
+
+      descargarImagen(
+        blobPaseCompartible
+      );
+
+    }
+
+    return;
+
+  }
+
+
+  try {
+
+
+    const puedeCompartirArchivo =
+      navigator.share &&
+      (
+        !navigator.canShare ||
+        navigator.canShare({
+          files:
+            [archivoPaseCompartible]
+        })
+      );
+
+
+    if (
+      puedeCompartirArchivo
+    ) {
+
+      await navigator.share({
+
+        files:
+          [archivoPaseCompartible],
+
+        title:
+          "Pase de acceso",
+
+        text:
+          "Pase de acceso a Arcos del Poniente"
+
+      });
+
+
+      return;
+
+    }
+
+
+    descargarImagen(
+      blobPaseCompartible
+    );
+
+
+    alert(
+      "Este navegador no permite adjuntar la imagen directamente. Se guardó el pase para que puedas enviarlo por WhatsApp."
+    );
+
+
+  }
+  catch (error) {
+
+
+    if (
+      error &&
+      error.name ===
+      "AbortError"
+    ) {
+
+      return;
+
+    }
+
+
+    console.error(
+      error
+    );
+
+
+    descargarImagen(
+      blobPaseCompartible
+    );
+
+
+    alert(
+      "No fue posible abrir el menú de compartir. Se guardó la imagen para que puedas enviarla manualmente."
+    );
+
+  }
+
+}
+
+
+
+/*************************************************
+ * GUARDAR IMAGEN
+ *************************************************/
+
+function descargarImagen(
+  blob
+) {
+
+
+  if (!blob) {
+
+    return;
+
+  }
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const enlace =
+    document.createElement(
+      "a"
+    );
+
+
+  enlace.href =
+    url;
+
+
+  enlace.download =
+    "Pase_" +
+    paseCreado.idPase +
+    ".png";
+
+
+  document.body.appendChild(
+    enlace
+  );
+
+
+  enlace.click();
+
+
+  enlace.remove();
+
+
+  setTimeout(
+    function() {
+
+      URL.revokeObjectURL(
+        url
+      );
+
+    },
+    1500
+  );
+
+}
+
+
+
+/*************************************************
+ * UTILIDADES CANVAS
+ *************************************************/
+
+function redondearRectangulo(
+  ctx,
+  x,
+  y,
+  ancho,
+  alto,
+  radio
+) {
+
+
+  ctx.beginPath();
+
+
+  ctx.moveTo(
+    x + radio,
+    y
+  );
+
+
+  ctx.lineTo(
+    x + ancho - radio,
+    y
+  );
+
+
+  ctx.quadraticCurveTo(
+    x + ancho,
+    y,
+    x + ancho,
+    y + radio
+  );
+
+
+  ctx.lineTo(
+    x + ancho,
+    y + alto - radio
+  );
+
+
+  ctx.quadraticCurveTo(
+    x + ancho,
+    y + alto,
+    x + ancho - radio,
+    y + alto
+  );
+
+
+  ctx.lineTo(
+    x + radio,
+    y + alto
+  );
+
+
+  ctx.quadraticCurveTo(
+    x,
+    y + alto,
+    x,
+    y + alto - radio
+  );
+
+
+  ctx.lineTo(
+    x,
+    y + radio
+  );
+
+
+  ctx.quadraticCurveTo(
+    x,
+    y,
+    x + radio,
+    y
+  );
+
+
+  ctx.closePath();
+
+}
+
+
+
+function dibujarTextoLimitado(
+  ctx,
+  valorTexto,
+  x,
+  y,
+  anchoMaximo
+) {
+
+
+  const original =
+    String(
+      valorTexto || ""
+    );
+
+
+  let valor =
+    original;
+
+
+  while (
+    ctx.measureText(
+      valor
+    ).width >
+      anchoMaximo &&
+    valor.length > 3
+  ) {
+
+    valor =
+      valor.substring(
+        0,
+        valor.length - 1
+      );
+
+  }
+
+
+  if (
+    valor !==
+    original
+  ) {
+
+    valor +=
+      "…";
+
+  }
+
+
+  ctx.fillText(
+    valor,
+    x,
+    y
+  );
+
+}
+
+
+
+/*************************************************
+ * LOGO REAL DE ARCOS PARA CANVAS
+ *************************************************/
+
+function dibujarLogoArcosImagen(
+  ctx,
+  imagen,
+  centroX,
+  centroY,
+  anchoMaximo,
+  altoMaximo
+) {
+
+  const proporcion =
+    imagen.width /
+    imagen.height;
+
+
+  let ancho =
+    anchoMaximo;
+
+
+  let alto =
+    ancho /
+    proporcion;
+
+
+  if (
+    alto >
+    altoMaximo
+  ) {
+
+    alto =
+      altoMaximo;
+
+
+    ancho =
+      alto *
+      proporcion;
+
+  }
+
+
+  ctx.drawImage(
+    imagen,
+    centroX -
+      (ancho / 2),
+    centroY -
+      (alto / 2),
+    ancho,
+    alto
+  );
+
+}
+
+
+
+/*************************************************
+ * TEXTO CENTRADO LIMITADO
+ *************************************************/
+
+function dibujarTextoCentradoLimitado(
+  ctx,
+  valorTexto,
+  centroX,
+  y,
+  anchoMaximo
+) {
+
+  const original =
+    String(
+      valorTexto || ""
+    );
+
+
+  let valor =
+    original;
+
+
+  while (
+    ctx.measureText(
+      valor
+    ).width >
+      anchoMaximo &&
+    valor.length > 3
+  ) {
+
+    valor =
+      valor.substring(
+        0,
+        valor.length - 1
+      );
+
+  }
+
+
+  if (
+    valor !==
+    original
+  ) {
+
+    valor +=
+      "…";
+
+  }
+
+
+  ctx.textAlign =
+    "center";
+
+
+  ctx.fillText(
+    valor,
+    centroX,
+    y
+  );
+
+}
+
+
+
+/*************************************************
+ * MOTOR DE OPERACIONES EXTERNAS V3
+ *************************************************/
+
+let OPERACION_PASE =
+  null;
+
+
+const MAX_CONSULTAS_PASE =
+  35;
+
+
+function ejecutarOperacionPaseV3(
+  accion,
+  datos,
+  alTerminar,
+  alFallar
+) {
+
+  if (
+    OPERACION_PASE
+  ) {
+
+    if (
+      typeof alFallar ===
+        "function"
+    ) {
+
+      alFallar();
+
+    }
+
+    return;
+
+  }
+
+
+  const requestId =
+    generarRequestIdPaseV3();
+
+
+  OPERACION_PASE = {
+    requestId:
+      requestId,
+
+    alTerminar:
+      alTerminar,
+
+    alFallar:
+      alFallar,
+
+    consultas:
+      0
+  };
+
+
+  document
+    .getElementById(
+      "opAccion"
+    )
+    .value =
+      accion;
+
+
+  document
+    .getElementById(
+      "opToken"
+    )
+    .value =
+      TOKEN;
+
+
+  document
+    .getElementById(
+      "opRequestId"
+    )
+    .value =
+      requestId;
+
+
+  document
+    .getElementById(
+      "opTipoPase"
+    )
+    .value =
+      datos &&
+      datos.tipoPase
+        ? datos.tipoPase
+        : "";
+
+
+  document
+    .getElementById(
+      "opTipoAcceso"
+    )
+    .value =
+      datos &&
+      datos.tipoAcceso
+        ? datos.tipoAcceso
+        : "";
+
+
+  document
+    .getElementById(
+      "opNombreVisitante"
+    )
+    .value =
+      datos &&
+      datos.nombreVisitante
+        ? datos.nombreVisitante
+        : "";
+
+
+  document
+    .getElementById(
+      "opTipoVisita"
+    )
+    .value =
+      datos &&
+      datos.tipoVisita
+        ? datos.tipoVisita
+        : "";
+
+
+  document
+    .getElementById(
+      "opPlacas"
+    )
+    .value =
+      datos &&
+      datos.placas
+        ? datos.placas
+        : "";
+
+
+  document
+    .getElementById(
+      "opIdPase"
+    )
+    .value =
+      datos &&
+      datos.idPase
+        ? datos.idPase
+        : "";
+
+
+  document
+    .getElementById(
+      "formOperacionPase"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarEstadoOperacionPaseV3,
+    700
+  );
+
+}
+
+
+function consultarEstadoOperacionPaseV3() {
+
+  if (
+    !OPERACION_PASE
+  ) {
+
+    return;
+
+  }
+
+
+  OPERACION_PASE.consultas++;
+
+
+  if (
+    OPERACION_PASE.consultas >
+      MAX_CONSULTAS_PASE
+  ) {
+
+    terminarOperacionPaseConError();
+
+    return;
+
+  }
+
+
+  window.recibirEstadoPaseV3 =
+    function(resultado) {
+
+      procesarEstadoOperacionPaseV3(
+        resultado
+      );
+
+    };
+
+
+  const anterior =
+    document.getElementById(
+      "consultaPaseV3"
+    );
+
+
+  if (
+    anterior
+  ) {
+
+    anterior.remove();
+
+  }
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.id =
+    "consultaPaseV3";
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=operacionEstado" +
+    "&requestId=" +
+    encodeURIComponent(
+      OPERACION_PASE.requestId
+    ) +
+    "&callback=recibirEstadoPaseV3" +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function() {
+
+      script.remove();
+
+
+      if (
+        OPERACION_PASE
+      ) {
+
+        setTimeout(
+          consultarEstadoOperacionPaseV3,
+          700
+        );
+
+      }
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function procesarEstadoOperacionPaseV3(
+  resultado
+) {
+
+  const script =
+    document.getElementById(
+      "consultaPaseV3"
+    );
+
+
+  if (
+    script
+  ) {
+
+    script.remove();
+
+  }
+
+
+  if (
+    !OPERACION_PASE
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    terminarOperacionPaseConError();
+
+    return;
+
+  }
+
+
+  const datos =
+    resultado.datos || {};
+
+
+  if (
+    datos.estado ===
+      "PENDIENTE"
+  ) {
+
+    setTimeout(
+      consultarEstadoOperacionPaseV3,
+      700
+    );
+
+    return;
+
+  }
+
+
+  if (
+    datos.estado !==
+      "LISTO" ||
+    !datos.resultado
+  ) {
+
+    terminarOperacionPaseConError();
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_PASE;
+
+
+  OPERACION_PASE =
+    null;
+
+
+  if (
+    typeof operacion.alTerminar ===
+      "function"
+  ) {
+
+    operacion.alTerminar(
+      datos.resultado
+    );
+
+  }
+
+}
+
+
+function terminarOperacionPaseConError() {
+
+  if (
+    !OPERACION_PASE
+  ) {
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_PASE;
+
+
+  OPERACION_PASE =
+    null;
+
+
+  if (
+    typeof operacion.alFallar ===
+      "function"
+  ) {
+
+    operacion.alFallar();
+
+  }
+
+}
+
+
+function generarRequestIdPaseV3() {
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+
+  return (
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2) +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
+}
+
+
+
+/*************************************************
+ * CREAR OTRO
+ *************************************************/
+
+function crearOtro() {
+
+
+  paseCreado =
+    null;
+
+
+  archivoPaseCompartible =
+    null;
+
+
+  blobPaseCompartible =
+    null;
+
+
+  document
+    .getElementById(
+      "resultado"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "formulario"
+    )
+    .style.display =
+      "block";
+
+
+  document
+    .getElementById(
+      "nombreVisitante"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "tipoVisita"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "placas"
+    )
+    .value =
+      "";
+
+
+  seleccionarAcceso(
+    "VEHICULAR"
+  );
+
+
+  restaurarBoton();
+
+}
+
+
+
+/*************************************************
+ * MENSAJES
+ *************************************************/
+
+function restaurarBoton() {
+
+
+  const boton =
+    document.getElementById(
+      "btnCrear"
+    );
+
+
+  boton.disabled =
+    false;
+
+
+  boton.textContent =
+    TIPO_PASE ===
+      "PERMANENTE"
+        ? "CREAR PASE PERMANENTE"
+        : "CREAR PASE";
+
+}
+
+
+
+function mostrarError(
+  textoMensaje
+) {
+
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.className =
+    "mensaje error";
+
+
+  mensaje.textContent =
+    textoMensaje;
+
+
+  mensaje.scrollIntoView({
+    behavior:
+      "smooth",
+    block:
+      "nearest"
+  });
+
+}
+
+
+
+function ocultarMensaje() {
+
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.className =
+    "mensaje";
+
+
+  mensaje.textContent =
+    "";
+
+}
+
+
+
+/*************************************************
+ * TEXTO SEGURO
+ *************************************************/
+
+function escaparHtml(
+  valor
+) {
+
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    valor || "";
+
+
+  return div.innerHTML;
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
