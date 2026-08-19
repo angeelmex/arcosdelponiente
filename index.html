@@ -3,12 +3,14 @@
 
 <head>
 
-  <base target="_top">
+  <meta charset="UTF-8">
 
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
   >
+
+  <title>Arcos del Poniente</title>
 
   <style>
 
@@ -319,13 +321,128 @@
 <script>
 
 
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
 document.addEventListener(
   "DOMContentLoaded",
-  function() {
+  cargarDatos
+);
+
+
+function cargarDatos() {
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=inicio" +
+    "&callback=recibirDatosInicio" +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function() {
+
+      mostrarSinAviso();
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function recibirDatosInicio(
+  resultado
+) {
+
+  document
+    .getElementById(
+      "cargando"
+    )
+    .style.display =
+      "none";
+
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    mostrarSinAviso();
+
+    return;
+
+  }
+
+
+  const datos =
+    resultado.datos || {};
+
+
+  if (
+    datos.urlAviso
+  ) {
+
+    const imagen =
+      document.getElementById(
+        "imagenAviso"
+      );
+
+
+    imagen.onload =
+      function() {
+
+        imagen.style.display =
+          "block";
+
+
+        document
+          .getElementById(
+            "sinAviso"
+          )
+          .style.display =
+            "none";
+
+      };
+
+
+    imagen.onerror =
+      function() {
+
+        mostrarSinAviso();
+
+      };
+
+
+    imagen.src =
+      datos.urlAviso;
+
+  }
+  else {
+
+    mostrarSinAviso();
+
+  }
+
+
+  if (
+    datos.sistemaActivo === false
+  ) {
 
     document
       .getElementById(
-        "cargando"
+        "btnAcceder"
       )
       .style.display =
         "none";
@@ -333,122 +450,25 @@ document.addEventListener(
 
     document
       .getElementById(
-        "sinAviso"
+        "estadoSistema"
       )
       .style.display =
         "block";
 
   }
-);
-
-
-function cargarDatos() {
-
-  google.script.run
-
-    .withSuccessHandler(
-      function(resultado) {
-
-        document
-          .getElementById(
-            "cargando"
-          )
-          .style.display =
-            "none";
-
-
-        if (
-          !resultado ||
-          !resultado.ok
-        ) {
-
-          mostrarSinAviso();
-
-          return;
-
-        }
-
-
-        const datos =
-          resultado.datos || {};
-
-
-        if (
-          datos.urlAviso
-        ) {
-
-          const imagen =
-            document.getElementById(
-              "imagenAviso"
-            );
-
-
-          imagen.onload =
-            function() {
-
-              imagen.style.display =
-                "block";
-
-            };
-
-
-          imagen.onerror =
-            function() {
-
-              mostrarSinAviso();
-
-            };
-
-
-          imagen.src =
-            datos.urlAviso;
-
-        }
-        else {
-
-          mostrarSinAviso();
-
-        }
-
-
-        if (
-          datos.sistemaActivo === false
-        ) {
-
-          document
-            .getElementById(
-              "btnAcceder"
-            )
-            .style.display =
-              "none";
-
-
-          document
-            .getElementById(
-              "estadoSistema"
-            )
-            .style.display =
-              "block";
-
-        }
-
-      }
-    )
-
-    .withFailureHandler(
-      function() {
-
-        mostrarSinAviso();
-
-      }
-    )
-
-    .obtenerDatosInicio();
 
 }
 
 
 function mostrarSinAviso() {
+
+  document
+    .getElementById(
+      "cargando"
+    )
+    .style.display =
+      "none";
+
 
   document
     .getElementById(
@@ -471,7 +491,7 @@ function mostrarSinAviso() {
 function irLogin() {
 
   alert(
-    "Prueba V3 funcionando fuera de Apps Script"
+    "Inicio externo conectado correctamente. El siguiente paso será conectar el login."
   );
 
 }
