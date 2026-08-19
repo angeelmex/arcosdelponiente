@@ -442,12 +442,14 @@
     value="login"
   >
 
+
   <input
     type="hidden"
     id="postContrasena"
     name="contrasena"
     value=""
   >
+
 
   <input
     type="hidden"
@@ -478,13 +480,21 @@ let requestLoginActual =
   "";
 
 
-let temporizadorLogin =
-  null;
+let loginEnProceso =
+  false;
 
 
-let intervaloCallback =
-  null;
+let consultasRealizadas =
+  0;
 
+
+const MAX_CONSULTAS =
+  30;
+
+
+/*************************************************
+ * INICIO
+ *************************************************/
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -492,17 +502,13 @@ document.addEventListener(
 
     cargarDatosPublicos();
 
-    sessionStorage.removeItem(
-      "tokenResidente"
-    );
-
-    sessionStorage.removeItem(
-      "residente"
-    );
-
   }
 );
 
+
+/*************************************************
+ * DATOS PÚBLICOS / LOGO
+ *************************************************/
 
 function cargarDatosPublicos() {
 
@@ -575,6 +581,10 @@ function cargarDatosPublicos() {
 }
 
 
+/*************************************************
+ * MOSTRAR / OCULTAR CONTRASEÑA
+ *************************************************/
+
 function mostrarOcultar() {
 
   const campo =
@@ -591,6 +601,10 @@ function mostrarOcultar() {
 }
 
 
+/*************************************************
+ * ENTER
+ *************************************************/
+
 function detectarEnter(evento) {
 
   if (
@@ -604,7 +618,20 @@ function detectarEnter(evento) {
 }
 
 
+/*************************************************
+ * LOGIN
+ *************************************************/
+
 function iniciarSesion() {
+
+  if (
+    loginEnProceso
+  ) {
+
+    return;
+
+  }
+
 
   const contrasena =
     document
@@ -628,19 +655,22 @@ function iniciarSesion() {
   }
 
 
+  loginEnProceso =
+    true;
+
+
+  consultasRealizadas =
+    0;
+
+
+  requestLoginActual =
+    generarRequestId();
+
+
   const boton =
     document.getElementById(
       "btnIngresar"
     );
-
-
-  if (
-    boton.disabled
-  ) {
-
-    return;
-
-  }
 
 
   boton.disabled =
@@ -652,10 +682,6 @@ function iniciarSesion() {
 
 
   ocultarMensaje();
-
-
-  requestLoginActual =
-    generarRequestId();
 
 
   document
@@ -674,170 +700,39 @@ function iniciarSesion() {
       requestLoginActual;
 
 
-  iniciarEsperaCallback();
-
-
+  /*
+   * Mandamos la contraseña una sola vez,
+   * mediante POST y dentro de un iframe oculto.
+   */
   document
     .getElementById(
       "formLogin"
     )
     .submit();
 
-}
 
-
-function iniciarEsperaCallback() {
-
-  detenerEsperaCallback();
-
-
-  const iframe =
-    document.getElementById(
-      "iframeLogin"
-    );
-
-
-  intervaloCallback =
-    setInterval(
-      function() {
-
-        try {
-
-          const ubicacion =
-            iframe.contentWindow.location;
-
-
-          if (
-            ubicacion.origin !==
-            window.location.origin
-          ) {
-
-            return;
-
-          }
-
-
-          if (
-            ubicacion.pathname !==
-            "/arcosdelponiente/login-callback.html"
-          ) {
-
-            return;
-
-          }
-
-
-          const hash =
-            ubicacion.hash || "";
-
-
-          if (
-            !hash.startsWith(
-              "#data="
-            )
-          ) {
-
-            return;
-
-          }
-
-
-          const contenido =
-            hash.substring(
-              6
-            );
-
-
-          const payload =
-            JSON.parse(
-              decodeURIComponent(
-                contenido
-              )
-            );
-
-
-          procesarRespuestaLogin(
-            payload
-          );
-
-        }
-        catch (error) {
-
-          /*
-           * Mientras el iframe está en Apps Script
-           * el navegador impide leer su URL por
-           * seguridad. Es normal y seguimos esperando.
-           */
-
-        }
-
-      },
-      250
-    );
-
-
-  temporizadorLogin =
-    setTimeout(
-      function() {
-
-        detenerEsperaCallback();
-
-
-        mostrarError(
-          "La validación tardó demasiado. Intenta nuevamente."
-        );
-
-
-        restaurarBoton();
-
-      },
-      20000
-    );
+  /*
+   * Damos un pequeño margen para que el POST
+   * llegue al backend y después comenzamos
+   * a preguntar por el resultado.
+   */
+  setTimeout(
+    consultarEstadoLogin,
+    700
+  );
 
 }
 
 
-function detenerEsperaCallback() {
+/*************************************************
+ * CONSULTA DEL RESULTADO
+ *************************************************/
+
+function consultarEstadoLogin() {
 
   if (
-    intervaloCallback
-  ) {
-
-    clearInterval(
-      intervaloCallback
-    );
-
-    intervaloCallback =
-      null;
-
-  }
-
-
-  if (
-    temporizadorLogin
-  ) {
-
-    clearTimeout(
-      temporizadorLogin
-    );
-
-    temporizadorLogin =
-      null;
-
-  }
-
-}
-
-
-function procesarRespuestaLogin(
-  payload
-) {
-
-  if (
-    !payload ||
-    !payload.requestId ||
-    payload.requestId !==
-      requestLoginActual
+    !loginEnProceso ||
+    !requestLoginActual
   ) {
 
     return;
@@ -845,11 +740,177 @@ function procesarRespuestaLogin(
   }
 
 
-  detenerEsperaCallback();
+  consultasRealizadas++;
 
 
-  const resultado =
-    payload.resultado;
+  if (
+    consultasRealizadas >
+    MAX_CONSULTAS
+  ) {
+
+    finalizarConError(
+      "La validación tardó demasiado. Intenta nuevamente."
+    );
+
+    return;
+
+  }
+
+
+  const nombreCallback =
+    "recibirEstadoLoginV3";
+
+
+  window[
+    nombreCallback
+  ] =
+    function(resultado) {
+
+      procesarEstadoLogin(
+        resultado
+      );
+
+    };
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.id =
+    "consultaLoginV3";
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=loginEstado" +
+    "&requestId=" +
+    encodeURIComponent(
+      requestLoginActual
+    ) +
+    "&callback=" +
+    nombreCallback +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function() {
+
+      eliminarScriptConsulta();
+
+
+      if (
+        loginEnProceso
+      ) {
+
+        setTimeout(
+          consultarEstadoLogin,
+          700
+        );
+
+      }
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+/*************************************************
+ * PROCESAR ESTADO
+ *************************************************/
+
+function procesarEstadoLogin(
+  resultado
+) {
+
+  eliminarScriptConsulta();
+
+
+  if (
+    !loginEnProceso
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    finalizarConError(
+      resultado &&
+      resultado.mensaje
+        ? resultado.mensaje
+        : "No fue posible validar tu acceso."
+    );
+
+    return;
+
+  }
+
+
+  const datos =
+    resultado.datos || {};
+
+
+  if (
+    datos.estado ===
+    "PENDIENTE"
+  ) {
+
+    setTimeout(
+      consultarEstadoLogin,
+      700
+    );
+
+    return;
+
+  }
+
+
+  if (
+    datos.estado !==
+      "LISTO" ||
+    !datos.resultado
+  ) {
+
+    finalizarConError(
+      "No fue posible recuperar el resultado del acceso."
+    );
+
+    return;
+
+  }
+
+
+  procesarResultadoLogin(
+    datos.resultado
+  );
+
+}
+
+
+/*************************************************
+ * RESULTADO FINAL
+ *************************************************/
+
+function procesarResultadoLogin(
+  resultado
+) {
+
+  loginEnProceso =
+    false;
 
 
   if (
@@ -866,9 +927,6 @@ function procesarRespuestaLogin(
 
 
     restaurarBoton();
-
-
-    limpiarIframe();
 
 
     return;
@@ -890,9 +948,6 @@ function procesarRespuestaLogin(
 
 
     restaurarBoton();
-
-
-    limpiarIframe();
 
 
     return;
@@ -935,29 +990,63 @@ function procesarRespuestaLogin(
     "ACCESO CORRECTO";
 
 
-  limpiarIframe();
+  /*
+   * En el siguiente paso cambiaremos esto por:
+   *
+   * window.location.href = "menu.html";
+   */
 
 }
 
 
-function limpiarIframe() {
+/*************************************************
+ * LIMPIAR SCRIPT JSONP
+ *************************************************/
 
-  const iframe =
+function eliminarScriptConsulta() {
+
+  const anterior =
     document.getElementById(
-      "iframeLogin"
+      "consultaLoginV3"
     );
 
 
-  try {
+  if (
+    anterior
+  ) {
 
-    iframe.src =
-      "about:blank";
+    anterior.remove();
 
   }
-  catch (error) {}
 
 }
 
+
+/*************************************************
+ * ERROR FINAL
+ *************************************************/
+
+function finalizarConError(
+  texto
+) {
+
+  loginEnProceso =
+    false;
+
+
+  mostrarError(
+    texto
+  );
+
+
+  restaurarBoton();
+
+}
+
+
+/*************************************************
+ * REQUEST ID ALEATORIO
+ *************************************************/
 
 function generarRequestId() {
 
@@ -977,11 +1066,19 @@ function generarRequestId() {
     "_" +
     Math.random()
       .toString(36)
+      .slice(2) +
+    "_" +
+    Math.random()
+      .toString(36)
       .slice(2)
   );
 
 }
 
+
+/*************************************************
+ * VOLVER
+ *************************************************/
 
 function volverAvisos() {
 
@@ -990,6 +1087,10 @@ function volverAvisos() {
 
 }
 
+
+/*************************************************
+ * BOTÓN
+ *************************************************/
 
 function restaurarBoton() {
 
@@ -1008,6 +1109,10 @@ function restaurarBoton() {
 
 }
 
+
+/*************************************************
+ * MENSAJES
+ *************************************************/
 
 function ocultarMensaje() {
 
