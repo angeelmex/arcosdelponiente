@@ -976,7 +976,7 @@ function procesarResultadoLogin(
 
 
   mostrarCorrecto(
-    "Acceso correcto. Login externo funcionando."
+    "Acceso correcto."
   );
 
 
@@ -990,11 +990,15 @@ function procesarResultadoLogin(
     "ACCESO CORRECTO";
 
 
-  /*
-   * En el siguiente paso cambiaremos esto por:
-   *
-   * window.location.href = "menu.html";
-   */
+  setTimeout(
+    function() {
+
+      window.location.href =
+        "menu.html";
+
+    },
+    350
+  );
 
 }
 
