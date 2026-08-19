@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <base target="_top">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+
+      margin: 0;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      background:
+        #f4f7fb;
+
+      color:
+        #204d5d;
+
+    }
+
+    .pagina {
+
+      min-height: 100vh;
+
+      padding:
+        10px 14px 30px;
+
+    }
+
+    .contenedor {
+
+      width: 100%;
+
+      max-width: 520px;
+
+      margin: 0 auto;
+
+    }
+
+    .tarjeta {
+
+      background: white;
+
+      border-radius: 24px;
+
+      padding: 15px;
+
+      box-shadow:
+        0 8px 25px
+        rgba(20, 55, 95, 0.10);
+
+    }
+
+    .titulo {
+
+      text-align: center;
+
+      margin:
+        3px 0 14px;
+
+      font-size: 21px;
+
+      font-weight: 800;
+
+      color:
+        #204d5d;
+
+    }
+
+    .contenedor-imagen {
+
+      width: 100%;
+
+      min-height: 320px;
+
+      border-radius: 18px;
+
+      background:
+        #edf3f7;
+
+      overflow: hidden;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+    }
+
+    .imagen-aviso {
+
+      display: none;
+
+      width: 100%;
+
+      height: auto;
+
+      max-height: 560px;
+
+      object-fit: contain;
+
+    }
+
+    .sin-aviso {
+
+      display: none;
+
+      padding:
+        50px 25px;
+
+      text-align: center;
+
+      color:
+        #718198;
+
+      line-height: 1.5;
+
+    }
+
+    .sin-aviso-icono {
+
+      font-size: 50px;
+
+      margin-bottom: 12px;
+
+    }
+
+    .texto {
+
+      margin:
+        18px 8px;
+
+      text-align: center;
+
+      color:
+        #6c7c91;
+
+      font-size: 15px;
+
+      line-height: 1.4;
+
+    }
+
+    .boton {
+
+      width: 100%;
+
+      min-height: 64px;
+
+      border: none;
+
+      border-radius: 18px;
+
+      background:
+        #204d5d;
+
+      color: white;
+
+      font-size: 20px;
+
+      font-weight: 800;
+
+      cursor: pointer;
+
+    }
+
+    .boton:active {
+
+      transform:
+        scale(0.99);
+
+    }
+
+    .cargando {
+
+      text-align: center;
+
+      color:
+        #718198;
+
+      padding: 30px;
+
+    }
+
+    .estado {
+
+      display: none;
+
+      margin-top: 15px;
+
+      padding: 14px;
+
+      border-radius: 14px;
+
+      text-align: center;
+
+      background:
+        #fff3cd;
+
+      color:
+        #745d00;
+
+      font-weight: 700;
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<div class="pagina">
+
+  <div class="contenedor">
+
+
+    <div class="tarjeta">
+
+
+      <div class="titulo">
+        Avisos
+      </div>
+
+
+      <div
+        id="contenedorImagen"
+        class="contenedor-imagen"
+      >
+
+
+        <div
+          id="cargando"
+          class="cargando"
+        >
+          Cargando aviso...
+        </div>
+
+
+        <img
+          id="imagenAviso"
+          class="imagen-aviso"
+          alt="Aviso de la colonia"
+        >
+
+
+        <div
+          id="sinAviso"
+          class="sin-aviso"
+        >
+
+          <div class="sin-aviso-icono">
+            📢
+          </div>
+
+          No hay un aviso publicado
+          en este momento.
+
+        </div>
+
+
+      </div>
+
+
+      <div class="texto">
+
+        Consulta los avisos recientes
+        de la colonia antes de continuar.
+
+      </div>
+
+
+      <button
+        id="btnAcceder"
+        class="boton"
+        onclick="irLogin()"
+      >
+        ACCEDER
+      </button>
+
+
+      <div
+        id="estadoSistema"
+        class="estado"
+      >
+
+        El sistema se encuentra
+        temporalmente fuera de servicio.
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+</div>
+
+
+<script>
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    document
+      .getElementById(
+        "cargando"
+      )
+      .style.display =
+        "none";
+
+
+    document
+      .getElementById(
+        "sinAviso"
+      )
+      .style.display =
+        "block";
+
+  }
+);
+
+
+function cargarDatos() {
+
+  google.script.run
+
+    .withSuccessHandler(
+      function(resultado) {
+
+        document
+          .getElementById(
+            "cargando"
+          )
+          .style.display =
+            "none";
+
+
+        if (
+          !resultado ||
+          !resultado.ok
+        ) {
+
+          mostrarSinAviso();
+
+          return;
+
+        }
+
+
+        const datos =
+          resultado.datos || {};
+
+
+        if (
+          datos.urlAviso
+        ) {
+
+          const imagen =
+            document.getElementById(
+              "imagenAviso"
+            );
+
+
+          imagen.onload =
+            function() {
+
+              imagen.style.display =
+                "block";
+
+            };
+
+
+          imagen.onerror =
+            function() {
+
+              mostrarSinAviso();
+
+            };
+
+
+          imagen.src =
+            datos.urlAviso;
+
+        }
+        else {
+
+          mostrarSinAviso();
+
+        }
+
+
+        if (
+          datos.sistemaActivo === false
+        ) {
+
+          document
+            .getElementById(
+              "btnAcceder"
+            )
+            .style.display =
+              "none";
+
+
+          document
+            .getElementById(
+              "estadoSistema"
+            )
+            .style.display =
+              "block";
+
+        }
+
+      }
+    )
+
+    .withFailureHandler(
+      function() {
+
+        mostrarSinAviso();
+
+      }
+    )
+
+    .obtenerDatosInicio();
+
+}
+
+
+function mostrarSinAviso() {
+
+  document
+    .getElementById(
+      "imagenAviso"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "sinAviso"
+    )
+    .style.display =
+      "block";
+
+}
+
+
+function irLogin() {
+
+  alert(
+    "Prueba V3 funcionando fuera de Apps Script"
+  );
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
