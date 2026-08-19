@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #204d5d;
+    }
+
+    .pagina {
+      min-height: 100vh;
+      padding: 16px 14px 30px;
+    }
+
+    .contenedor {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .encabezado {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .volver {
+      width: 54px;
+      min-width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: white;
+      color: #204d5d;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+      font-weight: bold;
+      box-shadow:
+        0 5px 16px
+        rgba(20,55,95,.09);
+    }
+
+    .titulo {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .subtitulo {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #718198;
+    }
+
+    .seccion {
+      margin-top: 18px;
+    }
+
+    .seccion:first-of-type {
+      margin-top: 0;
+    }
+
+    .seccion-titulo {
+      margin:
+        0 2px 10px;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .seccion-ayuda {
+      margin:
+        -5px 2px 12px;
+      font-size: 12px;
+      color: #748399;
+      line-height: 1.4;
+    }
+
+    .lista {
+      display: grid;
+      gap: 12px;
+    }
+
+    .tarjeta {
+      background: white;
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow:
+        0 5px 18px
+        rgba(20,55,95,.09);
+    }
+
+    .tarjeta-cabecera {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+    }
+
+    .icono {
+      width: 48px;
+      min-width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      background: #e7f0f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 23px;
+    }
+
+    .info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .nombre {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.25;
+      color: #204d5d;
+      word-break: break-word;
+    }
+
+    .meta {
+      margin-top: 5px;
+      font-size: 13px;
+      color: #718198;
+      line-height: 1.45;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 9px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 29px;
+      padding:
+        5px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      background: #edf3f6;
+      color: #52697d;
+    }
+
+    .chip.activo {
+      background: #e9f7ee;
+      color: #257343;
+    }
+
+    .chip.expirado {
+      background: #fff3d9;
+      color: #8b6700;
+    }
+
+    .chip.cancelado,
+    .chip.usado {
+      background: #fdeaea;
+      color: #9b3333;
+    }
+
+    .chip.permanente {
+      background: #f0f7cf;
+      color: #647800;
+    }
+
+    .acciones {
+      display: grid;
+      grid-template-columns:
+        1fr 1fr;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .acciones.una {
+      grid-template-columns: 1fr;
+    }
+
+    .btn {
+      min-height: 50px;
+      border: none;
+      border-radius: 15px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-ver {
+      background: #204d5d;
+      color: white;
+    }
+
+    .btn-cancelar {
+      background: #fff0f0;
+      color: #a03030;
+      border:
+        1px solid #f2cccc;
+    }
+
+    .sin-datos {
+      background: white;
+      border-radius: 20px;
+      padding:
+        30px 18px;
+      text-align: center;
+      color: #748399;
+      box-shadow:
+        0 5px 18px
+        rgba(20,55,95,.07);
+      line-height: 1.5;
+    }
+
+    .sin-datos .grande {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 36px;
+    }
+
+    .cargando {
+      background: white;
+      border-radius: 20px;
+      padding: 30px 18px;
+      text-align: center;
+      color: #748399;
+      box-shadow:
+        0 5px 18px
+        rgba(20,55,95,.07);
+    }
+
+    .mensaje {
+      display: none;
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 22px;
+      z-index: 2000;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 15px;
+      border-radius: 15px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow:
+        0 7px 24px
+        rgba(0,0,0,.14);
+    }
+
+    .mensaje.ok {
+      display: block;
+      background: #e9f7ee;
+      color: #257343;
+    }
+
+    .mensaje.error {
+      display: block;
+      background: #fdeaea;
+      color: #9b3333;
+    }
+
+    .modal-fondo {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background:
+        rgba(10,25,45,.62);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      border-radius: 24px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .modal h2 {
+      margin:
+        0 0 7px;
+      font-size: 22px;
+    }
+
+    .modal-datos {
+      margin-bottom: 12px;
+      color: #718198;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .modal img {
+      display: block;
+      width: 100%;
+      max-width: 330px;
+      margin: 0 auto 10px;
+    }
+
+    .modal-folio {
+      margin-bottom: 14px;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .modal-cerrar {
+      width: 100%;
+      min-height: 53px;
+      border: none;
+      border-radius: 15px;
+      background: #204d5d;
+      color: white;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .confirmacion {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 3500;
+      background:
+        rgba(10,25,45,.62);
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .confirmacion-tarjeta {
+      width: 100%;
+      max-width: 410px;
+      background: white;
+      border-radius: 23px;
+      padding: 22px;
+      text-align: center;
+    }
+
+    .confirmacion-tarjeta h3 {
+      margin:
+        0 0 8px;
+      font-size: 21px;
+    }
+
+    .confirmacion-tarjeta p {
+      margin:
+        0 0 17px;
+      color: #718198;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .confirmacion-botones {
+      display: grid;
+      grid-template-columns:
+        1fr 1fr;
+      gap: 9px;
+    }
+
+    .btn-no {
+      min-height: 52px;
+      border: none;
+      border-radius: 15px;
+      background: #edf3f6;
+      color: #204d5d;
+      font-weight: 800;
+    }
+
+    .btn-si {
+      min-height: 52px;
+      border: none;
+      border-radius: 15px;
+      background: #a93636;
+      color: white;
+      font-weight: 800;
+    }
+
+  </style>
+
+  <title>Mis QR</title>
+
+</head>
+
+
+<body>
+
+
+<div class="pagina">
+
+  <div class="contenedor">
+
+
+    <div class="encabezado">
+
+      <a
+        class="volver"
+        href="menu.html"
+        aria-label="Volver al menú"
+      >
+        ←
+      </a>
+
+      <div>
+
+        <h1 class="titulo">
+          Mis QR
+        </h1>
+
+        <div class="subtitulo">
+          Consulta y administra tus pases
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <div id="cargando" class="cargando">
+      Cargando tus pases...
+    </div>
+
+
+
+    <div
+      id="contenido"
+      style="display:none;"
+    >
+
+
+      <section class="seccion">
+
+        <h2 class="seccion-titulo">
+          Activos
+        </h2>
+
+        <div class="seccion-ayuda">
+          Aquí aparecen todos los pases que todavía pueden utilizarse.
+        </div>
+
+        <div
+          id="listaActivos"
+          class="lista"
+        ></div>
+
+      </section>
+
+
+
+      <section class="seccion">
+
+        <h2 class="seccion-titulo">
+          Recientes
+        </h2>
+
+        <div class="seccion-ayuda">
+          Se muestran hasta los últimos 10 pases de tu cuenta.
+        </div>
+
+        <div
+          id="listaRecientes"
+          class="lista"
+        ></div>
+
+      </section>
+
+
+    </div>
+
+
+  </div>
+
+</div>
+
+
+
+<div
+  id="mensaje"
+  class="mensaje"
+></div>
+
+
+
+<div
+  id="modalQr"
+  class="modal-fondo"
+>
+
+  <div class="modal">
+
+    <h2 id="modalNombre">
+      Pase
+    </h2>
+
+    <div
+      id="modalDatos"
+      class="modal-datos"
+    ></div>
+
+    <img
+      id="modalImagenQr"
+      alt="Código QR"
+    >
+
+    <div
+      id="modalFolio"
+      class="modal-folio"
+    ></div>
+
+    <button
+      type="button"
+      class="modal-cerrar"
+      onclick="cerrarQr()"
+    >
+      CERRAR
+    </button>
+
+  </div>
+
+</div>
+
+
+
+<div
+  id="confirmacion"
+  class="confirmacion"
+>
+
+  <div class="confirmacion-tarjeta">
+
+    <h3>
+      ¿Cancelar este pase?
+    </h3>
+
+    <p>
+      El QR dejará de ser válido inmediatamente.
+      Esta acción no se puede deshacer.
+    </p>
+
+    <div class="confirmacion-botones">
+
+      <button
+        type="button"
+        class="btn-no"
+        onclick="cerrarConfirmacion()"
+      >
+        NO
+      </button>
+
+      <button
+        id="btnConfirmarCancelar"
+        type="button"
+        class="btn-si"
+        onclick="confirmarCancelacion()"
+      >
+        SÍ, CANCELAR
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+
+<form
+  id="formOperacionPases"
+  method="post"
+  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
+  target="iframeOperacionPases"
+  style="display:none;"
+>
+
+  <input type="hidden" id="opPasesAccion" name="accion">
+  <input type="hidden" id="opPasesToken" name="token">
+  <input type="hidden" id="opPasesRequestId" name="requestId">
+  <input type="hidden" id="opPasesIdPase" name="idPase">
+
+</form>
+
+
+<iframe
+  id="iframeOperacionPases"
+  name="iframeOperacionPases"
+  style="display:none;width:0;height:0;border:0;"
+  title="Procesando pases"
+></iframe>
+
+
+<script>
+
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+let TOKEN =
+  "";
+
+
+let datosPases =
+  {
+    activos: [],
+    recientes: []
+  };
+
+
+let paseACancelar =
+  "";
+
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  cargarPases
+);
+
+
+
+function cargarPases() {
+
+  TOKEN =
+    sessionStorage.getItem(
+      "tokenResidente"
+    ) || "";
+
+
+  if (
+    !TOKEN
+  ) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  ejecutarOperacionPasesV3(
+    "pasesListar",
+    {},
+    function(resultado) {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cargar tus pases.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      datosPases =
+        resultado.datos ||
+        {
+          activos: [],
+          recientes: []
+        };
+
+
+      renderizarTodo();
+
+
+      document
+        .getElementById(
+          "contenido"
+        )
+        .style.display =
+          "block";
+
+    },
+    function() {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      mostrarMensaje(
+        "No fue posible cargar tus pases.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * RENDER
+ *************************************************/
+
+function renderizarTodo() {
+
+  renderizarLista(
+    "listaActivos",
+    datosPases.activos || [],
+    true
+  );
+
+
+  renderizarLista(
+    "listaRecientes",
+    datosPases.recientes || [],
+    false
+  );
+
+}
+
+
+
+function renderizarLista(
+  idContenedor,
+  pases,
+  esActivos
+) {
+
+
+  const contenedor =
+    document.getElementById(
+      idContenedor
+    );
+
+
+  contenedor.innerHTML =
+    "";
+
+
+  if (
+    !pases.length
+  ) {
+
+    contenedor.innerHTML =
+      '<div class="sin-datos">' +
+      '<span class="grande">🎫</span>' +
+      (
+        esActivos
+          ? "No tienes pases activos."
+          : "Todavía no tienes pases recientes."
+      ) +
+      '</div>';
+
+    return;
+
+  }
+
+
+  pases.forEach(
+    function(pase) {
+
+      contenedor.appendChild(
+        crearTarjeta(
+          pase,
+          esActivos
+        )
+      );
+
+    }
+  );
+
+}
+
+
+
+function crearTarjeta(
+  pase,
+  esActivos
+) {
+
+
+  const tarjeta =
+    document.createElement(
+      "div"
+    );
+
+
+  tarjeta.className =
+    "tarjeta";
+
+
+  const estado =
+    String(
+      pase.estado || ""
+    ).toUpperCase();
+
+
+  const tipoPase =
+    String(
+      pase.tipoPase || ""
+    ).toUpperCase();
+
+
+  const tipoAcceso =
+    String(
+      pase.tipoAcceso || ""
+    ).toUpperCase();
+
+
+  const icono =
+    tipoAcceso ===
+      "PEATONAL"
+        ? "🚶"
+        : "🚗";
+
+
+  let meta =
+    escaparHtml(
+      pase.tipoVisita || ""
+    );
+
+
+  if (
+    pase.placas
+  ) {
+
+    meta +=
+      " · " +
+      escaparHtml(
+        pase.placas
+      );
+
+  }
+
+
+  meta +=
+    "<br>Folio: " +
+    escaparHtml(
+      pase.idPase
+    );
+
+
+  if (
+    pase.fechaExpiracion
+  ) {
+
+    meta +=
+      "<br>Expira: " +
+      escaparHtml(
+        pase.fechaExpiracion
+      );
+
+  }
+
+
+  const claseEstado =
+    estado === "ACTIVO"
+      ? "activo"
+      : estado === "EXPIRADO"
+        ? "expirado"
+        : estado === "CANCELADO"
+          ? "cancelado"
+          : estado === "USADO"
+            ? "usado"
+            : "";
+
+
+  let html =
+    '<div class="tarjeta-cabecera">' +
+
+      '<div class="icono">' +
+        icono +
+      '</div>' +
+
+      '<div class="info">' +
+
+        '<h3 class="nombre">' +
+          escaparHtml(
+            pase.nombreVisitante || "Visitante"
+          ) +
+        '</h3>' +
+
+        '<div class="meta">' +
+          meta +
+        '</div>' +
+
+        '<div class="chips">' +
+
+          '<span class="chip ' +
+            (
+              tipoPase === "PERMANENTE"
+                ? "permanente"
+                : ""
+            ) +
+          '">' +
+            (
+              tipoPase === "PERMANENTE"
+                ? "FIJO"
+                : "TEMPORAL"
+            ) +
+          '</span>' +
+
+          '<span class="chip">' +
+            escaparHtml(
+              tipoAcceso
+            ) +
+          '</span>' +
+
+          '<span class="chip ' +
+            claseEstado +
+          '">' +
+            escaparHtml(
+              estado
+            ) +
+          '</span>' +
+
+        '</div>' +
+
+      '</div>' +
+
+    '</div>';
+
+
+  const estaActivo =
+    estado ===
+    "ACTIVO";
+
+
+  if (
+    estaActivo
+  ) {
+
+    html +=
+      '<div class="acciones">' +
+
+        '<button type="button" class="btn btn-ver" data-accion="ver">' +
+          'VER QR' +
+        '</button>' +
+
+        '<button type="button" class="btn btn-cancelar" data-accion="cancelar">' +
+          'CANCELAR' +
+        '</button>' +
+
+      '</div>';
+
+  }
+  else {
+
+    html +=
+      '<div class="acciones una">' +
+
+        '<button type="button" class="btn btn-ver" data-accion="ver">' +
+          'VER DETALLE' +
+        '</button>' +
+
+      '</div>';
+
+  }
+
+
+  tarjeta.innerHTML =
+    html;
+
+
+  const botonVer =
+    tarjeta.querySelector(
+      '[data-accion="ver"]'
+    );
+
+
+  botonVer.addEventListener(
+    "click",
+    function() {
+
+      abrirQr(
+        pase
+      );
+
+    }
+  );
+
+
+  const botonCancelar =
+    tarjeta.querySelector(
+      '[data-accion="cancelar"]'
+    );
+
+
+  if (
+    botonCancelar
+  ) {
+
+    botonCancelar.addEventListener(
+      "click",
+      function() {
+
+        solicitarCancelacion(
+          pase.idPase
+        );
+
+      }
+    );
+
+  }
+
+
+  return tarjeta;
+
+}
+
+
+
+/*************************************************
+ * VER QR
+ *************************************************/
+
+function abrirQr(
+  pase
+) {
+
+
+  document
+    .getElementById(
+      "modalNombre"
+    )
+    .textContent =
+      pase.nombreVisitante ||
+      "Pase";
+
+
+  let datos =
+    pase.tipoPase +
+    " · " +
+    pase.tipoAcceso;
+
+
+  if (
+    pase.placas
+  ) {
+
+    datos +=
+      "<br>Placas: " +
+      escaparHtml(
+        pase.placas
+      );
+
+  }
+
+
+  datos +=
+    "<br>Estado: " +
+    escaparHtml(
+      pase.estado
+    );
+
+
+  document
+    .getElementById(
+      "modalDatos"
+    )
+    .innerHTML =
+      datos;
+
+
+  document
+    .getElementById(
+      "modalImagenQr"
+    )
+    .src =
+      pase.imagenQr;
+
+
+  document
+    .getElementById(
+      "modalFolio"
+    )
+    .textContent =
+      "FOLIO: " +
+      pase.idPase;
+
+
+  document
+    .getElementById(
+      "modalQr"
+    )
+    .style.display =
+      "flex";
+
+}
+
+
+
+function cerrarQr() {
+
+  document
+    .getElementById(
+      "modalQr"
+    )
+    .style.display =
+      "none";
+
+}
+
+
+
+/*************************************************
+ * CANCELAR
+ *************************************************/
+
+function solicitarCancelacion(
+  idPase
+) {
+
+
+  paseACancelar =
+    idPase;
+
+
+  document
+    .getElementById(
+      "confirmacion"
+    )
+    .style.display =
+      "flex";
+
+}
+
+
+
+function cerrarConfirmacion() {
+
+
+  paseACancelar =
+    "";
+
+
+  document
+    .getElementById(
+      "confirmacion"
+    )
+    .style.display =
+      "none";
+
+}
+
+
+
+function confirmarCancelacion() {
+
+  if (
+    !paseACancelar
+  ) {
+
+    return;
+
+  }
+
+
+  const idPase =
+    paseACancelar;
+
+
+  const boton =
+    document.getElementById(
+      "btnConfirmarCancelar"
+    );
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "CANCELANDO...";
+
+
+  ejecutarOperacionPasesV3(
+    "paseCancelar",
+    {
+      idPase:
+        idPase
+    },
+    function(resultado) {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "SÍ, CANCELAR";
+
+
+      cerrarConfirmacion();
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cancelar el pase.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      mostrarMensaje(
+        "Pase cancelado correctamente.",
+        "ok"
+      );
+
+
+      document
+        .getElementById(
+          "contenido"
+        )
+        .style.display =
+          "none";
+
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .textContent =
+          "Actualizando tus pases...";
+
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "block";
+
+
+      cargarPases();
+
+    },
+    function() {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "SÍ, CANCELAR";
+
+
+      cerrarConfirmacion();
+
+
+      mostrarMensaje(
+        "No fue posible cancelar el pase.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * MOTOR DE OPERACIONES EXTERNAS V3
+ *************************************************/
+
+let OPERACION_PASES =
+  null;
+
+
+const MAX_CONSULTAS_PASES =
+  35;
+
+
+function ejecutarOperacionPasesV3(
+  accion,
+  datos,
+  alTerminar,
+  alFallar
+) {
+
+  if (
+    OPERACION_PASES
+  ) {
+
+    if (
+      typeof alFallar ===
+        "function"
+    ) {
+
+      alFallar();
+
+    }
+
+    return;
+
+  }
+
+
+  const requestId =
+    generarRequestIdPasesV3();
+
+
+  OPERACION_PASES = {
+    requestId:
+      requestId,
+
+    alTerminar:
+      alTerminar,
+
+    alFallar:
+      alFallar,
+
+    consultas:
+      0
+  };
+
+
+  document
+    .getElementById(
+      "opPasesAccion"
+    )
+    .value =
+      accion;
+
+
+  document
+    .getElementById(
+      "opPasesToken"
+    )
+    .value =
+      TOKEN;
+
+
+  document
+    .getElementById(
+      "opPasesRequestId"
+    )
+    .value =
+      requestId;
+
+
+  document
+    .getElementById(
+      "opPasesIdPase"
+    )
+    .value =
+      datos &&
+      datos.idPase
+        ? datos.idPase
+        : "";
+
+
+  document
+    .getElementById(
+      "formOperacionPases"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarEstadoPasesV3,
+    700
+  );
+
+}
+
+
+function consultarEstadoPasesV3() {
+
+  if (
+    !OPERACION_PASES
+  ) {
+
+    return;
+
+  }
+
+
+  OPERACION_PASES.consultas++;
+
+
+  if (
+    OPERACION_PASES.consultas >
+      MAX_CONSULTAS_PASES
+  ) {
+
+    terminarOperacionPasesConError();
+
+    return;
+
+  }
+
+
+  window.recibirEstadoPasesV3 =
+    function(resultado) {
+
+      procesarEstadoPasesV3(
+        resultado
+      );
+
+    };
+
+
+  const anterior =
+    document.getElementById(
+      "consultaPasesV3"
+    );
+
+
+  if (
+    anterior
+  ) {
+
+    anterior.remove();
+
+  }
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.id =
+    "consultaPasesV3";
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=operacionEstado" +
+    "&requestId=" +
+    encodeURIComponent(
+      OPERACION_PASES.requestId
+    ) +
+    "&callback=recibirEstadoPasesV3" +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function() {
+
+      script.remove();
+
+
+      if (
+        OPERACION_PASES
+      ) {
+
+        setTimeout(
+          consultarEstadoPasesV3,
+          700
+        );
+
+      }
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function procesarEstadoPasesV3(
+  resultado
+) {
+
+  const script =
+    document.getElementById(
+      "consultaPasesV3"
+    );
+
+
+  if (
+    script
+  ) {
+
+    script.remove();
+
+  }
+
+
+  if (
+    !OPERACION_PASES
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    terminarOperacionPasesConError();
+
+    return;
+
+  }
+
+
+  const datos =
+    resultado.datos || {};
+
+
+  if (
+    datos.estado ===
+      "PENDIENTE"
+  ) {
+
+    setTimeout(
+      consultarEstadoPasesV3,
+      700
+    );
+
+    return;
+
+  }
+
+
+  if (
+    datos.estado !==
+      "LISTO" ||
+    !datos.resultado
+  ) {
+
+    terminarOperacionPasesConError();
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_PASES;
+
+
+  OPERACION_PASES =
+    null;
+
+
+  if (
+    typeof operacion.alTerminar ===
+      "function"
+  ) {
+
+    operacion.alTerminar(
+      datos.resultado
+    );
+
+  }
+
+}
+
+
+function terminarOperacionPasesConError() {
+
+  if (
+    !OPERACION_PASES
+  ) {
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_PASES;
+
+
+  OPERACION_PASES =
+    null;
+
+
+  if (
+    typeof operacion.alFallar ===
+      "function"
+  ) {
+
+    operacion.alFallar();
+
+  }
+
+}
+
+
+function generarRequestIdPasesV3() {
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+
+  return (
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2) +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
+}
+
+
+
+/*************************************************
+ * MENSAJES
+ *************************************************/
+
+function mostrarMensaje(
+  textoMensaje,
+  tipo
+) {
+
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.textContent =
+    textoMensaje;
+
+
+  mensaje.className =
+    "mensaje " +
+    tipo;
+
+
+  setTimeout(
+    function() {
+
+      mensaje.className =
+        "mensaje";
+
+    },
+    3200
+  );
+
+}
+
+
+
+/*************************************************
+ * TEXTO SEGURO
+ *************************************************/
+
+function escaparHtml(
+  valor
+) {
+
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    valor || "";
+
+
+  return div.innerHTML;
+
+}
+
+
+
+/*************************************************
+ * CERRAR MODALES AL TOCAR FONDO
+ *************************************************/
+
+window.addEventListener(
+  "click",
+  function(evento) {
+
+
+    const modalQr =
+      document.getElementById(
+        "modalQr"
+      );
+
+
+    const confirmacion =
+      document.getElementById(
+        "confirmacion"
+      );
+
+
+    if (
+      evento.target ===
+      modalQr
+    ) {
+
+      cerrarQr();
+
+    }
+
+
+    if (
+      evento.target ===
+      confirmacion
+    ) {
+
+      cerrarConfirmacion();
+
+    }
+
+  }
+);
+
+
+</script>
+
+
+</body>
+
+</html>
