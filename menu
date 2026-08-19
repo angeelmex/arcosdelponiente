@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #204d5d;
+    }
+
+
+    .pagina {
+      min-height: 100vh;
+      padding: 16px 14px 28px;
+    }
+
+
+    .contenedor {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+
+    .encabezado {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 17px;
+    }
+
+
+    .perfil-icono {
+      width: 82px;
+      min-width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: #e7f0f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      box-shadow:
+        0 5px 16px
+        rgba(20, 55, 95, 0.09);
+    }
+
+
+    .datos {
+      flex: 1;
+      min-width: 0;
+    }
+
+
+    .saludo {
+      margin: 0;
+      font-size: 21px;
+      font-weight: 800;
+      line-height: 1.18;
+      color: #204d5d;
+    }
+
+
+    .domicilio {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #718198;
+    }
+
+
+    .tarjeta-qr {
+      background: white;
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow:
+        0 7px 24px
+        rgba(20, 55, 95, 0.10);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+
+    .qr-info {
+      flex: 1;
+    }
+
+
+    .qr-titulo {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+
+    .qr-texto {
+      font-size: 13px;
+      line-height: 1.4;
+      color: #748399;
+    }
+
+
+    .qr-id {
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+
+    .btn-mi-qr {
+      width: 112px;
+      min-width: 112px;
+      height: 112px;
+      border: none;
+      border-radius: 20px;
+      background: #204d5d;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+
+    .icono-qr {
+      font-size: 31px;
+    }
+
+
+    .seccion-titulo {
+      margin: 5px 2px 12px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #68798e;
+    }
+
+
+    .menu {
+      display: grid;
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+
+    .boton-menu {
+      min-height: 118px;
+      border: none;
+      border-radius: 20px;
+      background: white;
+      color: #204d5d;
+      padding: 14px 9px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow:
+        0 5px 16px
+        rgba(20, 55, 95, 0.09);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+      text-decoration: none;
+    }
+
+
+    .boton-menu:active {
+      transform: scale(0.98);
+    }
+
+
+    .icono {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 25px;
+      background: #e7f0f4;
+    }
+
+
+    .boton-menu.verde
+    .icono {
+      background: #f0f7cf;
+    }
+
+
+    .cerrar {
+      grid-column: 1 / -1;
+      min-height: 74px;
+      background: #fff2f2;
+      color: #9c3030;
+      flex-direction: row;
+      gap: 12px;
+    }
+
+
+    .cerrar .icono {
+      background: #fde2e2;
+    }
+
+
+    .mensaje {
+      display: none;
+      position: fixed;
+      left: 18px;
+      right: 18px;
+      bottom: 25px;
+      z-index: 500;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 15px;
+      border-radius: 15px;
+      background: #fff4d8;
+      color: #735b00;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow:
+        0 7px 22px
+        rgba(0,0,0,.12);
+    }
+
+
+    .modal-fondo {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background:
+        rgba(10,25,45,.60);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+
+    .modal {
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      border-radius: 24px;
+      padding: 22px;
+      text-align: center;
+    }
+
+
+    .modal h2 {
+      margin: 0 0 7px;
+      font-size: 24px;
+    }
+
+
+    .modal p {
+      margin: 0 0 16px;
+      color: #718198;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+
+    .qr-contenedor {
+      width: 100%;
+      border:
+        1px solid #dce5ef;
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+
+    .qr-imagen {
+      display: block;
+      width: 100%;
+      max-width: 330px;
+      margin: 0 auto;
+    }
+
+
+    .codigo {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+
+    .btn-cerrar-modal {
+      width: 100%;
+      min-height: 54px;
+      border: none;
+      border-radius: 15px;
+      background: #204d5d;
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+
+/*************************************************
+ * NIP TEMPORAL
+ *************************************************/
+
+.tarjeta-nip {
+  display: none;
+  background: white;
+  border-radius: 22px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  box-shadow:
+    0 7px 24px
+    rgba(20, 55, 95, 0.10);
+}
+
+.nip-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.nip-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.nip-titulo {
+  font-size: 18px;
+  font-weight: 800;
+  color: #204d5d;
+}
+
+.nip-texto {
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #748399;
+}
+
+.nip-codigo {
+  margin-top: 8px;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: #204d5d;
+}
+
+.nip-expiracion {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #718198;
+}
+
+.btn-nip {
+  min-width: 112px;
+  min-height: 58px;
+  border: none;
+  border-radius: 16px;
+  background: #204d5d;
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-nip:disabled {
+  opacity: .55;
+}
+
+.btn-cancelar-nip {
+  display: none;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 12px;
+  border: 1px solid #d8e1e8;
+  border-radius: 14px;
+  background: white;
+  color: #9c3030;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+
+  </style>
+
+  <title>Menú de residente</title>
+
+</head>
+
+
+<body>
+
+
+<div class="pagina">
+
+  <div class="contenedor">
+
+
+    <div class="encabezado">
+
+      <div class="perfil-icono">
+        👤
+      </div>
+
+      <div class="datos">
+
+        <h1
+          id="nombreResidente"
+          class="saludo"
+        >
+          Hola
+        </h1>
+
+        <div
+          id="domicilioResidente"
+          class="domicilio"
+        ></div>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="tarjeta-qr">
+
+
+      <div class="qr-info">
+
+        <div class="qr-titulo">
+          Mi QR
+        </div>
+
+        <div class="qr-texto">
+          Úsalo cuando necesites
+          identificarte como residente.
+        </div>
+
+        <div
+          id="idQrTexto"
+          class="qr-id"
+        ></div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="btn-mi-qr"
+        onclick="mostrarMiQr()"
+      >
+
+        <div class="icono-qr">
+          ▦
+        </div>
+
+        MI QR
+
+      </button>
+
+
+    </div>
+
+    <div
+      id="tarjetaNip"
+      class="tarjeta-nip"
+    >
+
+      <div class="nip-cabecera">
+
+        <div class="nip-info">
+
+          <div class="nip-titulo">
+            🔐 NIP DE ACCESO
+          </div>
+
+          <div
+            id="textoNip"
+            class="nip-texto"
+          >
+            Genera un código temporal para autorizar una visita sin QR.
+          </div>
+
+          <div
+            id="codigoNip"
+            class="nip-codigo"
+            style="display:none;"
+          ></div>
+
+          <div
+            id="expiracionNip"
+            class="nip-expiracion"
+            style="display:none;"
+          ></div>
+
+        </div>
+
+
+        <button
+          id="btnGenerarNip"
+          type="button"
+          class="btn-nip"
+          onclick="generarNip()"
+        >
+          GENERAR NIP
+        </button>
+
+      </div>
+
+
+      <button
+        id="btnCancelarNip"
+        type="button"
+        class="btn-cancelar-nip"
+        onclick="cancelarNip()"
+      >
+        CANCELAR NIP
+      </button>
+
+    </div>
+
+    <div class="seccion-titulo">
+      Servicios
+    </div>
+
+
+
+    <div class="menu">
+
+
+      <a
+        id="linkFijo"
+        class="boton-menu"
+        target="_top"
+      >
+
+        <div class="icono">
+          ♾️
+        </div>
+
+        CREAR QR FIJO
+
+      </a>
+
+
+      <a
+        id="linkTemporal"
+        class="boton-menu verde"
+        target="_top"
+      >
+
+        <div class="icono">
+          ▦
+        </div>
+
+        CREAR QR
+
+      </a>
+
+
+      <a
+        id="linkMisPases"
+        class="boton-menu"
+        target="_top"
+      >
+
+        <div class="icono">
+          🎫
+        </div>
+
+        MIS QR
+
+      </a>
+
+
+      <a
+        id="linkDirectorio"
+        class="boton-menu verde"
+        target="_top"
+      >
+
+        <div class="icono">
+          📒
+        </div>
+
+        DIRECTORIO
+
+      </a>
+
+
+      <a
+        id="linkSeguridad"
+        class="boton-menu"
+        target="_top"
+      >
+
+        <div class="icono">
+          🛡️
+        </div>
+
+        SEGURIDAD
+
+      </a>
+
+
+      <a
+        id="linkMascotas"
+        class="boton-menu verde"
+        target="_top"
+      >
+
+        <div class="icono">
+          🐾
+        </div>
+
+        MASCOTAS
+
+      </a>
+
+
+      <a
+        id="linkEncuestas"
+        class="boton-menu"
+        target="_top"
+      >
+
+        <div class="icono">
+          📊
+        </div>
+
+        ENCUESTAS
+
+      </a>
+
+
+      <a
+        id="linkJuntas"
+        class="boton-menu verde"
+        target="_top"
+      >
+
+        <div class="icono">
+          👥
+        </div>
+
+        JUNTA DEL MES
+
+      </a>
+
+
+      <a
+        id="linkPeticiones"
+        class="boton-menu"
+        target="_top"
+      >
+
+        <div class="icono">
+          📝
+        </div>
+
+        PETICIONES
+
+      </a>
+
+
+            <a
+        id="linkPerfil"
+        class="boton-menu verde"
+        target="_top"
+      >
+        <div class="icono">👤</div>
+        MI PERFIL
+      </a>
+
+
+      <a
+        class="boton-menu cerrar"
+        href="#"
+        target="_top"
+        onclick="prepararCierreSesion(event)"
+      >
+
+        <div class="icono">
+          🚪
+        </div>
+
+        CERRAR SESIÓN
+
+      </a>
+
+
+    </div>
+
+
+    <div
+      id="mensaje"
+      class="mensaje"
+    ></div>
+
+
+  </div>
+
+</div>
+
+
+
+<div
+  id="modalQr"
+  class="modal-fondo"
+>
+
+  <div class="modal">
+
+    <h2>
+      Mi QR
+    </h2>
+
+    <p>
+      Este código identifica tu acceso
+      como residente de Arcos del Poniente.
+    </p>
+
+    <div class="qr-contenedor">
+
+      <img
+        id="imagenQr"
+        class="qr-imagen"
+        alt="QR del residente"
+      >
+
+      <div
+        id="codigoQr"
+        class="codigo"
+      ></div>
+
+    </div>
+
+    <button
+      type="button"
+      class="btn-cerrar-modal"
+      onclick="cerrarModalQr()"
+    >
+      CERRAR
+    </button>
+
+  </div>
+
+</div>
+
+
+
+
+<form
+  id="formOperacion"
+  method="post"
+  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
+  target="iframeOperacion"
+  style="display:none;"
+>
+
+  <input
+    type="hidden"
+    id="operacionAccion"
+    name="accion"
+    value=""
+  >
+
+  <input
+    type="hidden"
+    id="operacionToken"
+    name="token"
+    value=""
+  >
+
+  <input
+    type="hidden"
+    id="operacionRequestId"
+    name="requestId"
+    value=""
+  >
+
+</form>
+
+
+<iframe
+  id="iframeOperacion"
+  name="iframeOperacion"
+  style="display:none;width:0;height:0;border:0;"
+  title="Procesando operación"
+></iframe>
+
+
+<script>
+
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+let TOKEN =
+  "";
+
+
+let RESIDENTE =
+  null;
+
+
+let OPERACION =
+  null;
+
+
+const MAX_CONSULTAS_OPERACION =
+  30;
+
+
+/*************************************************
+ * INICIAR MENÚ EXTERNO
+ *************************************************/
+
+document.addEventListener(
+  "DOMContentLoaded",
+  iniciarMenu
+);
+
+
+function iniciarMenu() {
+
+  TOKEN =
+    sessionStorage.getItem(
+      "tokenResidente"
+    ) || "";
+
+
+  const residenteTexto =
+    sessionStorage.getItem(
+      "residente"
+    );
+
+
+  if (
+    !TOKEN ||
+    !residenteTexto
+  ) {
+
+    volverLogin();
+
+    return;
+
+  }
+
+
+  try {
+
+    RESIDENTE =
+      JSON.parse(
+        residenteTexto
+      );
+
+  }
+  catch (error) {
+
+    volverLogin();
+
+    return;
+
+  }
+
+
+  if (
+    !RESIDENTE ||
+    !RESIDENTE.nombre ||
+    !RESIDENTE.idQr
+  ) {
+
+    volverLogin();
+
+    return;
+
+  }
+
+
+  document
+    .getElementById(
+      "nombreResidente"
+    )
+    .textContent =
+      "Hola, " +
+      RESIDENTE.nombre;
+
+
+  document
+    .getElementById(
+      "domicilioResidente"
+    )
+    .textContent =
+      RESIDENTE.calle +
+      " #" +
+      RESIDENTE.numero;
+
+
+  document
+    .getElementById(
+      "idQrTexto"
+    )
+    .textContent =
+      "ID: " +
+      RESIDENTE.idQr;
+
+
+  prepararBotonesPrueba();
+
+
+  /*
+   * Ya conectamos el NIP real con Apps Script.
+   */
+  cargarNipResidente();
+
+}
+
+
+/*************************************************
+ * BOTONES DEL MENÚ
+ *
+ * Los demás módulos todavía se migrarán uno por
+ * uno para que no vuelva a aparecer Apps Script.
+ *************************************************/
+
+function prepararBotonesPrueba() {
+
+  const ids = [
+    "linkFijo",
+    "linkTemporal",
+    "linkMisPases",
+    "linkDirectorio",
+    "linkSeguridad",
+    "linkMascotas",
+    "linkEncuestas",
+    "linkJuntas",
+    "linkPeticiones",
+    "linkPerfil"
+  ];
+
+
+  ids.forEach(
+    function(id) {
+
+      const enlace =
+        document.getElementById(
+          id
+        );
+
+
+      if (
+        !enlace
+      ) {
+
+        return;
+
+      }
+
+
+      enlace.href =
+        "#";
+
+
+      enlace.removeAttribute(
+        "target"
+      );
+
+
+      enlace.addEventListener(
+        "click",
+        function(evento) {
+
+          evento.preventDefault();
+
+          moduloPendiente();
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * MI QR
+ *************************************************/
+
+function mostrarMiQr() {
+
+  const codigo =
+    RESIDENTE.idQr;
+
+
+  const destinoQr =
+    URL_BACKEND +
+    "?validar=" +
+    encodeURIComponent(
+      codigo
+    );
+
+
+  const url =
+    "https://quickchart.io/qr" +
+    "?size=600" +
+    "&margin=2" +
+    "&text=" +
+    encodeURIComponent(
+      destinoQr
+    );
+
+
+  document
+    .getElementById(
+      "imagenQr"
+    )
+    .src =
+      url;
+
+
+  document
+    .getElementById(
+      "codigoQr"
+    )
+    .textContent =
+      codigo;
+
+
+  document
+    .getElementById(
+      "modalQr"
+    )
+    .style.display =
+      "flex";
+
+}
+
+
+function cerrarModalQr() {
+
+  document
+    .getElementById(
+      "modalQr"
+    )
+    .style.display =
+      "none";
+
+}
+
+
+/*************************************************
+ * MÓDULOS PENDIENTES
+ *************************************************/
+
+function moduloPendiente() {
+
+  mostrarMensajeNip(
+    "Este módulo se conectará en la siguiente etapa de V3."
+  );
+
+}
+
+
+/*************************************************
+ * NIP TEMPORAL - CARGAR ESTADO
+ *************************************************/
+
+function cargarNipResidente() {
+
+  ejecutarOperacionV3(
+    "nipDatos",
+
+    function(resultado) {
+
+      if (
+        !resultado ||
+        !resultado.ok ||
+        !resultado.datos
+      ) {
+
+        document
+          .getElementById(
+            "tarjetaNip"
+          )
+          .style.display =
+            "none";
+
+        return;
+
+      }
+
+
+      if (
+        resultado.datos.habilitado !==
+          true
+      ) {
+
+        document
+          .getElementById(
+            "tarjetaNip"
+          )
+          .style.display =
+            "none";
+
+        return;
+
+      }
+
+
+      document
+        .getElementById(
+          "tarjetaNip"
+        )
+        .style.display =
+          "block";
+
+
+      pintarEstadoNip(
+        resultado.datos
+      );
+
+    },
+
+    function() {
+
+      document
+        .getElementById(
+          "tarjetaNip"
+        )
+        .style.display =
+          "none";
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * PINTAR ESTADO DEL NIP
+ *************************************************/
+
+function pintarEstadoNip(
+  datos
+) {
+
+  const codigo =
+    document.getElementById(
+      "codigoNip"
+    );
+
+
+  const expiracion =
+    document.getElementById(
+      "expiracionNip"
+    );
+
+
+  const textoNip =
+    document.getElementById(
+      "textoNip"
+    );
+
+
+  const botonGenerar =
+    document.getElementById(
+      "btnGenerarNip"
+    );
+
+
+  const botonCancelar =
+    document.getElementById(
+      "btnCancelarNip"
+    );
+
+
+  botonGenerar.disabled =
+    false;
+
+
+  botonCancelar.disabled =
+    false;
+
+
+  if (
+    datos &&
+    datos.tieneNip === true &&
+    datos.nip
+  ) {
+
+    codigo.textContent =
+      String(
+        datos.nip
+      );
+
+
+    codigo.style.display =
+      "block";
+
+
+    if (
+      datos.expiracion
+    ) {
+
+      const fecha =
+        new Date(
+          Number(
+            datos.expiracion
+          )
+        );
+
+
+      expiracion.textContent =
+        "Válido hasta " +
+        fecha.toLocaleTimeString(
+          "es-MX",
+          {
+            hour:
+              "2-digit",
+            minute:
+              "2-digit"
+          }
+        );
+
+
+      expiracion.style.display =
+        "block";
+
+    }
+    else {
+
+      expiracion.style.display =
+        "none";
+
+    }
+
+
+    textoNip.textContent =
+      "Comparte este código únicamente con la visita que deseas autorizar.";
+
+
+    botonGenerar.textContent =
+      "NUEVO NIP";
+
+
+    botonCancelar.textContent =
+      "CANCELAR NIP";
+
+
+    botonCancelar.style.display =
+      "block";
+
+  }
+  else {
+
+    codigo.textContent =
+      "";
+
+
+    codigo.style.display =
+      "none";
+
+
+    expiracion.textContent =
+      "";
+
+
+    expiracion.style.display =
+      "none";
+
+
+    textoNip.textContent =
+      "Genera un código temporal para autorizar una visita sin QR.";
+
+
+    botonGenerar.textContent =
+      "GENERAR NIP";
+
+
+    botonCancelar.textContent =
+      "CANCELAR NIP";
+
+
+    botonCancelar.style.display =
+      "none";
+
+  }
+
+}
+
+
+/*************************************************
+ * GENERAR NIP
+ *************************************************/
+
+function generarNip() {
+
+  const boton =
+    document.getElementById(
+      "btnGenerarNip"
+    );
+
+
+  if (
+    boton.disabled ||
+    OPERACION
+  ) {
+
+    return;
+
+  }
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "GENERANDO...";
+
+
+  ejecutarOperacionV3(
+    "nipGenerar",
+
+    function(resultado) {
+
+      boton.disabled =
+        false;
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        boton.textContent =
+          "GENERAR NIP";
+
+
+        mostrarMensajeNip(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible generar el NIP."
+        );
+
+        return;
+
+      }
+
+
+      pintarEstadoNip(
+        resultado.datos
+      );
+
+    },
+
+    function() {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "GENERAR NIP";
+
+
+      mostrarMensajeNip(
+        "No fue posible generar el NIP."
+      );
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * CANCELAR NIP
+ *************************************************/
+
+function cancelarNip() {
+
+  const boton =
+    document.getElementById(
+      "btnCancelarNip"
+    );
+
+
+  if (
+    boton.disabled ||
+    OPERACION
+  ) {
+
+    return;
+
+  }
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "CANCELANDO...";
+
+
+  ejecutarOperacionV3(
+    "nipCancelar",
+
+    function(resultado) {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "CANCELAR NIP";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensajeNip(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cancelar el NIP."
+        );
+
+        return;
+
+      }
+
+
+      pintarEstadoNip(
+        resultado.datos
+      );
+
+    },
+
+    function() {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "CANCELAR NIP";
+
+
+      mostrarMensajeNip(
+        "No fue posible cancelar el NIP."
+      );
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * MOTOR DE OPERACIONES EXTERNAS
+ *
+ * 1. Envía acción/token por POST.
+ * 2. Apps Script procesa la operación.
+ * 3. El resultado queda unos segundos en caché.
+ * 4. Consultamos por requestId hasta recibirlo.
+ *************************************************/
+
+function ejecutarOperacionV3(
+  accion,
+  alTerminar,
+  alFallar
+) {
+
+  if (
+    OPERACION
+  ) {
+
+    return;
+
+  }
+
+
+  const requestId =
+    generarRequestId();
+
+
+  OPERACION = {
+    requestId:
+      requestId,
+
+    alTerminar:
+      alTerminar,
+
+    alFallar:
+      alFallar,
+
+    consultas:
+      0
+  };
+
+
+  document
+    .getElementById(
+      "operacionAccion"
+    )
+    .value =
+      accion;
+
+
+  document
+    .getElementById(
+      "operacionToken"
+    )
+    .value =
+      TOKEN;
+
+
+  document
+    .getElementById(
+      "operacionRequestId"
+    )
+    .value =
+      requestId;
+
+
+  document
+    .getElementById(
+      "formOperacion"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarEstadoOperacionV3,
+    650
+  );
+
+}
+
+
+function consultarEstadoOperacionV3() {
+
+  if (
+    !OPERACION
+  ) {
+
+    return;
+
+  }
+
+
+  OPERACION.consultas++;
+
+
+  if (
+    OPERACION.consultas >
+      MAX_CONSULTAS_OPERACION
+  ) {
+
+    terminarOperacionConError();
+
+    return;
+
+  }
+
+
+  window.recibirEstadoOperacionV3 =
+    function(resultado) {
+
+      procesarEstadoOperacionV3(
+        resultado
+      );
+
+    };
+
+
+  const anterior =
+    document.getElementById(
+      "consultaOperacionV3"
+    );
+
+
+  if (
+    anterior
+  ) {
+
+    anterior.remove();
+
+  }
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.id =
+    "consultaOperacionV3";
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=operacionEstado" +
+    "&requestId=" +
+    encodeURIComponent(
+      OPERACION.requestId
+    ) +
+    "&callback=recibirEstadoOperacionV3" +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function() {
+
+      script.remove();
+
+
+      if (
+        OPERACION
+      ) {
+
+        setTimeout(
+          consultarEstadoOperacionV3,
+          700
+        );
+
+      }
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function procesarEstadoOperacionV3(
+  resultado
+) {
+
+  const script =
+    document.getElementById(
+      "consultaOperacionV3"
+    );
+
+
+  if (
+    script
+  ) {
+
+    script.remove();
+
+  }
+
+
+  if (
+    !OPERACION
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    terminarOperacionConError();
+
+    return;
+
+  }
+
+
+  const datos =
+    resultado.datos || {};
+
+
+  if (
+    datos.estado ===
+      "PENDIENTE"
+  ) {
+
+    setTimeout(
+      consultarEstadoOperacionV3,
+      700
+    );
+
+    return;
+
+  }
+
+
+  if (
+    datos.estado !==
+      "LISTO" ||
+    !datos.resultado
+  ) {
+
+    terminarOperacionConError();
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION;
+
+
+  OPERACION =
+    null;
+
+
+  if (
+    typeof operacion.alTerminar ===
+      "function"
+  ) {
+
+    operacion.alTerminar(
+      datos.resultado
+    );
+
+  }
+
+}
+
+
+function terminarOperacionConError() {
+
+  if (
+    !OPERACION
+  ) {
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION;
+
+
+  OPERACION =
+    null;
+
+
+  if (
+    typeof operacion.alFallar ===
+      "function"
+  ) {
+
+    operacion.alFallar();
+
+  }
+
+}
+
+
+/*************************************************
+ * REQUEST ID
+ *************************************************/
+
+function generarRequestId() {
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+
+  return (
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2) +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
+}
+
+
+/*************************************************
+ * MENSAJES
+ *************************************************/
+
+function mostrarMensajeNip(
+  texto
+) {
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.textContent =
+    texto;
+
+
+  mensaje.style.display =
+    "block";
+
+
+  setTimeout(
+    function() {
+
+      mensaje.style.display =
+        "none";
+
+    },
+    3000
+  );
+
+}
+
+
+/*************************************************
+ * CERRAR SESIÓN
+ *************************************************/
+
+function prepararCierreSesion(
+  evento
+) {
+
+  if (
+    evento
+  ) {
+
+    evento.preventDefault();
+
+  }
+
+
+  sessionStorage.removeItem(
+    "tokenResidente"
+  );
+
+
+  sessionStorage.removeItem(
+    "residente"
+  );
+
+
+  window.location.href =
+    "./";
+
+}
+
+
+/*************************************************
+ * VOLVER AL LOGIN
+ *************************************************/
+
+function volverLogin() {
+
+  sessionStorage.removeItem(
+    "tokenResidente"
+  );
+
+
+  sessionStorage.removeItem(
+    "residente"
+  );
+
+
+  window.location.href =
+    "login.html";
+
+}
+
+
+/*************************************************
+ * MODAL
+ *************************************************/
+
+window.addEventListener(
+  "click",
+  function(evento) {
+
+    const modal =
+      document.getElementById(
+        "modalQr"
+      );
+
+
+    if (
+      evento.target === modal
+    ) {
+
+      cerrarModalQr();
+
+    }
+
+  }
+);
+
+
+</script>
+
+
+</body>
+
+</html>
