@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #204d5d;
+    }
+
+
+    .pagina {
+      min-height: 100vh;
+      padding: 16px 14px 30px;
+    }
+
+
+    .contenedor {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+
+    .encabezado {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+
+    .volver {
+      width: 54px;
+      min-width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: white;
+      color: #204d5d;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+      font-weight: bold;
+      box-shadow:
+        0 5px 16px
+        rgba(20,55,95,.09);
+    }
+
+
+    .titulo {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+
+    .subtitulo {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #718198;
+    }
+
+
+    .cargando {
+      background: white;
+      border-radius: 20px;
+      padding: 30px 18px;
+      text-align: center;
+      color: #748399;
+      box-shadow:
+        0 5px 18px
+        rgba(20,55,95,.07);
+    }
+
+
+    .seccion {
+      margin-top: 20px;
+    }
+
+
+    .seccion:first-of-type {
+      margin-top: 0;
+    }
+
+
+    .seccion-titulo {
+      margin:
+        0 2px 5px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+
+    .seccion-texto {
+      margin:
+        0 2px 12px;
+      color: #748399;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+
+    .lista {
+      display: grid;
+      gap: 12px;
+    }
+
+
+    .tarjeta {
+      background: white;
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow:
+        0 5px 18px
+        rgba(20,55,95,.09);
+    }
+
+
+    .cabecera {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+
+    .icono {
+      width: 52px;
+      min-width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: #e7f0f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 25px;
+    }
+
+
+    .negocio .icono {
+      background: #f0f7cf;
+    }
+
+
+    .info {
+      flex: 1;
+      min-width: 0;
+    }
+
+
+    .nombre {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.25;
+      font-weight: 800;
+      color: #204d5d;
+      word-break: break-word;
+    }
+
+
+    .cargo {
+      margin-top: 4px;
+      color: #6f8094;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+
+    .descripcion {
+      margin-top: 10px;
+      color: #718198;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
+
+    .acciones {
+      display: grid;
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+
+    .acciones.uno {
+      grid-template-columns: 1fr;
+    }
+
+
+    .btn {
+      min-height: 52px;
+      border-radius: 15px;
+      border: none;
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      cursor: pointer;
+    }
+
+
+    .btn-llamar {
+      background: #edf3f6;
+      color: #204d5d;
+    }
+
+
+    .btn-whatsapp {
+      background: #238c45;
+      color: white;
+    }
+
+
+    .sin-datos {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 18px;
+      text-align: center;
+      color: #748399;
+      line-height: 1.5;
+      box-shadow:
+        0 5px 18px
+        rgba(20,55,95,.07);
+    }
+
+
+    .sin-datos .grande {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 36px;
+    }
+
+
+    .mensaje {
+      display: none;
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 22px;
+      z-index: 2000;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 15px;
+      border-radius: 15px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      background: #fdeaea;
+      color: #9b3333;
+      box-shadow:
+        0 7px 24px
+        rgba(0,0,0,.14);
+    }
+
+  </style>
+
+  <title>Directorio</title>
+
+</head>
+
+
+<body>
+
+
+<div class="pagina">
+
+  <div class="contenedor">
+
+
+    <div class="encabezado">
+
+      <a
+        class="volver"
+        href="menu.html"
+        aria-label="Volver al menú"
+      >
+        ←
+      </a>
+
+
+      <div>
+
+        <h1 class="titulo">
+          Directorio
+        </h1>
+
+        <div class="subtitulo">
+          Contactos útiles de la colonia
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <div
+      id="cargando"
+      class="cargando"
+    >
+      Cargando directorio...
+    </div>
+
+
+
+    <div
+      id="contenido"
+      style="display:none;"
+    >
+
+
+      <section class="seccion">
+
+        <h2 class="seccion-titulo">
+          Comité
+        </h2>
+
+        <p class="seccion-texto">
+          Contactos de los integrantes del comité.
+        </p>
+
+        <div
+          id="listaComite"
+          class="lista"
+        ></div>
+
+      </section>
+
+
+
+      <section class="seccion">
+
+        <h2 class="seccion-titulo">
+          Negocios y servicios
+        </h2>
+
+        <p class="seccion-texto">
+          Negocios y proveedores publicados en el directorio.
+        </p>
+
+        <div
+          id="listaNegocios"
+          class="lista"
+        ></div>
+
+      </section>
+
+
+    </div>
+
+
+  </div>
+
+</div>
+
+
+
+<div
+  id="mensaje"
+  class="mensaje"
+></div>
+
+
+
+
+<form
+  id="formDirectorio"
+  method="post"
+  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
+  target="iframeDirectorio"
+  style="display:none;"
+>
+
+  <input type="hidden" id="directorioAccion" name="accion">
+  <input type="hidden" id="directorioToken" name="token">
+  <input type="hidden" id="directorioRequestId" name="requestId">
+
+</form>
+
+
+<iframe
+  id="iframeDirectorio"
+  name="iframeDirectorio"
+  style="display:none;width:0;height:0;border:0;"
+  title="Procesando directorio"
+></iframe>
+
+
+<script>
+
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+let TOKEN =
+  "";
+
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  cargarDirectorio
+);
+
+
+
+function cargarDirectorio() {
+
+  TOKEN =
+    sessionStorage.getItem(
+      "tokenResidente"
+    ) || "";
+
+
+  if (
+    !TOKEN
+  ) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  ejecutarOperacionDirectorioV3(
+    "directorioDatos",
+    function(resultado) {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarError(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cargar el directorio."
+        );
+
+        return;
+
+      }
+
+
+      const datos =
+        resultado.datos ||
+        {
+          comite: [],
+          negocios: []
+        };
+
+
+      renderizarLista(
+        "listaComite",
+        datos.comite || [],
+        "COMITE"
+      );
+
+
+      renderizarLista(
+        "listaNegocios",
+        datos.negocios || [],
+        "NEGOCIO"
+      );
+
+
+      document
+        .getElementById(
+          "contenido"
+        )
+        .style.display =
+          "block";
+
+    },
+    function() {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      mostrarError(
+        "No fue posible cargar el directorio."
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * RENDER
+ *************************************************/
+
+function renderizarLista(
+  idContenedor,
+  registros,
+  tipo
+) {
+
+
+  const contenedor =
+    document.getElementById(
+      idContenedor
+    );
+
+
+  contenedor.innerHTML =
+    "";
+
+
+  if (
+    !registros.length
+  ) {
+
+    contenedor.innerHTML =
+      '<div class="sin-datos">' +
+        '<span class="grande">' +
+          (
+            tipo === "COMITE"
+              ? "👥"
+              : "🏪"
+          ) +
+        '</span>' +
+        (
+          tipo === "COMITE"
+            ? "No hay integrantes del comité publicados."
+            : "No hay negocios o servicios publicados."
+        ) +
+      '</div>';
+
+    return;
+
+  }
+
+
+  registros.forEach(
+    function(registro) {
+
+      contenedor.appendChild(
+        crearTarjeta(
+          registro,
+          tipo
+        )
+      );
+
+    }
+  );
+
+}
+
+
+
+function crearTarjeta(
+  registro,
+  tipo
+) {
+
+
+  const tarjeta =
+    document.createElement(
+      "div"
+    );
+
+
+  tarjeta.className =
+    "tarjeta " +
+    (
+      tipo === "NEGOCIO"
+        ? "negocio"
+        : ""
+    );
+
+
+  const icono =
+    tipo === "COMITE"
+      ? "👤"
+      : "🏪";
+
+
+  let html =
+    '<div class="cabecera">' +
+
+      '<div class="icono">' +
+        icono +
+      '</div>' +
+
+      '<div class="info">' +
+
+        '<h3 class="nombre">' +
+          escaparHtml(
+            registro.nombre
+          ) +
+        '</h3>';
+
+
+  if (
+    registro.cargoONegocio
+  ) {
+
+    html +=
+      '<div class="cargo">' +
+        escaparHtml(
+          registro.cargoONegocio
+        ) +
+      '</div>';
+
+  }
+
+
+  html +=
+      '</div>' +
+    '</div>';
+
+
+  if (
+    registro.descripcion
+  ) {
+
+    html +=
+      '<div class="descripcion">' +
+        escaparHtml(
+          registro.descripcion
+        ) +
+      '</div>';
+
+  }
+
+
+  const acciones =
+    [];
+
+
+  if (
+    registro.telefono
+  ) {
+
+    acciones.push(
+      '<a class="btn btn-llamar" href="tel:' +
+        escaparAtributo(
+          registro.telefono
+        ) +
+      '">' +
+        '📞 LLAMAR' +
+      '</a>'
+    );
+
+  }
+
+
+  if (
+    registro.whatsapp
+  ) {
+
+    acciones.push(
+      '<a class="btn btn-whatsapp" target="_blank" rel="noopener" href="' +
+        construirWhatsapp(
+          registro.whatsapp
+        ) +
+      '">' +
+        '💬 WHATSAPP' +
+      '</a>'
+    );
+
+  }
+
+
+  if (
+    acciones.length
+  ) {
+
+    html +=
+      '<div class="acciones ' +
+        (
+          acciones.length === 1
+            ? "uno"
+            : ""
+        ) +
+      '">' +
+        acciones.join("") +
+      '</div>';
+
+  }
+
+
+  tarjeta.innerHTML =
+    html;
+
+
+  return tarjeta;
+
+}
+
+
+
+/*************************************************
+ * WHATSAPP
+ *************************************************/
+
+function construirWhatsapp(
+  telefono
+) {
+
+
+  const limpio =
+    String(
+      telefono || ""
+    )
+      .replace(
+        /\D/g,
+        ""
+      );
+
+
+  if (
+    !limpio
+  ) {
+
+    return "#";
+
+  }
+
+
+  const numero =
+    limpio.length === 10
+      ? "52" + limpio
+      : limpio;
+
+
+  return (
+    "https://wa.me/" +
+    numero
+  );
+
+}
+
+
+
+/*************************************************
+ * MOTOR DE OPERACIONES EXTERNAS V3
+ *************************************************/
+
+let OPERACION_DIRECTORIO =
+  null;
+
+
+const MAX_CONSULTAS_DIRECTORIO =
+  35;
+
+
+function ejecutarOperacionDirectorioV3(
+  accion,
+  alTerminar,
+  alFallar
+) {
+
+  if (
+    OPERACION_DIRECTORIO
+  ) {
+
+    return;
+
+  }
+
+
+  const requestId =
+    generarRequestIdDirectorioV3();
+
+
+  OPERACION_DIRECTORIO = {
+    requestId:
+      requestId,
+
+    alTerminar:
+      alTerminar,
+
+    alFallar:
+      alFallar,
+
+    consultas:
+      0
+  };
+
+
+  document
+    .getElementById(
+      "directorioAccion"
+    )
+    .value =
+      accion;
+
+
+  document
+    .getElementById(
+      "directorioToken"
+    )
+    .value =
+      TOKEN;
+
+
+  document
+    .getElementById(
+      "directorioRequestId"
+    )
+    .value =
+      requestId;
+
+
+  document
+    .getElementById(
+      "formDirectorio"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarEstadoDirectorioV3,
+    700
+  );
+
+}
+
+
+function consultarEstadoDirectorioV3() {
+
+  if (
+    !OPERACION_DIRECTORIO
+  ) {
+
+    return;
+
+  }
+
+
+  OPERACION_DIRECTORIO.consultas++;
+
+
+  if (
+    OPERACION_DIRECTORIO.consultas >
+      MAX_CONSULTAS_DIRECTORIO
+  ) {
+
+    terminarDirectorioConError();
+
+    return;
+
+  }
+
+
+  window.recibirEstadoDirectorioV3 =
+    function(resultado) {
+
+      procesarEstadoDirectorioV3(
+        resultado
+      );
+
+    };
+
+
+  const anterior =
+    document.getElementById(
+      "consultaDirectorioV3"
+    );
+
+
+  if (
+    anterior
+  ) {
+
+    anterior.remove();
+
+  }
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.id =
+    "consultaDirectorioV3";
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=operacionEstado" +
+    "&requestId=" +
+    encodeURIComponent(
+      OPERACION_DIRECTORIO.requestId
+    ) +
+    "&callback=recibirEstadoDirectorioV3" +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function() {
+
+      script.remove();
+
+
+      if (
+        OPERACION_DIRECTORIO
+      ) {
+
+        setTimeout(
+          consultarEstadoDirectorioV3,
+          700
+        );
+
+      }
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function procesarEstadoDirectorioV3(
+  resultado
+) {
+
+  const script =
+    document.getElementById(
+      "consultaDirectorioV3"
+    );
+
+
+  if (
+    script
+  ) {
+
+    script.remove();
+
+  }
+
+
+  if (
+    !OPERACION_DIRECTORIO
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    terminarDirectorioConError();
+
+    return;
+
+  }
+
+
+  const datos =
+    resultado.datos || {};
+
+
+  if (
+    datos.estado ===
+      "PENDIENTE"
+  ) {
+
+    setTimeout(
+      consultarEstadoDirectorioV3,
+      700
+    );
+
+    return;
+
+  }
+
+
+  if (
+    datos.estado !==
+      "LISTO" ||
+    !datos.resultado
+  ) {
+
+    terminarDirectorioConError();
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_DIRECTORIO;
+
+
+  OPERACION_DIRECTORIO =
+    null;
+
+
+  if (
+    typeof operacion.alTerminar ===
+      "function"
+  ) {
+
+    operacion.alTerminar(
+      datos.resultado
+    );
+
+  }
+
+}
+
+
+function terminarDirectorioConError() {
+
+  if (
+    !OPERACION_DIRECTORIO
+  ) {
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_DIRECTORIO;
+
+
+  OPERACION_DIRECTORIO =
+    null;
+
+
+  if (
+    typeof operacion.alFallar ===
+      "function"
+  ) {
+
+    operacion.alFallar();
+
+  }
+
+}
+
+
+function generarRequestIdDirectorioV3() {
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+
+  return (
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2) +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
+}
+
+
+
+/*************************************************
+ * ERROR
+ *************************************************/
+
+function mostrarError(
+  textoMensaje
+) {
+
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.textContent =
+    textoMensaje;
+
+
+  mensaje.style.display =
+    "block";
+
+
+  setTimeout(
+    function() {
+
+      mensaje.style.display =
+        "none";
+
+    },
+    3500
+  );
+
+}
+
+
+
+/*************************************************
+ * TEXTO SEGURO
+ *************************************************/
+
+function escaparHtml(
+  valor
+) {
+
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    valor || "";
+
+
+  return div.innerHTML;
+
+}
+
+
+
+function escaparAtributo(
+  valor
+) {
+
+
+  return String(
+    valor || ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    );
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
