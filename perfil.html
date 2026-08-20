@@ -520,6 +520,10 @@
   <input type="hidden" id="perfilTelefono" name="telefono">
   <input type="hidden" id="perfilNuevaContrasena" name="nuevaContrasena">
   <input type="hidden" id="perfilConfirmarContrasena" name="confirmarContrasena">
+  <input type="hidden" id="perfilFcmToken" name="fcmToken">
+  <input type="hidden" id="perfilDeviceId" name="deviceId">
+  <input type="hidden" id="perfilDispositivo" name="dispositivo">
+  <input type="hidden" id="perfilPlataforma" name="plataforma">
 
 </form>
 
@@ -709,7 +713,31 @@ async function revisarNotificaciones() {
 
 
     botonToken.style.display =
-      "block";
+      "none";
+
+
+    /*
+     * Si ya tenía permiso/token, lo volvemos a asociar
+     * silenciosamente. Esto también actualiza la fecha
+     * de última conexión del dispositivo.
+     */
+    if (
+      TOKEN
+    ) {
+
+      registrarTokenEnSistema(
+        TOKEN_FCM
+      ).catch(
+        function(error) {
+
+          console.error(
+            error
+          );
+
+        }
+      );
+
+    }
 
 
     return;
@@ -843,11 +871,36 @@ async function activarNotificaciones() {
     );
 
 
+    const registroBackend =
+      await registrarTokenEnSistema(
+        TOKEN_FCM
+      );
+
+
+    if (
+      !registroBackend
+    ) {
+
+      throw new Error(
+        "No fue posible asociar este dispositivo al residente."
+      );
+
+    }
+
+
     await revisarNotificaciones();
 
 
+    document
+      .getElementById(
+        "btnCopiarToken"
+      )
+      .style.display =
+        "none";
+
+
     mostrarMensaje(
-      "Notificaciones activadas correctamente.",
+      "Notificaciones activadas y dispositivo registrado.",
       "ok"
     );
 
@@ -881,6 +934,235 @@ async function activarNotificaciones() {
     );
 
   }
+
+}
+
+
+function obtenerDeviceIdNotificaciones() {
+
+  let deviceId =
+    localStorage.getItem(
+      "deviceIdNotificacionesArcos"
+    ) || "";
+
+
+  if (
+    deviceId
+  ) {
+
+    return deviceId;
+
+  }
+
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    deviceId =
+      crypto.randomUUID();
+
+  }
+  else {
+
+    deviceId =
+      Date.now() +
+      "_" +
+      Math.random()
+        .toString(36)
+        .slice(2);
+
+  }
+
+
+  localStorage.setItem(
+    "deviceIdNotificacionesArcos",
+    deviceId
+  );
+
+
+  return deviceId;
+
+}
+
+
+function detectarDispositivoNotificaciones() {
+
+  const agente =
+    navigator.userAgent || "";
+
+
+  let dispositivo =
+    "Navegador";
+
+
+  let plataforma =
+    navigator.platform || "";
+
+
+  if (
+    /iPhone/i.test(
+      agente
+    )
+  ) {
+
+    dispositivo =
+      "iPhone";
+
+    plataforma =
+      "iOS";
+
+  }
+  else if (
+    /iPad/i.test(
+      agente
+    )
+  ) {
+
+    dispositivo =
+      "iPad";
+
+    plataforma =
+      "iPadOS";
+
+  }
+  else if (
+    /Android/i.test(
+      agente
+    )
+  ) {
+
+    dispositivo =
+      "Android";
+
+    plataforma =
+      "Android";
+
+  }
+  else if (
+    /Windows/i.test(
+      agente
+    )
+  ) {
+
+    dispositivo =
+      "PC";
+
+    plataforma =
+      "Windows";
+
+  }
+  else if (
+    /Macintosh|Mac OS X/i.test(
+      agente
+    )
+  ) {
+
+    dispositivo =
+      "Mac";
+
+    plataforma =
+      "macOS";
+
+  }
+
+
+  return {
+    dispositivo:
+      dispositivo,
+
+    plataforma:
+      plataforma
+  };
+
+}
+
+
+function registrarTokenEnSistema(
+  fcmToken
+) {
+
+  return new Promise(
+    function(resolve, reject) {
+
+      if (
+        !TOKEN ||
+        !fcmToken
+      ) {
+
+        reject(
+          new Error(
+            "Falta la sesión o el token FCM."
+          )
+        );
+
+        return;
+
+      }
+
+
+      const dispositivo =
+        detectarDispositivoNotificaciones();
+
+
+      ejecutarOperacionPerfilV3(
+        "notificacionesRegistrar",
+        {
+          fcmToken:
+            fcmToken,
+
+          deviceId:
+            obtenerDeviceIdNotificaciones(),
+
+          dispositivo:
+            dispositivo.dispositivo,
+
+          plataforma:
+            dispositivo.plataforma
+        },
+
+        function(resultado) {
+
+          if (
+            resultado &&
+            resultado.ok
+          ) {
+
+            resolve(
+              true
+            );
+
+            return;
+
+          }
+
+
+          reject(
+            new Error(
+              resultado &&
+              resultado.mensaje
+                ? resultado.mensaje
+                : "No fue posible registrar el dispositivo."
+            )
+          );
+
+        },
+
+        function() {
+
+          reject(
+            new Error(
+              "No fue posible registrar el dispositivo."
+            )
+          );
+
+        }
+      );
+
+    }
+  );
 
 }
 
@@ -1505,6 +1787,50 @@ function ejecutarOperacionPerfilV3(
       datos &&
       datos.confirmarContrasena
         ? datos.confirmarContrasena
+        : "";
+
+
+  document
+    .getElementById(
+      "perfilFcmToken"
+    )
+    .value =
+      datos &&
+      datos.fcmToken
+        ? datos.fcmToken
+        : "";
+
+
+  document
+    .getElementById(
+      "perfilDeviceId"
+    )
+    .value =
+      datos &&
+      datos.deviceId
+        ? datos.deviceId
+        : "";
+
+
+  document
+    .getElementById(
+      "perfilDispositivo"
+    )
+    .value =
+      datos &&
+      datos.dispositivo
+        ? datos.dispositivo
+        : "";
+
+
+  document
+    .getElementById(
+      "perfilPlataforma"
+    )
+    .value =
+      datos &&
+      datos.plataforma
+        ? datos.plataforma
         : "";
 
 
