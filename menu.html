@@ -693,7 +693,7 @@
             <a
         id="linkPerfil"
         class="boton-menu verde"
-        target="_top"
+        href="perfil.html"
       >
         <div class="icono">👤</div>
         MI PERFIL
@@ -1087,6 +1087,23 @@ function iniciarMenu() {
     );
 
 
+  document
+    .getElementById(
+      "linkPerfil"
+    )
+    .href =
+      "perfil.html";
+
+
+  document
+    .getElementById(
+      "linkPerfil"
+    )
+    .removeAttribute(
+      "target"
+    );
+
+
   prepararBotonesPrueba();
 
 
@@ -1107,9 +1124,7 @@ function iniciarMenu() {
 
 function prepararBotonesPrueba() {
 
-  const ids = [
-    "linkPerfil"
-  ];
+  const ids = [];
 
 
   ids.forEach(
