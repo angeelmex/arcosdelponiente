@@ -1053,6 +1053,23 @@ function iniciarMenu() {
     );
 
 
+  document
+    .getElementById(
+      "linkJuntas"
+    )
+    .href =
+      "junta.html";
+
+
+  document
+    .getElementById(
+      "linkJuntas"
+    )
+    .removeAttribute(
+      "target"
+    );
+
+
   prepararBotonesPrueba();
 
 
@@ -1074,6 +1091,7 @@ function iniciarMenu() {
 function prepararBotonesPrueba() {
 
   const ids = [
+    "linkEncuestas",
     "linkJuntas",
     "linkPeticiones",
     "linkPerfil"
