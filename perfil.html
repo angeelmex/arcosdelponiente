@@ -219,6 +219,93 @@
       background: #fdeaea;
       color: #9b3333;
     }
+
+    .notificaciones {
+      margin-top: 22px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #f4f7fb;
+      border: 1px solid #e2e9ee;
+    }
+
+    .notificaciones-cabecera {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .notificaciones-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notificaciones-titulo {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: #204d5d;
+    }
+
+    .notificaciones-texto {
+      margin-top: 5px;
+      color: #718198;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .estado-notificacion {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #fff3d9;
+      color: #8b6700;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .estado-notificacion.activo {
+      background: #e9f7ee;
+      color: #267245;
+    }
+
+    .estado-notificacion.bloqueado {
+      background: #fdeaea;
+      color: #9b3333;
+    }
+
+    .btn-notificaciones {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 13px;
+      border: none;
+      border-radius: 15px;
+      background: #204d5d;
+      color: white;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-notificaciones:disabled {
+      opacity: .55;
+    }
+
+    .btn-token {
+      display: none;
+      width: 100%;
+      min-height: 46px;
+      margin-top: 9px;
+      border: 1px solid #cfdbe2;
+      border-radius: 14px;
+      background: white;
+      color: #204d5d;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
   </style>
   <title>Mi perfil</title>
 </head>
@@ -352,6 +439,51 @@
         </div>
       </section>
 
+
+      <section class="seccion">
+        <h3 class="seccion-titulo">Notificaciones</h3>
+
+        <div class="notificaciones">
+          <div class="notificaciones-cabecera">
+            <div class="notificaciones-info">
+              <div class="notificaciones-titulo">
+                🔔 Avisos en tu celular
+              </div>
+
+              <div class="notificaciones-texto">
+                Recibe avisos de ingresos a tu domicilio y comunicados importantes de la colonia.
+              </div>
+
+              <div
+                id="estadoNotificaciones"
+                class="estado-notificacion"
+              >
+                REVISANDO...
+              </div>
+            </div>
+          </div>
+
+          <button
+            id="btnActivarNotificaciones"
+            type="button"
+            class="btn-notificaciones"
+            onclick="activarNotificaciones()"
+          >
+            ACTIVAR NOTIFICACIONES
+          </button>
+
+          <button
+            id="btnCopiarToken"
+            type="button"
+            class="btn-token"
+            onclick="copiarTokenPrueba()"
+          >
+            COPIAR TOKEN DE PRUEBA
+          </button>
+        </div>
+      </section>
+
+
       <button
         id="btnGuardar"
         type="button"
@@ -398,6 +530,420 @@
   style="display:none;width:0;height:0;border:0;"
   title="Procesando perfil"
 ></iframe>
+
+
+
+<script type="module">
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+
+
+import {
+  getMessaging,
+  getToken,
+  isSupported
+} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-messaging.js";
+
+
+const FIREBASE_CONFIG = {
+  apiKey:
+    "AIzaSyDse3UCwboAneei4QM0KG468IkB8UeyG50",
+
+  authDomain:
+    "arcos-residentes.firebaseapp.com",
+
+  projectId:
+    "arcos-residentes",
+
+  storageBucket:
+    "arcos-residentes.firebasestorage.app",
+
+  messagingSenderId:
+    "359067671558",
+
+  appId:
+    "1:359067671558:web:f0395d4220d5b5f40d7787",
+
+  measurementId:
+    "G-LXQ2EWZLS0"
+};
+
+
+const VAPID_PUBLICA =
+  "BNdhd8uJxRm7NgTovRjqUOvNkXQczHSaDHhDDnq1BtywcBNVLtby-_OdY5CCLCN7ElzNIaf_eqtYKAeaSdiqNnQ";
+
+
+let TOKEN_FCM =
+  localStorage.getItem(
+    "tokenNotificacionesArcos"
+  ) || "";
+
+
+window.revisarNotificaciones =
+  revisarNotificaciones;
+
+
+window.activarNotificaciones =
+  activarNotificaciones;
+
+
+window.copiarTokenPrueba =
+  copiarTokenPrueba;
+
+
+async function revisarNotificaciones() {
+
+  const estado =
+    document.getElementById(
+      "estadoNotificaciones"
+    );
+
+
+  const boton =
+    document.getElementById(
+      "btnActivarNotificaciones"
+    );
+
+
+  const botonToken =
+    document.getElementById(
+      "btnCopiarToken"
+    );
+
+
+  if (
+    !("Notification" in window) ||
+    !("serviceWorker" in navigator)
+  ) {
+
+    estado.textContent =
+      "NO COMPATIBLE";
+
+
+    estado.className =
+      "estado-notificacion bloqueado";
+
+
+    boton.style.display =
+      "none";
+
+
+    return;
+
+  }
+
+
+  const compatible =
+    await isSupported();
+
+
+  if (
+    !compatible
+  ) {
+
+    estado.textContent =
+      "NO COMPATIBLE";
+
+
+    estado.className =
+      "estado-notificacion bloqueado";
+
+
+    boton.style.display =
+      "none";
+
+
+    return;
+
+  }
+
+
+  if (
+    Notification.permission ===
+      "denied"
+  ) {
+
+    estado.textContent =
+      "BLOQUEADAS";
+
+
+    estado.className =
+      "estado-notificacion bloqueado";
+
+
+    boton.textContent =
+      "NOTIFICACIONES BLOQUEADAS";
+
+
+    boton.disabled =
+      true;
+
+
+    return;
+
+  }
+
+
+  if (
+    Notification.permission ===
+      "granted" &&
+    TOKEN_FCM
+  ) {
+
+    estado.textContent =
+      "ACTIVADAS";
+
+
+    estado.className =
+      "estado-notificacion activo";
+
+
+    boton.textContent =
+      "NOTIFICACIONES ACTIVADAS";
+
+
+    boton.disabled =
+      true;
+
+
+    botonToken.style.display =
+      "block";
+
+
+    return;
+
+  }
+
+
+  estado.textContent =
+    "DESACTIVADAS";
+
+
+  estado.className =
+    "estado-notificacion";
+
+
+  boton.textContent =
+    "ACTIVAR NOTIFICACIONES";
+
+
+  boton.disabled =
+    false;
+
+}
+
+
+async function activarNotificaciones() {
+
+  const boton =
+    document.getElementById(
+      "btnActivarNotificaciones"
+    );
+
+
+  const estado =
+    document.getElementById(
+      "estadoNotificaciones"
+    );
+
+
+  try {
+
+    boton.disabled =
+      true;
+
+
+    boton.textContent =
+      "ACTIVANDO...";
+
+
+    const permiso =
+      await Notification.requestPermission();
+
+
+    if (
+      permiso !==
+        "granted"
+    ) {
+
+      TOKEN_FCM =
+        "";
+
+
+      localStorage.removeItem(
+        "tokenNotificacionesArcos"
+      );
+
+
+      await revisarNotificaciones();
+
+      return;
+
+    }
+
+
+    const registro =
+      await navigator.serviceWorker.register(
+        "./service-worker.js",
+        {
+          scope:
+            "./"
+        }
+      );
+
+
+    await navigator.serviceWorker.ready;
+
+
+    const app =
+      initializeApp(
+        FIREBASE_CONFIG
+      );
+
+
+    const messaging =
+      getMessaging(
+        app
+      );
+
+
+    const token =
+      await getToken(
+        messaging,
+        {
+          vapidKey:
+            VAPID_PUBLICA,
+
+          serviceWorkerRegistration:
+            registro
+        }
+      );
+
+
+    if (
+      !token
+    ) {
+
+      throw new Error(
+        "Firebase no devolvió un token."
+      );
+
+    }
+
+
+    TOKEN_FCM =
+      token;
+
+
+    localStorage.setItem(
+      "tokenNotificacionesArcos",
+      TOKEN_FCM
+    );
+
+
+    await revisarNotificaciones();
+
+
+    mostrarMensaje(
+      "Notificaciones activadas correctamente.",
+      "ok"
+    );
+
+  }
+  catch (error) {
+
+    console.error(
+      error
+    );
+
+
+    boton.disabled =
+      false;
+
+
+    boton.textContent =
+      "ACTIVAR NOTIFICACIONES";
+
+
+    estado.textContent =
+      "ERROR AL ACTIVAR";
+
+
+    estado.className =
+      "estado-notificacion bloqueado";
+
+
+    mostrarMensaje(
+      "No fue posible activar las notificaciones.",
+      "error"
+    );
+
+  }
+
+}
+
+
+async function copiarTokenPrueba() {
+
+  if (
+    !TOKEN_FCM
+  ) {
+
+    mostrarMensaje(
+      "Primero activa las notificaciones.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    await navigator.clipboard.writeText(
+      TOKEN_FCM
+    );
+
+
+    mostrarMensaje(
+      "Token de prueba copiado.",
+      "ok"
+    );
+
+  }
+  catch (error) {
+
+    console.error(
+      error
+    );
+
+
+    window.prompt(
+      "Copia este token:",
+      TOKEN_FCM
+    );
+
+  }
+
+}
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    setTimeout(
+      revisarNotificaciones,
+      300
+    );
+
+  }
+);
+
+</script>
 
 
 <script>
