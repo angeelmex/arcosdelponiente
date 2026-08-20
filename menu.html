@@ -1002,6 +1002,23 @@ function iniciarMenu() {
     );
 
 
+  document
+    .getElementById(
+      "linkSeguridad"
+    )
+    .href =
+      "seguridad.html";
+
+
+  document
+    .getElementById(
+      "linkSeguridad"
+    )
+    .removeAttribute(
+      "target"
+    );
+
+
   prepararBotonesPrueba();
 
 
@@ -1023,7 +1040,6 @@ function iniciarMenu() {
 function prepararBotonesPrueba() {
 
   const ids = [
-    "linkSeguridad",
     "linkMascotas",
     "linkEncuestas",
     "linkJuntas",
