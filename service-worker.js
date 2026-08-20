@@ -1,20 +1,46 @@
 /*
  * Arcos del Poniente - Service Worker V3
- *
- * Primera etapa:
- * - Hace que la plataforma tenga base PWA.
- * - Prepara el manejo de notificaciones push.
- * - NO almacena HTML en caché para evitar que GitHub Pages
- *   muestre versiones antiguas después de cada actualización.
+ * Notificaciones Firebase Cloud Messaging
  */
 
-const VERSION =
-  "arcos-v3-20260820-1";
+importScripts(
+  "https://www.gstatic.com/firebasejs/12.17.0/firebase-app-compat.js"
+);
+
+
+importScripts(
+  "https://www.gstatic.com/firebasejs/12.17.0/firebase-messaging-compat.js"
+);
+
+
+firebase.initializeApp({
+  apiKey:
+    "AIzaSyDse3UCwboAneei4QM0KG468IkB8UeyG50",
+
+  authDomain:
+    "arcos-residentes.firebaseapp.com",
+
+  projectId:
+    "arcos-residentes",
+
+  storageBucket:
+    "arcos-residentes.firebasestorage.app",
+
+  messagingSenderId:
+    "359067671558",
+
+  appId:
+    "1:359067671558:web:f0395d4220d5b5f40d7787"
+});
+
+
+const messaging =
+  firebase.messaging();
 
 
 self.addEventListener(
   "install",
-  function(event) {
+  function() {
 
     self.skipWaiting();
 
@@ -35,9 +61,9 @@ self.addEventListener(
 
 
 /*
- * Por ahora dejamos la navegación normal por red.
- * Esto evita que index.html, menu.html y los demás módulos
- * queden atrapados en una versión vieja.
+ * No almacenamos las páginas HTML en caché.
+ * Así GitHub Pages puede actualizarse sin quedarse
+ * mostrando versiones antiguas.
  */
 self.addEventListener(
   "fetch",
@@ -49,88 +75,54 @@ self.addEventListener(
 );
 
 
-/*
- * Este bloque quedará listo para la siguiente etapa,
- * cuando registremos cada dispositivo para Web Push.
- */
-self.addEventListener(
-  "push",
-  function(event) {
+messaging.onBackgroundMessage(
+  function(payload) {
 
-    let datos = {
-      titulo:
-        "Arcos del Poniente",
+    console.log(
+      "Notificación recibida:",
+      payload
+    );
 
-      cuerpo:
+
+    const notificacion =
+      payload.notification || {};
+
+
+    const datos =
+      payload.data || {};
+
+
+    const titulo =
+      notificacion.title ||
+      datos.titulo ||
+      "Arcos del Poniente";
+
+
+    const opciones = {
+      body:
+        notificacion.body ||
+        datos.cuerpo ||
         "Tienes una nueva notificación.",
 
-      url:
-        "./"
+      icon:
+        "./icon-192.png",
+
+      badge:
+        "./icon-192.png",
+
+      data: {
+        url:
+          datos.url ||
+          "./"
+      }
     };
 
 
-    if (
-      event.data
-    ) {
-
-      try {
-
-        const recibidos =
-          event.data.json();
-
-
-        datos = {
-          titulo:
-            recibidos.titulo ||
-            datos.titulo,
-
-          cuerpo:
-            recibidos.cuerpo ||
-            datos.cuerpo,
-
-          url:
-            recibidos.url ||
-            datos.url,
-
-          tag:
-            recibidos.tag ||
-            ""
-        };
-
-      }
-      catch (error) {
-
-        datos.cuerpo =
-          event.data.text();
-
-      }
-
-    }
-
-
-    event.waitUntil(
-      self.registration.showNotification(
-        datos.titulo,
-        {
-          body:
-            datos.cuerpo,
-
-          icon:
-            "./icon-192.png",
-
-          badge:
-            "./icon-192.png",
-
-          tag:
-            datos.tag || undefined,
-
-          data: {
-            url:
-              datos.url
-          }
-        }
-      )
-    );
+    return self.registration
+      .showNotification(
+        titulo,
+        opciones
+      );
 
   }
 );
