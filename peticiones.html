@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #204d5d;
+    }
+
+    .pagina {
+      min-height: 100vh;
+      padding: 16px 14px 30px;
+    }
+
+    .contenedor {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .encabezado {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .volver {
+      width: 54px;
+      min-width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: white;
+      color: #204d5d;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+      font-weight: bold;
+      box-shadow: 0 5px 16px rgba(20,55,95,.09);
+    }
+
+    .titulo {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .subtitulo {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #718198;
+    }
+
+    .nueva {
+      width: 100%;
+      min-height: 62px;
+      border: none;
+      border-radius: 18px;
+      background: #204d5d;
+      color: white;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-bottom: 18px;
+    }
+
+    .seccion-titulo {
+      margin: 0 2px 10px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .cargando,
+    .sin-datos {
+      background: white;
+      border-radius: 20px;
+      padding: 30px 18px;
+      text-align: center;
+      color: #748399;
+      line-height: 1.5;
+      box-shadow: 0 5px 18px rgba(20,55,95,.07);
+    }
+
+    .lista {
+      display: grid;
+      gap: 12px;
+    }
+
+    .tarjeta {
+      background: white;
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 5px 18px rgba(20,55,95,.09);
+    }
+
+    .cabecera-peticion {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .folio {
+      font-size: 13px;
+      font-weight: 800;
+      color: #718198;
+    }
+
+    .asunto {
+      margin: 5px 0 0;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .estado {
+      flex: 0 0 auto;
+      padding: 6px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      background: #fff3d9;
+      color: #8b6700;
+    }
+
+    .estado.proceso {
+      background: #e8f1ff;
+      color: #245d9b;
+    }
+
+    .estado.resuelta {
+      background: #e9f7ee;
+      color: #267245;
+    }
+
+    .estado.rechazada {
+      background: #fdeaea;
+      color: #9b3333;
+    }
+
+    .meta {
+      margin-top: 8px;
+      color: #718198;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .descripcion {
+      margin-top: 12px;
+      color: #52677d;
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
+    .foto {
+      width: 100%;
+      margin-top: 12px;
+      border-radius: 15px;
+      display: block;
+      max-height: 320px;
+      object-fit: cover;
+      background: #eef2f5;
+    }
+
+    .respuesta {
+      margin-top: 13px;
+      padding: 12px 13px;
+      border-radius: 14px;
+      background: #eef5f7;
+      color: #52677d;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .respuesta strong {
+      color: #204d5d;
+    }
+
+    .modal-fondo {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: rgba(8,18,30,.72);
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      overflow-y: auto;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      border-radius: 24px;
+      padding: 20px;
+    }
+
+    .modal h2 {
+      margin: 0 0 16px;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    .grupo {
+      margin-bottom: 14px;
+    }
+
+    .grupo label {
+      display: block;
+      margin: 0 0 7px 2px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .grupo input,
+    .grupo select,
+    .grupo textarea {
+      width: 100%;
+      border: 2px solid #dce5ec;
+      border-radius: 15px;
+      background: white;
+      color: #20384f;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .grupo input,
+    .grupo select {
+      height: 58px;
+      padding: 0 14px;
+    }
+
+    .grupo textarea {
+      min-height: 120px;
+      padding: 13px 14px;
+      resize: vertical;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .foto-input {
+      display: none;
+    }
+
+    .foto-boton {
+      min-height: 58px;
+      border: 2px solid #204d5d;
+      border-radius: 15px;
+      color: #204d5d;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .preview {
+      display: none;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 15px;
+      background: #eef2f5;
+    }
+
+    .preview img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .modal-botones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-top: 16px;
+    }
+
+    .btn-cancelar,
+    .btn-enviar {
+      min-height: 54px;
+      border: none;
+      border-radius: 15px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .btn-cancelar {
+      background: #edf3f6;
+      color: #204d5d;
+    }
+
+    .btn-enviar {
+      background: #204d5d;
+      color: white;
+    }
+
+    .btn-enviar:disabled {
+      opacity: .55;
+    }
+
+    .mensaje {
+      display: none;
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 22px;
+      z-index: 4000;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 15px;
+      border-radius: 15px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 7px 24px rgba(0,0,0,.14);
+    }
+
+    .mensaje.ok {
+      display: block;
+      background: #e9f7ee;
+      color: #267245;
+    }
+
+    .mensaje.error {
+      display: block;
+      background: #fdeaea;
+      color: #9b3333;
+    }
+
+  </style>
+
+  <title>Peticiones</title>
+
+</head>
+
+
+<body>
+
+
+<div class="pagina">
+
+  <div class="contenedor">
+
+    <div class="encabezado">
+
+      <a
+        class="volver"
+        href="menu.html"
+      >
+        ←
+      </a>
+
+      <div>
+        <h1 class="titulo">
+          Peticiones
+        </h1>
+        <div class="subtitulo">
+          Solicitudes, mejoras, quejas y sugerencias
+        </div>
+      </div>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="nueva"
+      onclick="abrirModal()"
+    >
+      + NUEVA PETICIÓN
+    </button>
+
+
+    <h2 class="seccion-titulo">
+      Mis peticiones
+    </h2>
+
+
+    <div
+      id="cargando"
+      class="cargando"
+    >
+      Cargando peticiones...
+    </div>
+
+
+    <div
+      id="lista"
+      class="lista"
+      style="display:none;"
+    ></div>
+
+  </div>
+
+</div>
+
+
+
+<div
+  id="modalPeticion"
+  class="modal-fondo"
+>
+
+  <div class="modal">
+
+    <h2>
+      Nueva petición
+    </h2>
+
+
+    <div class="grupo">
+
+      <label for="tipo">
+        Tipo
+      </label>
+
+      <select id="tipo">
+        <option value="">
+          Selecciona una opción
+        </option>
+        <option value="SEGURIDAD">
+          Seguridad
+        </option>
+        <option value="MANTENIMIENTO">
+          Mantenimiento
+        </option>
+        <option value="LIMPIEZA">
+          Limpieza
+        </option>
+        <option value="ALUMBRADO">
+          Alumbrado
+        </option>
+        <option value="AREAS COMUNES">
+          Áreas comunes
+        </option>
+        <option value="QUEJA">
+          Queja
+        </option>
+        <option value="SUGERENCIA">
+          Sugerencia
+        </option>
+        <option value="OTRO">
+          Otro
+        </option>
+      </select>
+
+    </div>
+
+
+    <div class="grupo">
+
+      <label for="asunto">
+        Asunto
+      </label>
+
+      <input
+        id="asunto"
+        type="text"
+        maxlength="100"
+        placeholder="Ej. Lámpara apagada"
+      >
+
+    </div>
+
+
+    <div class="grupo">
+
+      <label for="descripcion">
+        Descripción
+      </label>
+
+      <textarea
+        id="descripcion"
+        maxlength="700"
+        placeholder="Describe lo que deseas reportar o solicitar."
+      ></textarea>
+
+    </div>
+
+
+    <div class="grupo">
+
+      <label>
+        Fotografía
+      </label>
+
+      <input
+        id="fotoPeticion"
+        class="foto-input"
+        type="file"
+        accept="image/*"
+        onchange="procesarFoto(this)"
+      >
+
+      <label
+        for="fotoPeticion"
+        class="foto-boton"
+      >
+        📎 ADJUNTAR FOTO (OPCIONAL)
+      </label>
+
+      <div
+        id="preview"
+        class="preview"
+      >
+        <img
+          id="previewImagen"
+          alt="Vista previa"
+        >
+      </div>
+
+    </div>
+
+
+    <div class="modal-botones">
+
+      <button
+        type="button"
+        class="btn-cancelar"
+        onclick="cerrarModal()"
+      >
+        CANCELAR
+      </button>
+
+      <button
+        id="btnEnviar"
+        type="button"
+        class="btn-enviar"
+        onclick="enviarPeticion()"
+      >
+        ENVIAR
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<div
+  id="mensaje"
+  class="mensaje"
+></div>
+
+
+
+
+<form
+  id="formPeticiones"
+  method="post"
+  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
+  target="iframePeticiones"
+  style="display:none;"
+>
+
+  <input type="hidden" id="petAccion" name="accion">
+  <input type="hidden" id="petToken" name="token">
+  <input type="hidden" id="petRequestId" name="requestId">
+  <input type="hidden" id="petTipo" name="tipo">
+  <input type="hidden" id="petAsunto" name="asunto">
+  <input type="hidden" id="petDescripcion" name="descripcion">
+  <input type="hidden" id="petBase64" name="base64">
+  <input type="hidden" id="petTipoMime" name="tipoMime">
+
+</form>
+
+
+<iframe
+  id="iframePeticiones"
+  name="iframePeticiones"
+  style="display:none;width:0;height:0;border:0;"
+  title="Procesando peticiones"
+></iframe>
+
+
+<script>
+
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+let TOKEN =
+  "";
+
+
+let fotoBase64 =
+  "";
+
+
+let fotoMime =
+  "";
+
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  cargarPeticiones
+);
+
+
+
+function cargarPeticiones() {
+
+  TOKEN =
+    sessionStorage.getItem(
+      "tokenResidente"
+    ) || "";
+
+
+  if (
+    !TOKEN
+  ) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  ejecutarOperacionPeticionesV3(
+    "peticionesListar",
+    {},
+
+    function(resultado) {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cargar tus peticiones.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      renderizar(
+        resultado.datos.peticiones ||
+        []
+      );
+
+    },
+
+    function() {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      mostrarMensaje(
+        "No fue posible cargar tus peticiones.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * RENDER
+ *************************************************/
+
+function renderizar(
+  peticiones
+) {
+
+
+  const lista =
+    document.getElementById(
+      "lista"
+    );
+
+
+  lista.innerHTML =
+    "";
+
+
+  lista.style.display =
+    "grid";
+
+
+  if (
+    !peticiones.length
+  ) {
+
+    lista.innerHTML =
+      '<div class="sin-datos">' +
+        'Todavía no tienes peticiones registradas.' +
+      '</div>';
+
+    return;
+
+  }
+
+
+  peticiones.forEach(
+    function(peticion) {
+
+      lista.appendChild(
+        crearTarjeta(
+          peticion
+        )
+      );
+
+    }
+  );
+
+}
+
+
+
+function crearTarjeta(
+  peticion
+) {
+
+
+  const tarjeta =
+    document.createElement(
+      "div"
+    );
+
+
+  tarjeta.className =
+    "tarjeta";
+
+
+  const estado =
+    String(
+      peticion.estado ||
+      "PENDIENTE"
+    ).toUpperCase();
+
+
+  let claseEstado =
+    "";
+
+
+  if (
+    estado === "EN PROCESO"
+  ) {
+
+    claseEstado =
+      "proceso";
+
+  }
+  else if (
+    estado === "RESUELTA" ||
+    estado === "RESUELTO"
+  ) {
+
+    claseEstado =
+      "resuelta";
+
+  }
+  else if (
+    estado === "RECHAZADA" ||
+    estado === "NO PROCEDE"
+  ) {
+
+    claseEstado =
+      "rechazada";
+
+  }
+
+
+  let html =
+    '<div class="cabecera-peticion">' +
+
+      '<div>' +
+
+        '<div class="folio">' +
+          escaparHtml(
+            peticion.idPeticion
+          ) +
+          ' · ' +
+          escaparHtml(
+            peticion.tipo
+          ) +
+        '</div>' +
+
+        '<h3 class="asunto">' +
+          escaparHtml(
+            peticion.asunto
+          ) +
+        '</h3>' +
+
+      '</div>' +
+
+      '<span class="estado ' +
+        claseEstado +
+      '">' +
+        escaparHtml(
+          estado
+        ) +
+      '</span>' +
+
+    '</div>' +
+
+    '<div class="meta">' +
+      escaparHtml(
+        peticion.fecha
+      ) +
+    '</div>' +
+
+    '<div class="descripcion">' +
+      escaparHtml(
+        peticion.descripcion
+      ) +
+    '</div>';
+
+
+  if (
+    peticion.foto
+  ) {
+
+    html +=
+      '<img class="foto" src="' +
+        escaparAtributo(
+          peticion.foto
+        ) +
+      '" alt="Foto de petición">';
+
+  }
+
+
+  if (
+    peticion.respuesta
+  ) {
+
+    html +=
+      '<div class="respuesta">' +
+        '<strong>Respuesta:</strong><br>' +
+        escaparHtml(
+          peticion.respuesta
+        ) +
+        (
+          peticion.fechaRespuesta
+            ? '<br><br><small>' +
+              escaparHtml(
+                peticion.fechaRespuesta
+              ) +
+              '</small>'
+            : ''
+        ) +
+      '</div>';
+
+  }
+
+
+  tarjeta.innerHTML =
+    html;
+
+
+  return tarjeta;
+
+}
+
+
+
+/*************************************************
+ * MODAL
+ *************************************************/
+
+function abrirModal() {
+
+
+  document
+    .getElementById(
+      "tipo"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "asunto"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "descripcion"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "fotoPeticion"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "preview"
+    )
+    .style.display =
+      "none";
+
+
+  fotoBase64 =
+    "";
+
+
+  fotoMime =
+    "";
+
+
+  document
+    .getElementById(
+      "modalPeticion"
+    )
+    .style.display =
+      "flex";
+
+}
+
+
+
+function cerrarModal() {
+
+
+  document
+    .getElementById(
+      "modalPeticion"
+    )
+    .style.display =
+      "none";
+
+}
+
+
+
+/*************************************************
+ * FOTO
+ *************************************************/
+
+function procesarFoto(
+  input
+) {
+
+
+  const archivo =
+    input.files &&
+    input.files[0];
+
+
+  if (
+    !archivo
+  ) {
+
+    return;
+
+  }
+
+
+  const lector =
+    new FileReader();
+
+
+  lector.onload =
+    function(evento) {
+
+
+      const imagen =
+        new Image();
+
+
+      imagen.onload =
+        function() {
+
+
+          const canvas =
+            document.createElement(
+              "canvas"
+            );
+
+
+          const maximo =
+            1600;
+
+
+          let ancho =
+            imagen.width;
+
+
+          let alto =
+            imagen.height;
+
+
+          if (
+            ancho > maximo ||
+            alto > maximo
+          ) {
+
+            const escala =
+              Math.min(
+                maximo / ancho,
+                maximo / alto
+              );
+
+
+            ancho =
+              Math.round(
+                ancho *
+                escala
+              );
+
+
+            alto =
+              Math.round(
+                alto *
+                escala
+              );
+
+          }
+
+
+          canvas.width =
+            ancho;
+
+
+          canvas.height =
+            alto;
+
+
+          const ctx =
+            canvas.getContext(
+              "2d"
+            );
+
+
+          ctx.drawImage(
+            imagen,
+            0,
+            0,
+            ancho,
+            alto
+          );
+
+
+          const dataUrl =
+            canvas.toDataURL(
+              "image/jpeg",
+              0.82
+            );
+
+
+          fotoMime =
+            "image/jpeg";
+
+
+          fotoBase64 =
+            dataUrl.split(
+              ","
+            )[1];
+
+
+          document
+            .getElementById(
+              "previewImagen"
+            )
+            .src =
+              dataUrl;
+
+
+          document
+            .getElementById(
+              "preview"
+            )
+            .style.display =
+              "block";
+
+        };
+
+
+      imagen.src =
+        evento.target.result;
+
+    };
+
+
+  lector.readAsDataURL(
+    archivo
+  );
+
+}
+
+
+
+/*************************************************
+ * ENVIAR
+ *************************************************/
+
+function enviarPeticion() {
+
+  const tipo =
+    document
+      .getElementById(
+        "tipo"
+      )
+      .value;
+
+
+  const asunto =
+    document
+      .getElementById(
+        "asunto"
+      )
+      .value
+      .trim();
+
+
+  const descripcion =
+    document
+      .getElementById(
+        "descripcion"
+      )
+      .value
+      .trim();
+
+
+  if (
+    !tipo
+  ) {
+
+    mostrarMensaje(
+      "Selecciona el tipo de petición.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !asunto
+  ) {
+
+    mostrarMensaje(
+      "Ingresa el asunto.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !descripcion
+  ) {
+
+    mostrarMensaje(
+      "Describe tu petición.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const boton =
+    document.getElementById(
+      "btnEnviar"
+    );
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "ENVIANDO...";
+
+
+  ejecutarOperacionPeticionesV3(
+    "peticionCrear",
+    {
+
+      tipo:
+        tipo,
+
+      asunto:
+        asunto,
+
+      descripcion:
+        descripcion,
+
+      base64:
+        fotoBase64,
+
+      tipoMime:
+        fotoMime
+
+    },
+
+    function(resultado) {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "ENVIAR";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible enviar la petición.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      cerrarModal();
+
+
+      mostrarMensaje(
+        "Petición enviada correctamente.",
+        "ok"
+      );
+
+
+      document
+        .getElementById(
+          "lista"
+        )
+        .style.display =
+          "none";
+
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .textContent =
+          "Actualizando peticiones...";
+
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "block";
+
+
+      cargarPeticiones();
+
+    },
+
+    function() {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "ENVIAR";
+
+
+      mostrarMensaje(
+        "No fue posible enviar la petición.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * MOTOR DE OPERACIONES EXTERNAS V3
+ *************************************************/
+
+let OPERACION_PETICIONES =
+  null;
+
+
+const MAX_CONSULTAS_PETICIONES =
+  40;
+
+
+function ejecutarOperacionPeticionesV3(
+  accion,
+  datos,
+  alTerminar,
+  alFallar
+) {
+
+  if (
+    OPERACION_PETICIONES
+  ) {
+
+    if (
+      typeof alFallar ===
+        "function"
+    ) {
+
+      alFallar();
+
+    }
+
+    return;
+
+  }
+
+
+  const requestId =
+    generarRequestIdPeticionesV3();
+
+
+  OPERACION_PETICIONES = {
+    requestId:
+      requestId,
+
+    alTerminar:
+      alTerminar,
+
+    alFallar:
+      alFallar,
+
+    consultas:
+      0
+  };
+
+
+  document
+    .getElementById(
+      "petAccion"
+    )
+    .value =
+      accion;
+
+
+  document
+    .getElementById(
+      "petToken"
+    )
+    .value =
+      TOKEN;
+
+
+  document
+    .getElementById(
+      "petRequestId"
+    )
+    .value =
+      requestId;
+
+
+  document
+    .getElementById(
+      "petTipo"
+    )
+    .value =
+      datos &&
+      datos.tipo
+        ? datos.tipo
+        : "";
+
+
+  document
+    .getElementById(
+      "petAsunto"
+    )
+    .value =
+      datos &&
+      datos.asunto
+        ? datos.asunto
+        : "";
+
+
+  document
+    .getElementById(
+      "petDescripcion"
+    )
+    .value =
+      datos &&
+      datos.descripcion
+        ? datos.descripcion
+        : "";
+
+
+  document
+    .getElementById(
+      "petBase64"
+    )
+    .value =
+      datos &&
+      datos.base64
+        ? datos.base64
+        : "";
+
+
+  document
+    .getElementById(
+      "petTipoMime"
+    )
+    .value =
+      datos &&
+      datos.tipoMime
+        ? datos.tipoMime
+        : "";
+
+
+  document
+    .getElementById(
+      "formPeticiones"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarEstadoPeticionesV3,
+    800
+  );
+
+}
+
+
+function consultarEstadoPeticionesV3() {
+
+  if (
+    !OPERACION_PETICIONES
+  ) {
+
+    return;
+
+  }
+
+
+  OPERACION_PETICIONES.consultas++;
+
+
+  if (
+    OPERACION_PETICIONES.consultas >
+      MAX_CONSULTAS_PETICIONES
+  ) {
+
+    terminarPeticionesConError();
+
+    return;
+
+  }
+
+
+  window.recibirEstadoPeticionesV3 =
+    function(resultado) {
+
+      procesarEstadoPeticionesV3(
+        resultado
+      );
+
+    };
+
+
+  const anterior =
+    document.getElementById(
+      "consultaPeticionesV3"
+    );
+
+
+  if (
+    anterior
+  ) {
+
+    anterior.remove();
+
+  }
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.id =
+    "consultaPeticionesV3";
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=operacionEstado" +
+    "&requestId=" +
+    encodeURIComponent(
+      OPERACION_PETICIONES.requestId
+    ) +
+    "&callback=recibirEstadoPeticionesV3" +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function() {
+
+      script.remove();
+
+
+      if (
+        OPERACION_PETICIONES
+      ) {
+
+        setTimeout(
+          consultarEstadoPeticionesV3,
+          800
+        );
+
+      }
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function procesarEstadoPeticionesV3(
+  resultado
+) {
+
+  const script =
+    document.getElementById(
+      "consultaPeticionesV3"
+    );
+
+
+  if (
+    script
+  ) {
+
+    script.remove();
+
+  }
+
+
+  if (
+    !OPERACION_PETICIONES
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    terminarPeticionesConError();
+
+    return;
+
+  }
+
+
+  const datos =
+    resultado.datos || {};
+
+
+  if (
+    datos.estado ===
+      "PENDIENTE"
+  ) {
+
+    setTimeout(
+      consultarEstadoPeticionesV3,
+      800
+    );
+
+    return;
+
+  }
+
+
+  if (
+    datos.estado !==
+      "LISTO" ||
+    !datos.resultado
+  ) {
+
+    terminarPeticionesConError();
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_PETICIONES;
+
+
+  OPERACION_PETICIONES =
+    null;
+
+
+  if (
+    typeof operacion.alTerminar ===
+      "function"
+  ) {
+
+    operacion.alTerminar(
+      datos.resultado
+    );
+
+  }
+
+}
+
+
+function terminarPeticionesConError() {
+
+  if (
+    !OPERACION_PETICIONES
+  ) {
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_PETICIONES;
+
+
+  OPERACION_PETICIONES =
+    null;
+
+
+  if (
+    typeof operacion.alFallar ===
+      "function"
+  ) {
+
+    operacion.alFallar();
+
+  }
+
+}
+
+
+function generarRequestIdPeticionesV3() {
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+
+  return (
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2) +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
+}
+
+
+
+/*************************************************
+ * MENSAJES
+ *************************************************/
+
+function mostrarMensaje(
+  textoMensaje,
+  tipo
+) {
+
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.textContent =
+    textoMensaje;
+
+
+  mensaje.className =
+    "mensaje " +
+    tipo;
+
+
+  setTimeout(
+    function() {
+
+      mensaje.className =
+        "mensaje";
+
+    },
+    3500
+  );
+
+}
+
+
+
+/*************************************************
+ * TEXTO SEGURO
+ *************************************************/
+
+function escaparHtml(
+  valor
+) {
+
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    valor || "";
+
+
+  return div.innerHTML;
+
+}
+
+
+
+function escaparAtributo(
+  valor
+) {
+
+
+  return String(
+    valor || ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    );
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
