@@ -1019,6 +1019,23 @@ function iniciarMenu() {
     );
 
 
+  document
+    .getElementById(
+      "linkMascotas"
+    )
+    .href =
+      "mascotas.html";
+
+
+  document
+    .getElementById(
+      "linkMascotas"
+    )
+    .removeAttribute(
+      "target"
+    );
+
+
   prepararBotonesPrueba();
 
 
@@ -1040,7 +1057,6 @@ function iniciarMenu() {
 function prepararBotonesPrueba() {
 
   const ids = [
-    "linkMascotas",
     "linkEncuestas",
     "linkJuntas",
     "linkPeticiones",
