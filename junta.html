@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #204d5d;
+    }
+
+
+    .pagina {
+      min-height: 100vh;
+      padding: 16px 14px 30px;
+    }
+
+
+    .contenedor {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+
+    .encabezado {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+
+    .volver {
+      width: 54px;
+      min-width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: white;
+      color: #204d5d;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+      font-weight: bold;
+      box-shadow:
+        0 5px 16px
+        rgba(20,55,95,.09);
+    }
+
+
+    .titulo {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+
+    .subtitulo {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #718198;
+    }
+
+
+    .cargando,
+    .sin-junta {
+      background: white;
+      border-radius: 22px;
+      padding: 32px 20px;
+      text-align: center;
+      color: #748399;
+      line-height: 1.5;
+      box-shadow:
+        0 5px 18px
+        rgba(20,55,95,.07);
+    }
+
+
+    .sin-junta-icono {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 42px;
+    }
+
+
+    .principal {
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow:
+        0 7px 24px
+        rgba(20,55,95,.10);
+    }
+
+
+    .principal-cabecera {
+      padding: 20px 18px;
+      background: #204d5d;
+      color: white;
+    }
+
+
+    .etiqueta {
+      display: inline-block;
+      margin-bottom: 9px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.15);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+
+    .fecha {
+      margin-bottom: 7px;
+      font-size: 14px;
+      opacity: .88;
+    }
+
+
+    .titulo-junta {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+
+    .principal-contenido {
+      padding: 18px;
+    }
+
+
+    .bloque + .bloque {
+      margin-top: 20px;
+    }
+
+
+    .bloque-titulo {
+      margin: 0 0 8px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #204d5d;
+    }
+
+
+    .texto {
+      margin: 0;
+      color: #5f7287;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+
+    .acuerdos {
+      margin: 0;
+      padding-left: 21px;
+      color: #5f7287;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+
+    .acuerdos li + li {
+      margin-top: 8px;
+    }
+
+
+    .archivo {
+      width: 100%;
+      min-height: 56px;
+      margin-top: 20px;
+      border-radius: 16px;
+      background: #edf3f6;
+      color: #204d5d;
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+
+    .historial-titulo {
+      margin: 24px 2px 11px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+
+    .historial {
+      display: grid;
+      gap: 11px;
+    }
+
+
+    .tarjeta-historial {
+      background: white;
+      border-radius: 19px;
+      padding: 15px;
+      box-shadow:
+        0 5px 18px
+        rgba(20,55,95,.08);
+    }
+
+
+    .historial-fecha {
+      color: #718198;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+
+    .historial-nombre {
+      margin: 5px 0 0;
+      color: #204d5d;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+
+    .historial-botones {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+
+    .ver-junta {
+      min-height: 48px;
+      border: none;
+      border-radius: 14px;
+      background: #204d5d;
+      color: white;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+
+    .mensaje {
+      display: none;
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 22px;
+      z-index: 3000;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 15px;
+      border-radius: 15px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      background: #fdeaea;
+      color: #9b3333;
+      box-shadow:
+        0 7px 24px
+        rgba(0,0,0,.14);
+    }
+
+
+    .modal-fondo {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2500;
+      background: rgba(8,18,30,.72);
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      overflow-y: auto;
+    }
+
+
+    .modal {
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      border-radius: 24px;
+      padding: 20px;
+    }
+
+
+    .modal-fecha {
+      color: #718198;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+
+    .modal-titulo {
+      margin: 6px 0 18px;
+      font-size: 22px;
+      line-height: 1.3;
+    }
+
+
+    .modal-cerrar {
+      width: 100%;
+      min-height: 52px;
+      margin-top: 18px;
+      border: none;
+      border-radius: 15px;
+      background: #204d5d;
+      color: white;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+  </style>
+
+  <title>Junta del mes</title>
+
+</head>
+
+
+<body>
+
+
+<div class="pagina">
+
+  <div class="contenedor">
+
+
+    <div class="encabezado">
+
+      <a
+        class="volver"
+        href="menu.html"
+        aria-label="Volver al menú"
+      >
+        ←
+      </a>
+
+
+      <div>
+
+        <h1 class="titulo">
+          Junta del mes
+        </h1>
+
+        <div class="subtitulo">
+          Información y acuerdos de las reuniones
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <div
+      id="cargando"
+      class="cargando"
+    >
+      Cargando junta...
+    </div>
+
+
+
+    <div
+      id="contenido"
+      style="display:none;"
+    >
+
+
+      <div
+        id="sinJunta"
+        class="sin-junta"
+        style="display:none;"
+      >
+
+        <span class="sin-junta-icono">
+          👥
+        </span>
+
+        <strong>
+          Aún no hay una junta publicada.
+        </strong>
+
+        <br>
+
+        Cuando se publique información aparecerá aquí.
+
+      </div>
+
+
+
+      <article
+        id="principal"
+        class="principal"
+        style="display:none;"
+      >
+
+
+        <div class="principal-cabecera">
+
+          <div class="etiqueta">
+            JUNTA PUBLICADA
+          </div>
+
+          <div
+            id="fechaPrincipal"
+            class="fecha"
+          ></div>
+
+          <h2
+            id="tituloPrincipal"
+            class="titulo-junta"
+          ></h2>
+
+        </div>
+
+
+        <div class="principal-contenido">
+
+
+          <section
+            id="bloqueResumen"
+            class="bloque"
+          >
+
+            <h3 class="bloque-titulo">
+              Resumen
+            </h3>
+
+            <p
+              id="resumenPrincipal"
+              class="texto"
+            ></p>
+
+          </section>
+
+
+
+          <section
+            id="bloqueAcuerdos"
+            class="bloque"
+          >
+
+            <h3 class="bloque-titulo">
+              🤝 Acuerdos
+            </h3>
+
+            <ul
+              id="acuerdosPrincipal"
+              class="acuerdos"
+            ></ul>
+
+          </section>
+
+
+
+          <a
+            id="archivoPrincipal"
+            class="archivo"
+            target="_blank"
+            rel="noopener"
+            style="display:none;"
+          >
+            📎 VER ARCHIVO DE LA JUNTA
+          </a>
+
+
+        </div>
+
+
+      </article>
+
+
+
+      <section
+        id="bloqueHistorial"
+        style="display:none;"
+      >
+
+        <h2 class="historial-titulo">
+          Juntas anteriores
+        </h2>
+
+        <div
+          id="historial"
+          class="historial"
+        ></div>
+
+      </section>
+
+
+    </div>
+
+
+  </div>
+
+</div>
+
+
+
+<div
+  id="modalJunta"
+  class="modal-fondo"
+>
+
+  <div class="modal">
+
+    <div
+      id="modalFecha"
+      class="modal-fecha"
+    ></div>
+
+    <h2
+      id="modalTitulo"
+      class="modal-titulo"
+    ></h2>
+
+
+    <section
+      id="modalBloqueResumen"
+      class="bloque"
+    >
+
+      <h3 class="bloque-titulo">
+        Resumen
+      </h3>
+
+      <p
+        id="modalResumen"
+        class="texto"
+      ></p>
+
+    </section>
+
+
+    <section
+      id="modalBloqueAcuerdos"
+      class="bloque"
+    >
+
+      <h3 class="bloque-titulo">
+        🤝 Acuerdos
+      </h3>
+
+      <ul
+        id="modalAcuerdos"
+        class="acuerdos"
+      ></ul>
+
+    </section>
+
+
+    <a
+      id="modalArchivo"
+      class="archivo"
+      target="_blank"
+      rel="noopener"
+      style="display:none;"
+    >
+      📎 VER ARCHIVO
+    </a>
+
+
+    <button
+      type="button"
+      class="modal-cerrar"
+      onclick="cerrarModal()"
+    >
+      CERRAR
+    </button>
+
+  </div>
+
+</div>
+
+
+
+<div
+  id="mensaje"
+  class="mensaje"
+></div>
+
+
+
+
+<form
+  id="formJuntas"
+  method="post"
+  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
+  target="iframeJuntas"
+  style="display:none;"
+>
+
+  <input type="hidden" id="juntaAccion" name="accion">
+  <input type="hidden" id="juntaToken" name="token">
+  <input type="hidden" id="juntaRequestId" name="requestId">
+
+</form>
+
+
+<iframe
+  id="iframeJuntas"
+  name="iframeJuntas"
+  style="display:none;width:0;height:0;border:0;"
+  title="Procesando junta"
+></iframe>
+
+
+<script>
+
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+let TOKEN =
+  "";
+
+
+let juntasAnteriores =
+  [];
+
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  cargarJuntas
+);
+
+
+
+function cargarJuntas() {
+
+  TOKEN =
+    sessionStorage.getItem(
+      "tokenResidente"
+    ) || "";
+
+
+  if (
+    !TOKEN
+  ) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  ejecutarOperacionJuntasV3(
+    "juntasListar",
+
+    function(resultado) {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarError(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cargar la junta."
+        );
+
+        return;
+
+      }
+
+
+      const datos =
+        resultado.datos ||
+        {
+          actual: null,
+          anteriores: []
+        };
+
+
+      juntasAnteriores =
+        datos.anteriores ||
+        [];
+
+
+      document
+        .getElementById(
+          "contenido"
+        )
+        .style.display =
+          "block";
+
+
+      if (
+        !datos.actual
+      ) {
+
+        document
+          .getElementById(
+            "sinJunta"
+          )
+          .style.display =
+            "block";
+
+        renderizarHistorial(
+          juntasAnteriores
+        );
+
+        return;
+
+      }
+
+
+      renderizarPrincipal(
+        datos.actual
+      );
+
+
+      renderizarHistorial(
+        juntasAnteriores
+      );
+
+    },
+
+    function() {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      mostrarError(
+        "No fue posible cargar la junta."
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * PRINCIPAL
+ *************************************************/
+
+function renderizarPrincipal(
+  junta
+) {
+
+
+  document
+    .getElementById(
+      "principal"
+    )
+    .style.display =
+      "block";
+
+
+  document
+    .getElementById(
+      "fechaPrincipal"
+    )
+    .textContent =
+      junta.fechaLarga ||
+      junta.fecha ||
+      "";
+
+
+  document
+    .getElementById(
+      "tituloPrincipal"
+    )
+    .textContent =
+      junta.titulo ||
+      "Junta vecinal";
+
+
+  configurarTexto(
+    "bloqueResumen",
+    "resumenPrincipal",
+    junta.resumen
+  );
+
+
+  configurarAcuerdos(
+    "bloqueAcuerdos",
+    "acuerdosPrincipal",
+    junta.acuerdos
+  );
+
+
+  configurarArchivo(
+    "archivoPrincipal",
+    junta.archivo
+  );
+
+}
+
+
+
+/*************************************************
+ * HISTORIAL
+ *************************************************/
+
+function renderizarHistorial(
+  juntas
+) {
+
+
+  if (
+    !juntas.length
+  ) {
+
+    return;
+
+  }
+
+
+  document
+    .getElementById(
+      "bloqueHistorial"
+    )
+    .style.display =
+      "block";
+
+
+  const contenedor =
+    document.getElementById(
+      "historial"
+    );
+
+
+  contenedor.innerHTML =
+    "";
+
+
+  juntas.forEach(
+    function(junta, indice) {
+
+
+      const tarjeta =
+        document.createElement(
+          "div"
+        );
+
+
+      tarjeta.className =
+        "tarjeta-historial";
+
+
+      tarjeta.innerHTML =
+        '<div class="historial-fecha">' +
+          escaparHtml(
+            junta.fechaLarga ||
+            junta.fecha ||
+            ""
+          ) +
+        '</div>' +
+
+        '<h3 class="historial-nombre">' +
+          escaparHtml(
+            junta.titulo ||
+            "Junta vecinal"
+          ) +
+        '</h3>' +
+
+        '<div class="historial-botones">' +
+          '<button class="ver-junta" type="button">' +
+            'VER JUNTA' +
+          '</button>' +
+        '</div>';
+
+
+      tarjeta
+        .querySelector(
+          ".ver-junta"
+        )
+        .addEventListener(
+          "click",
+          function() {
+
+            abrirModal(
+              indice
+            );
+
+          }
+        );
+
+
+      contenedor.appendChild(
+        tarjeta
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * MODAL
+ *************************************************/
+
+function abrirModal(
+  indice
+) {
+
+
+  const junta =
+    juntasAnteriores[
+      indice
+    ];
+
+
+  if (
+    !junta
+  ) {
+
+    return;
+
+  }
+
+
+  document
+    .getElementById(
+      "modalFecha"
+    )
+    .textContent =
+      junta.fechaLarga ||
+      junta.fecha ||
+      "";
+
+
+  document
+    .getElementById(
+      "modalTitulo"
+    )
+    .textContent =
+      junta.titulo ||
+      "Junta vecinal";
+
+
+  configurarTexto(
+    "modalBloqueResumen",
+    "modalResumen",
+    junta.resumen
+  );
+
+
+  configurarAcuerdos(
+    "modalBloqueAcuerdos",
+    "modalAcuerdos",
+    junta.acuerdos
+  );
+
+
+  configurarArchivo(
+    "modalArchivo",
+    junta.archivo
+  );
+
+
+  document
+    .getElementById(
+      "modalJunta"
+    )
+    .style.display =
+      "flex";
+
+}
+
+
+
+function cerrarModal() {
+
+
+  document
+    .getElementById(
+      "modalJunta"
+    )
+    .style.display =
+      "none";
+
+}
+
+
+
+/*************************************************
+ * RESUMEN
+ *************************************************/
+
+function configurarTexto(
+  idBloque,
+  idTexto,
+  valor
+) {
+
+
+  const bloque =
+    document.getElementById(
+      idBloque
+    );
+
+
+  const texto =
+    document.getElementById(
+      idTexto
+    );
+
+
+  if (
+    !valor
+  ) {
+
+    bloque.style.display =
+      "none";
+
+    texto.textContent =
+      "";
+
+    return;
+
+  }
+
+
+  bloque.style.display =
+    "block";
+
+
+  texto.textContent =
+    valor;
+
+}
+
+
+
+/*************************************************
+ * ACUERDOS
+ *************************************************/
+
+function configurarAcuerdos(
+  idBloque,
+  idLista,
+  valor
+) {
+
+
+  const bloque =
+    document.getElementById(
+      idBloque
+    );
+
+
+  const lista =
+    document.getElementById(
+      idLista
+    );
+
+
+  lista.innerHTML =
+    "";
+
+
+  if (
+    !valor
+  ) {
+
+    bloque.style.display =
+      "none";
+
+    return;
+
+  }
+
+
+  const acuerdos =
+    String(
+      valor
+    )
+      .split(
+        /\r?\n/
+      )
+      .map(
+        function(linea) {
+
+          return linea.trim();
+
+        }
+      )
+      .filter(
+        function(linea) {
+
+          return !!linea;
+
+        }
+      );
+
+
+  if (
+    !acuerdos.length
+  ) {
+
+    bloque.style.display =
+      "none";
+
+    return;
+
+  }
+
+
+  bloque.style.display =
+    "block";
+
+
+  acuerdos.forEach(
+    function(acuerdo) {
+
+
+      const item =
+        document.createElement(
+          "li"
+        );
+
+
+      item.textContent =
+        acuerdo
+          .replace(
+            /^[-•]\s*/,
+            ""
+          );
+
+
+      lista.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * ARCHIVO
+ *************************************************/
+
+function configurarArchivo(
+  idElemento,
+  url
+) {
+
+
+  const elemento =
+    document.getElementById(
+      idElemento
+    );
+
+
+  if (
+    !url
+  ) {
+
+    elemento.style.display =
+      "none";
+
+
+    elemento.removeAttribute(
+      "href"
+    );
+
+    return;
+
+  }
+
+
+  elemento.href =
+    url;
+
+
+  elemento.style.display =
+    "flex";
+
+}
+
+
+
+/*************************************************
+ * MOTOR DE OPERACIONES EXTERNAS V3
+ *************************************************/
+
+let OPERACION_JUNTAS =
+  null;
+
+
+const MAX_CONSULTAS_JUNTAS =
+  35;
+
+
+function ejecutarOperacionJuntasV3(
+  accion,
+  alTerminar,
+  alFallar
+) {
+
+  if (
+    OPERACION_JUNTAS
+  ) {
+
+    return;
+
+  }
+
+
+  const requestId =
+    generarRequestIdJuntasV3();
+
+
+  OPERACION_JUNTAS = {
+    requestId:
+      requestId,
+
+    alTerminar:
+      alTerminar,
+
+    alFallar:
+      alFallar,
+
+    consultas:
+      0
+  };
+
+
+  document
+    .getElementById(
+      "juntaAccion"
+    )
+    .value =
+      accion;
+
+
+  document
+    .getElementById(
+      "juntaToken"
+    )
+    .value =
+      TOKEN;
+
+
+  document
+    .getElementById(
+      "juntaRequestId"
+    )
+    .value =
+      requestId;
+
+
+  document
+    .getElementById(
+      "formJuntas"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarEstadoJuntasV3,
+    700
+  );
+
+}
+
+
+function consultarEstadoJuntasV3() {
+
+  if (
+    !OPERACION_JUNTAS
+  ) {
+
+    return;
+
+  }
+
+
+  OPERACION_JUNTAS.consultas++;
+
+
+  if (
+    OPERACION_JUNTAS.consultas >
+      MAX_CONSULTAS_JUNTAS
+  ) {
+
+    terminarJuntasConError();
+
+    return;
+
+  }
+
+
+  window.recibirEstadoJuntasV3 =
+    function(resultado) {
+
+      procesarEstadoJuntasV3(
+        resultado
+      );
+
+    };
+
+
+  const anterior =
+    document.getElementById(
+      "consultaJuntasV3"
+    );
+
+
+  if (
+    anterior
+  ) {
+
+    anterior.remove();
+
+  }
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.id =
+    "consultaJuntasV3";
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=operacionEstado" +
+    "&requestId=" +
+    encodeURIComponent(
+      OPERACION_JUNTAS.requestId
+    ) +
+    "&callback=recibirEstadoJuntasV3" +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function() {
+
+      script.remove();
+
+
+      if (
+        OPERACION_JUNTAS
+      ) {
+
+        setTimeout(
+          consultarEstadoJuntasV3,
+          700
+        );
+
+      }
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function procesarEstadoJuntasV3(
+  resultado
+) {
+
+  const script =
+    document.getElementById(
+      "consultaJuntasV3"
+    );
+
+
+  if (
+    script
+  ) {
+
+    script.remove();
+
+  }
+
+
+  if (
+    !OPERACION_JUNTAS
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    terminarJuntasConError();
+
+    return;
+
+  }
+
+
+  const datos =
+    resultado.datos || {};
+
+
+  if (
+    datos.estado ===
+      "PENDIENTE"
+  ) {
+
+    setTimeout(
+      consultarEstadoJuntasV3,
+      700
+    );
+
+    return;
+
+  }
+
+
+  if (
+    datos.estado !==
+      "LISTO" ||
+    !datos.resultado
+  ) {
+
+    terminarJuntasConError();
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_JUNTAS;
+
+
+  OPERACION_JUNTAS =
+    null;
+
+
+  if (
+    typeof operacion.alTerminar ===
+      "function"
+  ) {
+
+    operacion.alTerminar(
+      datos.resultado
+    );
+
+  }
+
+}
+
+
+function terminarJuntasConError() {
+
+  if (
+    !OPERACION_JUNTAS
+  ) {
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_JUNTAS;
+
+
+  OPERACION_JUNTAS =
+    null;
+
+
+  if (
+    typeof operacion.alFallar ===
+      "function"
+  ) {
+
+    operacion.alFallar();
+
+  }
+
+}
+
+
+function generarRequestIdJuntasV3() {
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+
+  return (
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2) +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
+}
+
+
+
+/*************************************************
+ * ERROR
+ *************************************************/
+
+function mostrarError(
+  textoMensaje
+) {
+
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.textContent =
+    textoMensaje;
+
+
+  mensaje.style.display =
+    "block";
+
+
+  setTimeout(
+    function() {
+
+      mensaje.style.display =
+        "none";
+
+    },
+    3500
+  );
+
+}
+
+
+
+/*************************************************
+ * TEXTO SEGURO
+ *************************************************/
+
+function escaparHtml(
+  valor
+) {
+
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    valor || "";
+
+
+  return div.innerHTML;
+
+}
+
+
+
+/*************************************************
+ * CERRAR MODAL AL TOCAR FONDO
+ *************************************************/
+
+window.addEventListener(
+  "click",
+  function(evento) {
+
+
+    const modal =
+      document.getElementById(
+        "modalJunta"
+      );
+
+
+    if (
+      evento.target ===
+      modal
+    ) {
+
+      cerrarModal();
+
+    }
+
+  }
+);
+
+
+</script>
+
+
+</body>
+
+</html>
