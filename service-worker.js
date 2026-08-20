@@ -1,6 +1,12 @@
 /*
  * Arcos del Poniente - Service Worker V3
- * Notificaciones Firebase Cloud Messaging
+ * Firebase Cloud Messaging
+ *
+ * Corrección:
+ * - Si Firebase ya trae un bloque "notification", NO mostramos otra
+ *   notificación manual. El navegador/FCM ya la presenta.
+ * - Solo mostramos manualmente cuando el mensaje viene como "data".
+ * Esto evita notificaciones duplicadas.
  */
 
 importScripts(
@@ -61,9 +67,7 @@ self.addEventListener(
 
 
 /*
- * No almacenamos las páginas HTML en caché.
- * Así GitHub Pages puede actualizarse sin quedarse
- * mostrando versiones antiguas.
+ * No almacenamos HTML en caché.
  */
 self.addEventListener(
   "fetch",
@@ -75,6 +79,11 @@ self.addEventListener(
 );
 
 
+/*
+ * FCM:
+ * - Mensajes con "notification": FCM ya los muestra.
+ * - Mensajes solo con "data": aquí sí creamos la notificación.
+ */
 messaging.onBackgroundMessage(
   function(payload) {
 
@@ -84,23 +93,30 @@ messaging.onBackgroundMessage(
     );
 
 
-    const notificacion =
-      payload.notification || {};
+    if (
+      payload &&
+      payload.notification
+    ) {
+
+      return;
+
+    }
 
 
     const datos =
-      payload.data || {};
+      payload &&
+      payload.data
+        ? payload.data
+        : {};
 
 
     const titulo =
-      notificacion.title ||
       datos.titulo ||
       "Arcos del Poniente";
 
 
     const opciones = {
       body:
-        notificacion.body ||
         datos.cuerpo ||
         "Tienes una nueva notificación.",
 
