@@ -725,16 +725,8 @@ async function revisarNotificaciones() {
       TOKEN
     ) {
 
-      registrarTokenEnSistema(
+      registrarTokenConReintento(
         TOKEN_FCM
-      ).catch(
-        function(error) {
-
-          console.error(
-            error
-          );
-
-        }
       );
 
     }
@@ -1080,6 +1072,89 @@ function detectarDispositivoNotificaciones() {
 }
 
 
+function registrarTokenConReintento(
+  fcmToken,
+  intento
+) {
+
+  const numeroIntento =
+    Number(
+      intento || 0
+    );
+
+
+  if (
+    !TOKEN ||
+    !fcmToken
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    OPERACION_PERFIL
+  ) {
+
+    if (
+      numeroIntento < 15
+    ) {
+
+      setTimeout(
+        function() {
+
+          registrarTokenConReintento(
+            fcmToken,
+            numeroIntento + 1
+          );
+
+        },
+        500
+      );
+
+    }
+
+    return;
+
+  }
+
+
+  registrarTokenEnSistema(
+    fcmToken
+  )
+  .catch(
+    function(error) {
+
+      console.error(
+        error
+      );
+
+
+      if (
+        numeroIntento < 15
+      ) {
+
+        setTimeout(
+          function() {
+
+            registrarTokenConReintento(
+              fcmToken,
+              numeroIntento + 1
+            );
+
+          },
+          700
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
 function registrarTokenEnSistema(
   fcmToken
 ) {
@@ -1307,6 +1382,23 @@ function cargarPerfil() {
         )
         .style.display =
           "block";
+
+
+      const tokenNotificaciones =
+        localStorage.getItem(
+          "tokenNotificacionesArcos"
+        ) || "";
+
+
+      if (
+        tokenNotificaciones
+      ) {
+
+        registrarTokenConReintento(
+          tokenNotificaciones
+        );
+
+      }
 
     },
 
