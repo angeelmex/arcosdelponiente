@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #204d5d;
+    }
+
+
+    .pagina {
+      min-height: 100vh;
+      padding: 16px 14px 30px;
+    }
+
+
+    .contenedor {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+
+    .encabezado {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+
+    .volver {
+      width: 54px;
+      min-width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: white;
+      color: #204d5d;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+      font-weight: bold;
+      box-shadow: 0 5px 16px rgba(20,55,95,.09);
+    }
+
+
+    .titulo {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+
+    .subtitulo {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #718198;
+    }
+
+
+    .cargando,
+    .sin-datos {
+      background: white;
+      border-radius: 22px;
+      padding: 32px 20px;
+      text-align: center;
+      color: #748399;
+      line-height: 1.5;
+      box-shadow: 0 5px 18px rgba(20,55,95,.07);
+    }
+
+
+    .seccion-titulo {
+      margin: 20px 2px 10px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+
+    .lista {
+      display: grid;
+      gap: 14px;
+    }
+
+
+    .tarjeta {
+      background: white;
+      border-radius: 22px;
+      padding: 17px;
+      box-shadow: 0 5px 18px rgba(20,55,95,.09);
+    }
+
+
+    .cabecera {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+
+    .mini {
+      color: #718198;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+
+    .titulo-encuesta {
+      margin: 5px 0 0;
+      font-size: 19px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+
+    .estado {
+      flex: 0 0 auto;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: #e9f7ee;
+      color: #267245;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+
+    .estado.cerrada {
+      background: #edf0f3;
+      color: #68778a;
+    }
+
+
+    .pregunta {
+      margin-top: 15px;
+      color: #465d73;
+      font-size: 16px;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+
+
+    .opciones {
+      display: grid;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+
+    .opcion {
+      width: 100%;
+      min-height: 56px;
+      padding: 12px 14px;
+      border: 2px solid #dce5ec;
+      border-radius: 16px;
+      background: white;
+      color: #204d5d;
+      text-align: left;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+
+    .opcion.seleccionada {
+      border-color: #204d5d;
+      background: #edf3f6;
+    }
+
+
+    .texto-libre {
+      width: 100%;
+      min-height: 100px;
+      margin-top: 14px;
+      padding: 13px 14px;
+      border: 2px solid #dce5ec;
+      border-radius: 16px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      resize: vertical;
+      outline: none;
+    }
+
+
+    .votar {
+      width: 100%;
+      min-height: 58px;
+      margin-top: 13px;
+      border: none;
+      border-radius: 17px;
+      background: #204d5d;
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+
+    .votar:disabled {
+      opacity: .55;
+    }
+
+
+    .participacion {
+      margin-top: 12px;
+      padding: 11px 12px;
+      border-radius: 14px;
+      background: #e9f7ee;
+      color: #267245;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+
+    .resultado-titulo {
+      margin-top: 16px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+
+    .resultado {
+      margin-top: 10px;
+    }
+
+
+    .resultado + .resultado {
+      margin-top: 12px;
+    }
+
+
+    .resultado-linea {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: #52677d;
+    }
+
+
+    .resultado-opcion {
+      font-weight: 700;
+    }
+
+
+    .mi-voto {
+      color: #204d5d;
+      font-weight: 800;
+    }
+
+
+    .barra {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e5ebef;
+    }
+
+
+    .barra-interna {
+      height: 100%;
+      border-radius: 999px;
+      background: #204d5d;
+    }
+
+
+    .total {
+      margin-top: 13px;
+      color: #718198;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+
+    .cerrada-texto {
+      margin-top: 12px;
+      padding: 11px 12px;
+      border-radius: 14px;
+      background: #edf0f3;
+      color: #68778a;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+
+    .mensaje {
+      display: none;
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 22px;
+      z-index: 3000;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 15px;
+      border-radius: 15px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 7px 24px rgba(0,0,0,.14);
+    }
+
+
+    .mensaje.ok {
+      display: block;
+      background: #e9f7ee;
+      color: #267245;
+    }
+
+
+    .mensaje.error {
+      display: block;
+      background: #fdeaea;
+      color: #9b3333;
+    }
+
+  </style>
+
+  <title>Encuestas</title>
+
+</head>
+
+
+<body>
+
+
+<div class="pagina">
+
+  <div class="contenedor">
+
+
+    <div class="encabezado">
+
+      <a
+        class="volver"
+        href="menu.html"
+        aria-label="Volver al menú"
+      >
+        ←
+      </a>
+
+
+      <div>
+
+        <h1 class="titulo">
+          Encuestas
+        </h1>
+
+        <div class="subtitulo">
+          Participa en las decisiones de la colonia
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <div
+      id="cargando"
+      class="cargando"
+    >
+      Cargando encuestas...
+    </div>
+
+
+
+    <div
+      id="contenido"
+      style="display:none;"
+    >
+
+
+      <section>
+
+        <h2 class="seccion-titulo">
+          Activas
+        </h2>
+
+        <div
+          id="listaActivas"
+          class="lista"
+        ></div>
+
+      </section>
+
+
+
+      <section>
+
+        <h2 class="seccion-titulo">
+          Anteriores
+        </h2>
+
+        <div
+          id="listaAnteriores"
+          class="lista"
+        ></div>
+
+      </section>
+
+
+    </div>
+
+
+  </div>
+
+</div>
+
+
+
+<div
+  id="mensaje"
+  class="mensaje"
+></div>
+
+
+
+
+<form
+  id="formEncuestas"
+  method="post"
+  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
+  target="iframeEncuestas"
+  style="display:none;"
+>
+
+  <input type="hidden" id="encAccion" name="accion">
+  <input type="hidden" id="encToken" name="token">
+  <input type="hidden" id="encRequestId" name="requestId">
+  <input type="hidden" id="encIdEncuesta" name="idEncuesta">
+  <input type="hidden" id="encRespuesta" name="respuesta">
+
+</form>
+
+
+<iframe
+  id="iframeEncuestas"
+  name="iframeEncuestas"
+  style="display:none;width:0;height:0;border:0;"
+  title="Procesando encuestas"
+></iframe>
+
+
+<script>
+
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+let TOKEN =
+  "";
+
+
+let encuestas =
+  [];
+
+
+const seleccionadas =
+  {};
+
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  cargarEncuestas
+);
+
+
+
+function cargarEncuestas() {
+
+  TOKEN =
+    sessionStorage.getItem(
+      "tokenResidente"
+    ) || "";
+
+
+  if (
+    !TOKEN
+  ) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  ejecutarOperacionEncuestasV3(
+    "encuestasListar",
+    {},
+
+    function(resultado) {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cargar las encuestas.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      encuestas =
+        resultado.datos.encuestas ||
+        [];
+
+
+      renderizarTodo();
+
+
+      document
+        .getElementById(
+          "contenido"
+        )
+        .style.display =
+          "block";
+
+    },
+
+    function() {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      mostrarMensaje(
+        "No fue posible cargar las encuestas.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * RENDER
+ *************************************************/
+
+function renderizarTodo() {
+
+
+  const activas =
+    encuestas.filter(
+      function(encuesta) {
+
+        return (
+          encuesta.estado ===
+          "ACTIVA"
+        );
+
+      }
+    );
+
+
+  const anteriores =
+    encuestas.filter(
+      function(encuesta) {
+
+        return (
+          encuesta.estado !==
+          "ACTIVA"
+        );
+
+      }
+    );
+
+
+  renderizarLista(
+    "listaActivas",
+    activas,
+    true
+  );
+
+
+  renderizarLista(
+    "listaAnteriores",
+    anteriores,
+    false
+  );
+
+}
+
+
+
+function renderizarLista(
+  idContenedor,
+  lista,
+  activas
+) {
+
+
+  const contenedor =
+    document.getElementById(
+      idContenedor
+    );
+
+
+  contenedor.innerHTML =
+    "";
+
+
+  if (
+    !lista.length
+  ) {
+
+    contenedor.innerHTML =
+      '<div class="sin-datos">' +
+        (
+          activas
+            ? "No hay encuestas activas en este momento."
+            : "Aún no hay encuestas anteriores."
+        ) +
+      '</div>';
+
+    return;
+
+  }
+
+
+  lista.forEach(
+    function(encuesta) {
+
+      contenedor.appendChild(
+        crearTarjeta(
+          encuesta
+        )
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * TARJETA
+ *************************************************/
+
+function crearTarjeta(
+  encuesta
+) {
+
+
+  const tarjeta =
+    document.createElement(
+      "article"
+    );
+
+
+  tarjeta.className =
+    "tarjeta";
+
+
+  const cerrada =
+    encuesta.estado ===
+    "CERRADA";
+
+
+  let html =
+    '<div class="cabecera">' +
+
+      '<div>' +
+
+        '<div class="mini">' +
+          escaparHtml(
+            encuesta.idEncuesta
+          ) +
+          (
+            encuesta.fechaCierre
+              ? ' · Cierra: ' +
+                escaparHtml(
+                  encuesta.fechaCierre
+                )
+              : ''
+          ) +
+        '</div>' +
+
+        '<h3 class="titulo-encuesta">' +
+          escaparHtml(
+            encuesta.titulo ||
+            "Encuesta"
+          ) +
+        '</h3>' +
+
+      '</div>' +
+
+      '<span class="estado ' +
+        (
+          cerrada
+            ? "cerrada"
+            : ""
+        ) +
+      '">' +
+        (
+          cerrada
+            ? "CERRADA"
+            : "ACTIVA"
+        ) +
+      '</span>' +
+
+    '</div>' +
+
+    '<div class="pregunta">' +
+      escaparHtml(
+        encuesta.pregunta
+      ) +
+    '</div>';
+
+
+  if (
+    encuesta.yaRespondio
+  ) {
+
+    html +=
+      '<div class="participacion">' +
+        '✓ Ya participaste en esta encuesta.' +
+      '</div>';
+
+  }
+
+
+  const tipo =
+    String(
+      encuesta.tipoRespuesta ||
+      "OPCION"
+    ).toUpperCase();
+
+
+  const esTexto =
+    tipo === "ABIERTA" ||
+    tipo === "TEXTO" ||
+    tipo === "LIBRE";
+
+
+  if (
+    !cerrada &&
+    !encuesta.yaRespondio
+  ) {
+
+    if (
+      esTexto
+    ) {
+
+      html +=
+        '<textarea class="texto-libre" data-texto="' +
+          escaparAtributo(
+            encuesta.idEncuesta
+          ) +
+        '" maxlength="500" placeholder="Escribe tu respuesta..."></textarea>';
+
+    }
+    else {
+
+      html +=
+        '<div class="opciones">';
+
+
+      (
+        encuesta.opciones ||
+        []
+      ).forEach(
+        function(opcion) {
+
+          html +=
+            '<button type="button" class="opcion" data-id="' +
+              escaparAtributo(
+                encuesta.idEncuesta
+              ) +
+            '" data-opcion="' +
+              escaparAtributo(
+                opcion
+              ) +
+            '">' +
+              escaparHtml(
+                opcion
+              ) +
+            '</button>';
+
+        }
+      );
+
+
+      html +=
+        '</div>';
+
+    }
+
+
+    html +=
+      '<button type="button" class="votar" data-votar="' +
+        escaparAtributo(
+          encuesta.idEncuesta
+        ) +
+      '">' +
+        'REGISTRAR MI VOTO' +
+      '</button>';
+
+  }
+  else if (
+    cerrada &&
+    !encuesta.yaRespondio
+  ) {
+
+    html +=
+      '<div class="cerrada-texto">' +
+        'La participación de esta encuesta ya terminó.' +
+      '</div>';
+
+  }
+
+
+  if (
+    encuesta.mostrarResultados &&
+    !esTexto
+  ) {
+
+    html +=
+      crearResultadosHtml(
+        encuesta
+      );
+
+  }
+
+
+  tarjeta.innerHTML =
+    html;
+
+
+  tarjeta
+    .querySelectorAll(
+      ".opcion"
+    )
+    .forEach(
+      function(boton) {
+
+        boton.addEventListener(
+          "click",
+          function() {
+
+            seleccionarOpcion(
+              tarjeta,
+              boton.dataset.id,
+              boton.dataset.opcion,
+              boton
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+  const btnVotar =
+    tarjeta.querySelector(
+      "[data-votar]"
+    );
+
+
+  if (
+    btnVotar
+  ) {
+
+    btnVotar.addEventListener(
+      "click",
+      function() {
+
+        votar(
+          encuesta,
+          tarjeta,
+          btnVotar
+        );
+
+      }
+    );
+
+  }
+
+
+  return tarjeta;
+
+}
+
+
+
+/*************************************************
+ * SELECCIÓN
+ *************************************************/
+
+function seleccionarOpcion(
+  tarjeta,
+  idEncuesta,
+  opcion,
+  botonSeleccionado
+) {
+
+
+  seleccionadas[
+    idEncuesta
+  ] =
+    opcion;
+
+
+  tarjeta
+    .querySelectorAll(
+      ".opcion"
+    )
+    .forEach(
+      function(boton) {
+
+        boton.classList.remove(
+          "seleccionada"
+        );
+
+      }
+    );
+
+
+  botonSeleccionado.classList.add(
+    "seleccionada"
+  );
+
+}
+
+
+
+/*************************************************
+ * VOTAR
+ *************************************************/
+
+function votar(
+  encuesta,
+  tarjeta,
+  boton
+) {
+
+  const tipo =
+    String(
+      encuesta.tipoRespuesta ||
+      "OPCION"
+    ).toUpperCase();
+
+
+  const esTexto =
+    tipo === "ABIERTA" ||
+    tipo === "TEXTO" ||
+    tipo === "LIBRE";
+
+
+  let respuesta =
+    "";
+
+
+  if (
+    esTexto
+  ) {
+
+    const campo =
+      tarjeta.querySelector(
+        "[data-texto]"
+      );
+
+
+    respuesta =
+      campo
+        ? campo.value.trim()
+        : "";
+
+  }
+  else {
+
+    respuesta =
+      seleccionadas[
+        encuesta.idEncuesta
+      ] ||
+      "";
+
+  }
+
+
+  if (
+    !respuesta
+  ) {
+
+    mostrarMensaje(
+      "Selecciona o escribe una respuesta antes de votar.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "REGISTRANDO...";
+
+
+  ejecutarOperacionEncuestasV3(
+    "encuestaVotar",
+    {
+      idEncuesta:
+        encuesta.idEncuesta,
+
+      respuesta:
+        respuesta
+    },
+
+    function(resultado) {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "REGISTRAR MI VOTO";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible registrar tu voto.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      mostrarMensaje(
+        "Tu voto fue registrado.",
+        "ok"
+      );
+
+
+      recargarEncuestas();
+
+    },
+
+    function() {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "REGISTRAR MI VOTO";
+
+
+      mostrarMensaje(
+        "No fue posible registrar tu voto.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * RESULTADOS
+ *************************************************/
+
+function crearResultadosHtml(
+  encuesta
+) {
+
+
+  const resultados =
+    encuesta.resultados ||
+    {
+      total: 0,
+      opciones: []
+    };
+
+
+  let html =
+    '<div class="resultado-titulo">' +
+      'Resultados actuales' +
+    '</div>';
+
+
+  (
+    resultados.opciones ||
+    []
+  ).forEach(
+    function(resultado) {
+
+
+      const esMiVoto =
+        encuesta.miRespuesta ===
+        resultado.opcion;
+
+
+      html +=
+        '<div class="resultado">' +
+
+          '<div class="resultado-linea">' +
+
+            '<span class="resultado-opcion ' +
+              (
+                esMiVoto
+                  ? "mi-voto"
+                  : ""
+              ) +
+            '">' +
+              escaparHtml(
+                resultado.opcion
+              ) +
+              (
+                esMiVoto
+                  ? " ← Tu voto"
+                  : ""
+              ) +
+            '</span>' +
+
+            '<span>' +
+              resultado.porcentaje +
+              '% · ' +
+              resultado.votos +
+              (
+                resultado.votos === 1
+                  ? " voto"
+                  : " votos"
+              ) +
+            '</span>' +
+
+          '</div>' +
+
+          '<div class="barra">' +
+            '<div class="barra-interna" style="width:' +
+              resultado.porcentaje +
+            '%;"></div>' +
+          '</div>' +
+
+        '</div>';
+
+    }
+  );
+
+
+  html +=
+    '<div class="total">' +
+      resultados.total +
+      (
+        resultados.total === 1
+          ? " vecino ha participado."
+          : " vecinos han participado."
+      ) +
+    '</div>';
+
+
+  return html;
+
+}
+
+
+
+/*************************************************
+ * RECARGAR
+ *************************************************/
+
+function recargarEncuestas() {
+
+
+  document
+    .getElementById(
+      "contenido"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "cargando"
+    )
+    .textContent =
+      "Actualizando encuesta...";
+
+
+  document
+    .getElementById(
+      "cargando"
+    )
+    .style.display =
+      "block";
+
+
+  cargarEncuestas();
+
+}
+
+
+
+/*************************************************
+ * MOTOR DE OPERACIONES EXTERNAS V3
+ *************************************************/
+
+let OPERACION_ENCUESTAS =
+  null;
+
+
+const MAX_CONSULTAS_ENCUESTAS =
+  35;
+
+
+function ejecutarOperacionEncuestasV3(
+  accion,
+  datos,
+  alTerminar,
+  alFallar
+) {
+
+  if (
+    OPERACION_ENCUESTAS
+  ) {
+
+    if (
+      typeof alFallar ===
+        "function"
+    ) {
+
+      alFallar();
+
+    }
+
+    return;
+
+  }
+
+
+  const requestId =
+    generarRequestIdEncuestasV3();
+
+
+  OPERACION_ENCUESTAS = {
+    requestId:
+      requestId,
+
+    alTerminar:
+      alTerminar,
+
+    alFallar:
+      alFallar,
+
+    consultas:
+      0
+  };
+
+
+  document
+    .getElementById(
+      "encAccion"
+    )
+    .value =
+      accion;
+
+
+  document
+    .getElementById(
+      "encToken"
+    )
+    .value =
+      TOKEN;
+
+
+  document
+    .getElementById(
+      "encRequestId"
+    )
+    .value =
+      requestId;
+
+
+  document
+    .getElementById(
+      "encIdEncuesta"
+    )
+    .value =
+      datos &&
+      datos.idEncuesta
+        ? datos.idEncuesta
+        : "";
+
+
+  document
+    .getElementById(
+      "encRespuesta"
+    )
+    .value =
+      datos &&
+      datos.respuesta
+        ? datos.respuesta
+        : "";
+
+
+  document
+    .getElementById(
+      "formEncuestas"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarEstadoEncuestasV3,
+    700
+  );
+
+}
+
+
+function consultarEstadoEncuestasV3() {
+
+  if (
+    !OPERACION_ENCUESTAS
+  ) {
+
+    return;
+
+  }
+
+
+  OPERACION_ENCUESTAS.consultas++;
+
+
+  if (
+    OPERACION_ENCUESTAS.consultas >
+      MAX_CONSULTAS_ENCUESTAS
+  ) {
+
+    terminarEncuestasConError();
+
+    return;
+
+  }
+
+
+  window.recibirEstadoEncuestasV3 =
+    function(resultado) {
+
+      procesarEstadoEncuestasV3(
+        resultado
+      );
+
+    };
+
+
+  const anterior =
+    document.getElementById(
+      "consultaEncuestasV3"
+    );
+
+
+  if (
+    anterior
+  ) {
+
+    anterior.remove();
+
+  }
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.id =
+    "consultaEncuestasV3";
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=operacionEstado" +
+    "&requestId=" +
+    encodeURIComponent(
+      OPERACION_ENCUESTAS.requestId
+    ) +
+    "&callback=recibirEstadoEncuestasV3" +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function() {
+
+      script.remove();
+
+
+      if (
+        OPERACION_ENCUESTAS
+      ) {
+
+        setTimeout(
+          consultarEstadoEncuestasV3,
+          700
+        );
+
+      }
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function procesarEstadoEncuestasV3(
+  resultado
+) {
+
+  const script =
+    document.getElementById(
+      "consultaEncuestasV3"
+    );
+
+
+  if (
+    script
+  ) {
+
+    script.remove();
+
+  }
+
+
+  if (
+    !OPERACION_ENCUESTAS
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    terminarEncuestasConError();
+
+    return;
+
+  }
+
+
+  const datos =
+    resultado.datos || {};
+
+
+  if (
+    datos.estado ===
+      "PENDIENTE"
+  ) {
+
+    setTimeout(
+      consultarEstadoEncuestasV3,
+      700
+    );
+
+    return;
+
+  }
+
+
+  if (
+    datos.estado !==
+      "LISTO" ||
+    !datos.resultado
+  ) {
+
+    terminarEncuestasConError();
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_ENCUESTAS;
+
+
+  OPERACION_ENCUESTAS =
+    null;
+
+
+  if (
+    typeof operacion.alTerminar ===
+      "function"
+  ) {
+
+    operacion.alTerminar(
+      datos.resultado
+    );
+
+  }
+
+}
+
+
+function terminarEncuestasConError() {
+
+  if (
+    !OPERACION_ENCUESTAS
+  ) {
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_ENCUESTAS;
+
+
+  OPERACION_ENCUESTAS =
+    null;
+
+
+  if (
+    typeof operacion.alFallar ===
+      "function"
+  ) {
+
+    operacion.alFallar();
+
+  }
+
+}
+
+
+function generarRequestIdEncuestasV3() {
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+
+  return (
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2) +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
+}
+
+
+
+/*************************************************
+ * MENSAJES
+ *************************************************/
+
+function mostrarMensaje(
+  textoMensaje,
+  tipo
+) {
+
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.textContent =
+    textoMensaje;
+
+
+  mensaje.className =
+    "mensaje " +
+    tipo;
+
+
+  setTimeout(
+    function() {
+
+      mensaje.className =
+        "mensaje";
+
+    },
+    3500
+  );
+
+}
+
+
+
+/*************************************************
+ * TEXTO SEGURO
+ *************************************************/
+
+function escaparHtml(
+  valor
+) {
+
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    valor || "";
+
+
+  return div.innerHTML;
+
+}
+
+
+
+function escaparAtributo(
+  valor
+) {
+
+
+  return String(
+    valor || ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    );
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
