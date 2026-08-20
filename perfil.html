@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #204d5d;
+    }
+    .pagina {
+      min-height: 100vh;
+      padding: 16px 14px 30px;
+    }
+    .contenedor {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .encabezado {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .volver {
+      width: 54px;
+      min-width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: white;
+      color: #204d5d;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+      font-weight: bold;
+      box-shadow: 0 5px 16px rgba(20,55,95,.09);
+    }
+    .titulo {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+    }
+    .subtitulo {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #718198;
+    }
+    .cargando {
+      background: white;
+      border-radius: 22px;
+      padding: 32px 20px;
+      text-align: center;
+      color: #748399;
+      box-shadow: 0 5px 18px rgba(20,55,95,.07);
+    }
+    .tarjeta {
+      background: white;
+      border-radius: 24px;
+      padding: 19px;
+      box-shadow: 0 7px 24px rgba(20,55,95,.10);
+    }
+    .identidad {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 18px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid #e5ebef;
+    }
+    .avatar {
+      width: 62px;
+      min-width: 62px;
+      height: 62px;
+      border-radius: 18px;
+      background: #e7f0f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 31px;
+    }
+    .nombre-grande {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+    .casa {
+      margin-top: 4px;
+      color: #718198;
+      font-size: 13px;
+    }
+    .datos-fijos {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 9px;
+      margin-bottom: 22px;
+    }
+    .dato {
+      padding: 12px;
+      border-radius: 15px;
+      background: #f4f7fb;
+    }
+    .dato-etiqueta {
+      color: #8290a1;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .dato-valor {
+      margin-top: 5px;
+      font-size: 13px;
+      font-weight: 800;
+      word-break: break-word;
+    }
+    .seccion {
+      margin-top: 20px;
+    }
+    .seccion-titulo {
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+    .grupo {
+      margin-bottom: 14px;
+    }
+    .grupo label {
+      display: block;
+      margin: 0 0 7px 2px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .grupo input {
+      width: 100%;
+      height: 59px;
+      padding: 0 15px;
+      border: 2px solid #dce5ec;
+      border-radius: 16px;
+      outline: none;
+      background: white;
+      color: #20384f;
+      font-size: 17px;
+    }
+    .grupo input:focus {
+      border-color: #b7d52b;
+    }
+    .ayuda {
+      margin: -4px 2px 14px;
+      color: #8290a1;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .campo-password {
+      position: relative;
+    }
+    .campo-password input {
+      padding-right: 60px;
+    }
+    .ojo {
+      position: absolute;
+      right: 6px;
+      top: 6px;
+      width: 47px;
+      height: 47px;
+      border: none;
+      border-radius: 13px;
+      background: #edf3f6;
+      font-size: 19px;
+    }
+    .guardar {
+      width: 100%;
+      min-height: 64px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 18px;
+      background: #204d5d;
+      color: white;
+      font-size: 17px;
+      font-weight: 800;
+    }
+    .guardar:disabled { opacity: .55; }
+    .ultima {
+      margin-top: 14px;
+      color: #8290a1;
+      text-align: center;
+      font-size: 11px;
+    }
+    .mensaje {
+      display: none;
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 22px;
+      z-index: 3000;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 15px;
+      border-radius: 15px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 7px 24px rgba(0,0,0,.14);
+    }
+    .mensaje.ok {
+      display: block;
+      background: #e9f7ee;
+      color: #267245;
+    }
+    .mensaje.error {
+      display: block;
+      background: #fdeaea;
+      color: #9b3333;
+    }
+  </style>
+  <title>Mi perfil</title>
+</head>
+
+<body>
+
+<div class="pagina">
+  <div class="contenedor">
+
+    <div class="encabezado">
+      <a
+        class="volver"
+        href="menu.html"
+        aria-label="Volver al menú"
+      >
+        ←
+      </a>
+
+      <div>
+        <h1 class="titulo">Mi perfil</h1>
+        <div class="subtitulo">Consulta y actualiza tus datos</div>
+      </div>
+    </div>
+
+    <div id="cargando" class="cargando">
+      Cargando perfil...
+    </div>
+
+    <div id="contenido" class="tarjeta" style="display:none;">
+
+      <div class="identidad">
+        <div class="avatar">👤</div>
+        <div>
+          <h2 id="nombreCabecera" class="nombre-grande"></h2>
+          <div id="casaCabecera" class="casa"></div>
+        </div>
+      </div>
+
+      <div class="datos-fijos">
+        <div class="dato">
+          <div class="dato-etiqueta">ID residente</div>
+          <div id="idResidente" class="dato-valor"></div>
+        </div>
+
+        <div class="dato">
+          <div class="dato-etiqueta">ID QR</div>
+          <div id="idQrResidente" class="dato-valor"></div>
+        </div>
+
+        <div class="dato">
+          <div class="dato-etiqueta">Estado</div>
+          <div id="estado" class="dato-valor"></div>
+        </div>
+
+        <div class="dato">
+          <div class="dato-etiqueta">Fecha de alta</div>
+          <div id="fechaAlta" class="dato-valor"></div>
+        </div>
+      </div>
+
+      <section class="seccion">
+        <h3 class="seccion-titulo">Datos de contacto</h3>
+
+        <div class="grupo">
+          <label for="nombre">Nombre</label>
+          <input
+            id="nombre"
+            type="text"
+            maxlength="100"
+            autocomplete="name"
+          >
+        </div>
+
+        <div class="grupo">
+          <label for="telefono">Teléfono</label>
+          <input
+            id="telefono"
+            type="tel"
+            inputmode="numeric"
+            maxlength="10"
+            autocomplete="tel"
+            placeholder="10 dígitos"
+            oninput="soloNumeros(this)"
+          >
+        </div>
+      </section>
+
+      <section class="seccion">
+        <h3 class="seccion-titulo">Cambiar contraseña</h3>
+
+        <div class="ayuda">
+          Déjala vacía si deseas conservar tu contraseña actual.
+        </div>
+
+        <div class="grupo">
+          <label for="nuevaContrasena">Nueva contraseña</label>
+          <div class="campo-password">
+            <input
+              id="nuevaContrasena"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Nueva contraseña"
+            >
+            <button
+              type="button"
+              class="ojo"
+              onclick="alternarPassword('nuevaContrasena', this)"
+            >
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <div class="grupo">
+          <label for="confirmarContrasena">Confirmar nueva contraseña</label>
+          <div class="campo-password">
+            <input
+              id="confirmarContrasena"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Repite la contraseña"
+            >
+            <button
+              type="button"
+              class="ojo"
+              onclick="alternarPassword('confirmarContrasena', this)"
+            >
+              👁️
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <button
+        id="btnGuardar"
+        type="button"
+        class="guardar"
+        onclick="guardarPerfil()"
+      >
+        GUARDAR CAMBIOS
+      </button>
+
+      <div
+        id="ultimaModificacion"
+        class="ultima"
+      ></div>
+
+    </div>
+  </div>
+</div>
+
+<div id="mensaje" class="mensaje"></div>
+
+
+<form
+  id="formPerfil"
+  method="post"
+  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
+  target="iframePerfil"
+  style="display:none;"
+>
+
+  <input type="hidden" id="perfilAccion" name="accion">
+  <input type="hidden" id="perfilToken" name="token">
+  <input type="hidden" id="perfilRequestId" name="requestId">
+  <input type="hidden" id="perfilNombre" name="nombre">
+  <input type="hidden" id="perfilTelefono" name="telefono">
+  <input type="hidden" id="perfilNuevaContrasena" name="nuevaContrasena">
+  <input type="hidden" id="perfilConfirmarContrasena" name="confirmarContrasena">
+
+</form>
+
+
+<iframe
+  id="iframePerfil"
+  name="iframePerfil"
+  style="display:none;width:0;height:0;border:0;"
+  title="Procesando perfil"
+></iframe>
+
+
+<script>
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+let TOKEN =
+  "";
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  cargarPerfil
+);
+
+
+function cargarPerfil() {
+
+  TOKEN =
+    sessionStorage.getItem(
+      "tokenResidente"
+    ) || "";
+
+
+  if (
+    !TOKEN
+  ) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  ejecutarOperacionPerfilV3(
+    "perfilObtener",
+    {},
+
+    function(resultado) {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cargar tu perfil.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      pintarPerfil(
+        resultado.datos || {}
+      );
+
+
+      document
+        .getElementById(
+          "contenido"
+        )
+        .style.display =
+          "block";
+
+    },
+
+    function() {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      mostrarMensaje(
+        "No fue posible cargar tu perfil.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+function pintarPerfil(datos) {
+
+  document.getElementById("nombreCabecera").textContent =
+    datos.nombre || "Residente";
+
+  document.getElementById("casaCabecera").textContent =
+    (datos.calle || "") +
+    (datos.numero ? " #" + datos.numero : "");
+
+  document.getElementById("idResidente").textContent =
+    datos.idResidente || "-";
+
+  document.getElementById("idQrResidente").textContent =
+    datos.idQrResidente || "-";
+
+  document.getElementById("estado").textContent =
+    datos.estado || "-";
+
+  document.getElementById("fechaAlta").textContent =
+    datos.fechaAlta || "-";
+
+  document.getElementById("nombre").value =
+    datos.nombre || "";
+
+  document.getElementById("telefono").value =
+    datos.telefono || "";
+
+  actualizarUltimaModificacion(
+    datos.ultimaModificacion
+  );
+}
+
+
+function guardarPerfil() {
+
+  const nombre =
+    document
+      .getElementById(
+        "nombre"
+      )
+      .value
+      .trim();
+
+
+  const telefono =
+    document
+      .getElementById(
+        "telefono"
+      )
+      .value
+      .trim();
+
+
+  const nuevaContrasena =
+    document
+      .getElementById(
+        "nuevaContrasena"
+      )
+      .value;
+
+
+  const confirmarContrasena =
+    document
+      .getElementById(
+        "confirmarContrasena"
+      )
+      .value;
+
+
+  if (
+    !nombre
+  ) {
+
+    mostrarMensaje(
+      "Ingresa tu nombre.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    telefono.length !== 10
+  ) {
+
+    mostrarMensaje(
+      "El teléfono debe tener 10 dígitos.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const deseaCambiar =
+    !!nuevaContrasena ||
+    !!confirmarContrasena;
+
+
+  if (
+    deseaCambiar
+  ) {
+
+    if (
+      !nuevaContrasena ||
+      !confirmarContrasena
+    ) {
+
+      mostrarMensaje(
+        "Escribe y confirma la nueva contraseña.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      nuevaContrasena !==
+        confirmarContrasena
+    ) {
+
+      mostrarMensaje(
+        "Las contraseñas no coinciden.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      nuevaContrasena.length < 4
+    ) {
+
+      mostrarMensaje(
+        "La contraseña debe tener al menos 4 caracteres.",
+        "error"
+      );
+
+      return;
+
+    }
+
+  }
+
+
+  const boton =
+    document.getElementById(
+      "btnGuardar"
+    );
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "GUARDANDO...";
+
+
+  ejecutarOperacionPerfilV3(
+    "perfilActualizar",
+    {
+
+      nombre:
+        nombre,
+
+      telefono:
+        telefono,
+
+      nuevaContrasena:
+        nuevaContrasena,
+
+      confirmarContrasena:
+        confirmarContrasena
+
+    },
+
+    function(resultado) {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "GUARDAR CAMBIOS";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible actualizar tu perfil.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const datos =
+        resultado.datos || {};
+
+
+      document
+        .getElementById(
+          "nombreCabecera"
+        )
+        .textContent =
+          datos.nombre || nombre;
+
+
+      document
+        .getElementById(
+          "nombre"
+        )
+        .value =
+          datos.nombre || nombre;
+
+
+      document
+        .getElementById(
+          "telefono"
+        )
+        .value =
+          datos.telefono || telefono;
+
+
+      document
+        .getElementById(
+          "nuevaContrasena"
+        )
+        .value =
+          "";
+
+
+      document
+        .getElementById(
+          "confirmarContrasena"
+        )
+        .value =
+          "";
+
+
+      actualizarUltimaModificacion(
+        datos.ultimaModificacion
+      );
+
+
+      /*
+       * Actualizamos también los datos guardados en
+       * sessionStorage para que el menú muestre el nombre
+       * nuevo sin tener que volver a iniciar sesión.
+       */
+      const residenteTexto =
+        sessionStorage.getItem(
+          "residente"
+        );
+
+
+      if (
+        residenteTexto
+      ) {
+
+        try {
+
+          const residente =
+            JSON.parse(
+              residenteTexto
+            );
+
+
+          residente.nombre =
+            datos.nombre || nombre;
+
+
+          sessionStorage.setItem(
+            "residente",
+            JSON.stringify(
+              residente
+            )
+          );
+
+        }
+        catch (error) {
+
+          console.error(
+            error
+          );
+
+        }
+
+      }
+
+
+      mostrarMensaje(
+        "Perfil actualizado correctamente.",
+        "ok"
+      );
+
+    },
+
+    function() {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "GUARDAR CAMBIOS";
+
+
+      mostrarMensaje(
+        "No fue posible actualizar tu perfil.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * MOTOR DE OPERACIONES EXTERNAS V3
+ *************************************************/
+
+let OPERACION_PERFIL =
+  null;
+
+
+const MAX_CONSULTAS_PERFIL =
+  35;
+
+
+function ejecutarOperacionPerfilV3(
+  accion,
+  datos,
+  alTerminar,
+  alFallar
+) {
+
+  if (
+    OPERACION_PERFIL
+  ) {
+
+    if (
+      typeof alFallar ===
+        "function"
+    ) {
+
+      alFallar();
+
+    }
+
+    return;
+
+  }
+
+
+  const requestId =
+    generarRequestIdPerfilV3();
+
+
+  OPERACION_PERFIL = {
+    requestId:
+      requestId,
+
+    alTerminar:
+      alTerminar,
+
+    alFallar:
+      alFallar,
+
+    consultas:
+      0
+  };
+
+
+  document
+    .getElementById(
+      "perfilAccion"
+    )
+    .value =
+      accion;
+
+
+  document
+    .getElementById(
+      "perfilToken"
+    )
+    .value =
+      TOKEN;
+
+
+  document
+    .getElementById(
+      "perfilRequestId"
+    )
+    .value =
+      requestId;
+
+
+  document
+    .getElementById(
+      "perfilNombre"
+    )
+    .value =
+      datos &&
+      datos.nombre
+        ? datos.nombre
+        : "";
+
+
+  document
+    .getElementById(
+      "perfilTelefono"
+    )
+    .value =
+      datos &&
+      datos.telefono
+        ? datos.telefono
+        : "";
+
+
+  document
+    .getElementById(
+      "perfilNuevaContrasena"
+    )
+    .value =
+      datos &&
+      datos.nuevaContrasena
+        ? datos.nuevaContrasena
+        : "";
+
+
+  document
+    .getElementById(
+      "perfilConfirmarContrasena"
+    )
+    .value =
+      datos &&
+      datos.confirmarContrasena
+        ? datos.confirmarContrasena
+        : "";
+
+
+  document
+    .getElementById(
+      "formPerfil"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarEstadoPerfilV3,
+    700
+  );
+
+}
+
+
+function consultarEstadoPerfilV3() {
+
+  if (
+    !OPERACION_PERFIL
+  ) {
+
+    return;
+
+  }
+
+
+  OPERACION_PERFIL.consultas++;
+
+
+  if (
+    OPERACION_PERFIL.consultas >
+      MAX_CONSULTAS_PERFIL
+  ) {
+
+    terminarPerfilConError();
+
+    return;
+
+  }
+
+
+  window.recibirEstadoPerfilV3 =
+    function(resultado) {
+
+      procesarEstadoPerfilV3(
+        resultado
+      );
+
+    };
+
+
+  const anterior =
+    document.getElementById(
+      "consultaPerfilV3"
+    );
+
+
+  if (
+    anterior
+  ) {
+
+    anterior.remove();
+
+  }
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.id =
+    "consultaPerfilV3";
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=operacionEstado" +
+    "&requestId=" +
+    encodeURIComponent(
+      OPERACION_PERFIL.requestId
+    ) +
+    "&callback=recibirEstadoPerfilV3" +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function() {
+
+      script.remove();
+
+
+      if (
+        OPERACION_PERFIL
+      ) {
+
+        setTimeout(
+          consultarEstadoPerfilV3,
+          700
+        );
+
+      }
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function procesarEstadoPerfilV3(
+  resultado
+) {
+
+  const script =
+    document.getElementById(
+      "consultaPerfilV3"
+    );
+
+
+  if (
+    script
+  ) {
+
+    script.remove();
+
+  }
+
+
+  if (
+    !OPERACION_PERFIL
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    terminarPerfilConError();
+
+    return;
+
+  }
+
+
+  const datos =
+    resultado.datos || {};
+
+
+  if (
+    datos.estado ===
+      "PENDIENTE"
+  ) {
+
+    setTimeout(
+      consultarEstadoPerfilV3,
+      700
+    );
+
+    return;
+
+  }
+
+
+  if (
+    datos.estado !==
+      "LISTO" ||
+    !datos.resultado
+  ) {
+
+    terminarPerfilConError();
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_PERFIL;
+
+
+  OPERACION_PERFIL =
+    null;
+
+
+  if (
+    typeof operacion.alTerminar ===
+      "function"
+  ) {
+
+    operacion.alTerminar(
+      datos.resultado
+    );
+
+  }
+
+}
+
+
+function terminarPerfilConError() {
+
+  if (
+    !OPERACION_PERFIL
+  ) {
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_PERFIL;
+
+
+  OPERACION_PERFIL =
+    null;
+
+
+  if (
+    typeof operacion.alFallar ===
+      "function"
+  ) {
+
+    operacion.alFallar();
+
+  }
+
+}
+
+
+function generarRequestIdPerfilV3() {
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+
+  return (
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2) +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
+}
+
+
+
+function soloNumeros(input) {
+
+  input.value =
+    input.value.replace(
+      /\D/g,
+      ""
+    );
+}
+
+
+function alternarPassword(idCampo, boton) {
+
+  const campo =
+    document.getElementById(idCampo);
+
+  campo.type =
+    campo.type === "password"
+      ? "text"
+      : "password";
+
+  boton.textContent =
+    campo.type === "password"
+      ? "👁️"
+      : "🙈";
+}
+
+
+function actualizarUltimaModificacion(valor) {
+
+  const elemento =
+    document.getElementById("ultimaModificacion");
+
+  elemento.textContent =
+    valor
+      ? "Última modificación: " + valor
+      : "";
+}
+
+
+function mostrarMensaje(textoMensaje, tipo) {
+
+  const mensaje =
+    document.getElementById("mensaje");
+
+  mensaje.textContent = textoMensaje;
+  mensaje.className = "mensaje " + tipo;
+
+  setTimeout(
+    function() {
+      mensaje.className = "mensaje";
+    },
+    3500
+  );
+}
+
+</script>
+
+</body>
+</html>
