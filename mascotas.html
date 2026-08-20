@@ -1,0 +1,2467 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #204d5d;
+    }
+
+    .pagina {
+      min-height: 100vh;
+      padding: 16px 14px 30px;
+    }
+
+    .contenedor {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .encabezado {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 17px;
+    }
+
+    .volver {
+      width: 54px;
+      min-width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: white;
+      color: #204d5d;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+      font-weight: bold;
+      box-shadow: 0 5px 16px rgba(20,55,95,.09);
+    }
+
+    .titulo {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .subtitulo {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #718198;
+    }
+
+    .barra {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 17px;
+    }
+
+    .buscar {
+      width: 100%;
+      height: 58px;
+      border: 2px solid #dce5ec;
+      border-radius: 17px;
+      padding: 0 16px;
+      background: white;
+      color: #20384f;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .buscar:focus {
+      border-color: #b7d52b;
+    }
+
+    .registrar {
+      width: 100%;
+      min-height: 58px;
+      border: none;
+      border-radius: 17px;
+      background: #204d5d;
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .seccion-titulo {
+      margin: 18px 2px 10px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .lista {
+      display: grid;
+      gap: 14px;
+    }
+
+    .tarjeta {
+      overflow: hidden;
+      background: white;
+      border-radius: 22px;
+      box-shadow: 0 5px 18px rgba(20,55,95,.09);
+    }
+
+    .foto {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      background: #e9eef2;
+      display: block;
+    }
+
+    .foto-vacia {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e9eef2;
+      font-size: 64px;
+    }
+
+    .datos {
+      padding: 15px 16px 17px;
+    }
+
+    .nombre {
+      margin: 0;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .detalle {
+      margin-top: 8px;
+      color: #6f8094;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .observaciones {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 13px;
+      background: #f4f7fb;
+      color: #66788c;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .acciones {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .acciones.una {
+      grid-template-columns: 1fr;
+    }
+
+    .btn {
+      min-height: 50px;
+      border: none;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .btn-contactar {
+      background: #238c45;
+      color: white;
+    }
+
+    .btn-editar {
+      background: #edf3f6;
+      color: #204d5d;
+    }
+
+    .btn-retirar {
+      background: #fff0f0;
+      color: #9b3333;
+    }
+
+    .cargando,
+    .sin-datos {
+      background: white;
+      border-radius: 20px;
+      padding: 30px 18px;
+      text-align: center;
+      color: #748399;
+      line-height: 1.5;
+      box-shadow: 0 5px 18px rgba(20,55,95,.07);
+    }
+
+    .modal-fondo {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: rgba(8,18,30,.72);
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      overflow-y: auto;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      border-radius: 24px;
+      padding: 20px;
+    }
+
+    .modal h2 {
+      margin: 0 0 16px;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .grupo {
+      margin-bottom: 14px;
+    }
+
+    .grupo label {
+      display: block;
+      margin: 0 0 7px 2px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .grupo input,
+    .grupo select,
+    .grupo textarea {
+      width: 100%;
+      border: 2px solid #dce5ec;
+      border-radius: 15px;
+      background: white;
+      color: #20384f;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .grupo input,
+    .grupo select {
+      height: 58px;
+      padding: 0 14px;
+    }
+
+    .grupo textarea {
+      min-height: 95px;
+      padding: 13px 14px;
+      resize: vertical;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .foto-input {
+      display: none;
+    }
+
+    .foto-boton {
+      min-height: 58px;
+      border: 2px solid #204d5d;
+      border-radius: 15px;
+      color: #204d5d;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .preview {
+      display: none;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 15px;
+      background: #eef2f5;
+    }
+
+    .preview img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .modal-botones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-top: 16px;
+    }
+
+    .cancelar-modal,
+    .guardar-modal {
+      min-height: 54px;
+      border: none;
+      border-radius: 15px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .cancelar-modal {
+      background: #edf3f6;
+      color: #204d5d;
+    }
+
+    .guardar-modal {
+      background: #204d5d;
+      color: white;
+    }
+
+    .guardar-modal:disabled {
+      opacity: .55;
+    }
+
+    .mensaje {
+      display: none;
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 22px;
+      z-index: 4000;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 15px;
+      border-radius: 15px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 7px 24px rgba(0,0,0,.14);
+    }
+
+    .mensaje.ok {
+      display: block;
+      background: #e9f7ee;
+      color: #267245;
+    }
+
+    .mensaje.error {
+      display: block;
+      background: #fdeaea;
+      color: #9b3333;
+    }
+
+  </style>
+
+  <title>Mascotas</title>
+
+</head>
+
+
+<body>
+
+
+<div class="pagina">
+
+  <div class="contenedor">
+
+    <div class="encabezado">
+
+      <a
+        class="volver"
+        href="menu.html"
+        aria-label="Volver al menú"
+      >
+        ←
+      </a>
+
+      <div>
+        <h1 class="titulo">
+          Mascotas
+        </h1>
+        <div class="subtitulo">
+          Directorio de mascotas de la colonia
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="barra">
+
+      <input
+        id="buscar"
+        class="buscar"
+        type="search"
+        placeholder="🔎 Buscar mascota, raza o calle..."
+        oninput="filtrarMascotas()"
+      >
+
+      <button
+        type="button"
+        class="registrar"
+        onclick="abrirRegistro()"
+      >
+        + REGISTRAR MI MASCOTA
+      </button>
+
+    </div>
+
+
+    <div id="cargando" class="cargando">
+      Cargando mascotas...
+    </div>
+
+
+    <div id="contenido" style="display:none;">
+
+      <h2 class="seccion-titulo">
+        Mis mascotas
+      </h2>
+
+      <div
+        id="listaMias"
+        class="lista"
+      ></div>
+
+
+      <h2 class="seccion-titulo">
+        Mascotas registradas
+      </h2>
+
+      <div
+        id="listaTodas"
+        class="lista"
+      ></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<div
+  id="modalMascota"
+  class="modal-fondo"
+>
+
+  <div class="modal">
+
+    <h2 id="modalTitulo">
+      Registrar mascota
+    </h2>
+
+
+    <input
+      id="idMascotaEditar"
+      type="hidden"
+    >
+
+
+    <div class="grupo">
+      <label for="nombreMascota">
+        Nombre
+      </label>
+
+      <input
+        id="nombreMascota"
+        type="text"
+        maxlength="60"
+        placeholder="Ej. Bruno"
+      >
+    </div>
+
+
+    <div class="grupo">
+      <label for="tipoMascota">
+        Tipo
+      </label>
+
+      <select id="tipoMascota">
+        <option value="">
+          Selecciona una opción
+        </option>
+        <option value="PERRO">
+          Perro
+        </option>
+        <option value="GATO">
+          Gato
+        </option>
+        <option value="OTRO">
+          Otro
+        </option>
+      </select>
+    </div>
+
+
+    <div class="grupo">
+      <label for="razaMascota">
+        Raza
+      </label>
+
+      <input
+        id="razaMascota"
+        type="text"
+        maxlength="60"
+        placeholder="Ej. Dachshund"
+      >
+    </div>
+
+
+    <div class="grupo">
+      <label for="edadMascota">
+        Edad
+      </label>
+
+      <input
+        id="edadMascota"
+        type="text"
+        maxlength="30"
+        placeholder="Ej. 4 años"
+      >
+    </div>
+
+
+    <div
+      id="grupoFoto"
+      class="grupo"
+    >
+      <label>
+        Fotografía
+      </label>
+
+      <input
+        id="fotoMascota"
+        class="foto-input"
+        type="file"
+        accept="image/*"
+        onchange="procesarFotoMascota(this)"
+      >
+
+      <label
+        for="fotoMascota"
+        class="foto-boton"
+      >
+        📷 TOMAR O SELECCIONAR FOTO
+      </label>
+
+      <div
+        id="preview"
+        class="preview"
+      >
+        <img
+          id="previewImagen"
+          alt="Vista previa"
+        >
+      </div>
+    </div>
+
+
+    <div class="grupo">
+      <label for="observacionesMascota">
+        Observaciones
+      </label>
+
+      <textarea
+        id="observacionesMascota"
+        maxlength="300"
+        placeholder="Opcional. Características, cuidados, etc."
+      ></textarea>
+    </div>
+
+
+    <div class="modal-botones">
+
+      <button
+        type="button"
+        class="cancelar-modal"
+        onclick="cerrarModal()"
+      >
+        CANCELAR
+      </button>
+
+      <button
+        id="btnGuardarMascota"
+        type="button"
+        class="guardar-modal"
+        onclick="guardarMascota()"
+      >
+        GUARDAR
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<div
+  id="mensaje"
+  class="mensaje"
+></div>
+
+
+
+
+<form
+  id="formMascotas"
+  method="post"
+  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
+  target="iframeMascotas"
+  style="display:none;"
+>
+
+  <input type="hidden" id="masAccion" name="accion">
+  <input type="hidden" id="masToken" name="token">
+  <input type="hidden" id="masRequestId" name="requestId">
+
+  <input type="hidden" id="masIdMascota" name="idMascota">
+  <input type="hidden" id="masNombreMascota" name="nombreMascota">
+  <input type="hidden" id="masTipo" name="tipo">
+  <input type="hidden" id="masRaza" name="raza">
+  <input type="hidden" id="masEdad" name="edad">
+  <input type="hidden" id="masObservaciones" name="observaciones">
+  <input type="hidden" id="masBase64" name="base64">
+  <input type="hidden" id="masTipoMime" name="tipoMime">
+
+</form>
+
+
+<iframe
+  id="iframeMascotas"
+  name="iframeMascotas"
+  style="display:none;width:0;height:0;border:0;"
+  title="Procesando mascotas"
+></iframe>
+
+
+<script>
+
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+let TOKEN =
+  "";
+
+
+let todasMascotas =
+  [];
+
+
+let misMascotas =
+  [];
+
+
+let fotoBase64 =
+  "";
+
+
+let fotoMime =
+  "";
+
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  cargarMascotas
+);
+
+
+
+function cargarMascotas() {
+
+  TOKEN =
+    sessionStorage.getItem(
+      "tokenResidente"
+    ) || "";
+
+
+  if (
+    !TOKEN
+  ) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  ejecutarOperacionMascotasV3(
+    "mascotasListar",
+    {},
+
+    function(resultado) {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cargar las mascotas.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      todasMascotas =
+        resultado.datos.todas ||
+        [];
+
+
+      misMascotas =
+        resultado.datos.mias ||
+        [];
+
+
+      renderizarListas();
+
+
+      document
+        .getElementById(
+          "contenido"
+        )
+        .style.display =
+          "block";
+
+    },
+
+    function() {
+
+      document
+        .getElementById(
+          "cargando"
+        )
+        .style.display =
+          "none";
+
+
+      mostrarMensaje(
+        "No fue posible cargar las mascotas.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * RENDER
+ *************************************************/
+
+function renderizarListas() {
+
+
+  renderizarLista(
+    "listaMias",
+    misMascotas,
+    true
+  );
+
+
+  renderizarLista(
+    "listaTodas",
+    todasMascotas,
+    false
+  );
+
+}
+
+
+
+function filtrarMascotas() {
+
+
+  const busqueda =
+    document
+      .getElementById(
+        "buscar"
+      )
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    !busqueda
+  ) {
+
+    renderizarListas();
+
+    return;
+
+  }
+
+
+  const filtradas =
+    todasMascotas.filter(
+      function(mascota) {
+
+        const textoBusqueda = [
+
+          mascota.nombreMascota,
+          mascota.tipo,
+          mascota.raza,
+          mascota.calle,
+          mascota.numero,
+          mascota.nombreResponsable
+
+        ]
+          .join(
+            " "
+          )
+          .toLowerCase();
+
+
+        return textoBusqueda.indexOf(
+          busqueda
+        ) !== -1;
+
+      }
+    );
+
+
+  renderizarLista(
+    "listaTodas",
+    filtradas,
+    false
+  );
+
+}
+
+
+
+function renderizarLista(
+  idContenedor,
+  mascotas,
+  propias
+) {
+
+
+  const contenedor =
+    document.getElementById(
+      idContenedor
+    );
+
+
+  contenedor.innerHTML =
+    "";
+
+
+  if (
+    !mascotas.length
+  ) {
+
+    contenedor.innerHTML =
+      '<div class="sin-datos">' +
+        (
+          propias
+            ? "Todavía no tienes mascotas registradas."
+            : "No hay mascotas para mostrar."
+        ) +
+      '</div>';
+
+    return;
+
+  }
+
+
+  mascotas.forEach(
+    function(mascota) {
+
+      contenedor.appendChild(
+        crearTarjeta(
+          mascota,
+          propias
+        )
+      );
+
+    }
+  );
+
+}
+
+
+
+function crearTarjeta(
+  mascota,
+  propias
+) {
+
+
+  const tarjeta =
+    document.createElement(
+      "div"
+    );
+
+
+  tarjeta.className =
+    "tarjeta";
+
+
+  let html = "";
+
+
+  if (
+    mascota.foto
+  ) {
+
+    html +=
+      '<img class="foto" src="' +
+      escaparAtributo(
+        mascota.foto
+      ) +
+      '" alt="' +
+      escaparAtributo(
+        mascota.nombreMascota
+      ) +
+      '">';
+
+  }
+  else {
+
+    html +=
+      '<div class="foto-vacia">🐾</div>';
+
+  }
+
+
+  html +=
+    '<div class="datos">' +
+
+      '<h3 class="nombre">' +
+        escaparHtml(
+          mascota.nombreMascota
+        ) +
+      '</h3>' +
+
+      '<div class="detalle">' +
+
+        (
+          mascota.tipo
+            ? '<strong>Tipo:</strong> ' +
+              escaparHtml(
+                mascota.tipo
+              ) +
+              '<br>'
+            : ''
+        ) +
+
+        (
+          mascota.raza
+            ? '<strong>Raza:</strong> ' +
+              escaparHtml(
+                mascota.raza
+              ) +
+              '<br>'
+            : ''
+        ) +
+
+        (
+          mascota.edad
+            ? '<strong>Edad:</strong> ' +
+              escaparHtml(
+                mascota.edad
+              ) +
+              '<br>'
+            : ''
+        ) +
+
+        (
+          mascota.calle
+            ? '<strong>Casa:</strong> ' +
+              escaparHtml(
+                mascota.calle
+              ) +
+              (
+                mascota.numero
+                  ? ' #' +
+                    escaparHtml(
+                      mascota.numero
+                    )
+                  : ''
+              ) +
+              '<br>'
+            : ''
+        ) +
+
+        (
+          mascota.nombreResponsable
+            ? '<strong>Responsable:</strong> ' +
+              escaparHtml(
+                mascota.nombreResponsable
+              )
+            : ''
+        ) +
+
+      '</div>';
+
+
+  if (
+    mascota.observaciones
+  ) {
+
+    html +=
+      '<div class="observaciones">' +
+        escaparHtml(
+          mascota.observaciones
+        ) +
+      '</div>';
+
+  }
+
+
+  const acciones =
+    [];
+
+
+  if (
+    mascota.telefono
+  ) {
+
+    const numero =
+      String(
+        mascota.telefono
+      )
+        .replace(
+          /\D/g,
+          ""
+        );
+
+
+    const whatsapp =
+      numero.length === 10
+        ? "52" + numero
+        : numero;
+
+
+    acciones.push(
+      '<a class="btn btn-contactar" target="_blank" rel="noopener" href="https://wa.me/' +
+        whatsapp +
+      '">' +
+        '💬 CONTACTAR' +
+      '</a>'
+    );
+
+  }
+
+
+  if (
+    propias
+  ) {
+
+    acciones.push(
+      '<button class="btn btn-editar" type="button" data-accion="editar">' +
+        'EDITAR' +
+      '</button>'
+    );
+
+
+    acciones.push(
+      '<button class="btn btn-retirar" type="button" data-accion="retirar">' +
+        'RETIRAR' +
+      '</button>'
+    );
+
+  }
+
+
+  if (
+    acciones.length
+  ) {
+
+    html +=
+      '<div class="acciones ' +
+        (
+          acciones.length === 1
+            ? 'una'
+            : ''
+        ) +
+      '">' +
+        acciones.join(
+          ""
+        ) +
+      '</div>';
+
+  }
+
+
+  html +=
+    '</div>';
+
+
+  tarjeta.innerHTML =
+    html;
+
+
+  const editar =
+    tarjeta.querySelector(
+      '[data-accion="editar"]'
+    );
+
+
+  if (
+    editar
+  ) {
+
+    editar.addEventListener(
+      "click",
+      function() {
+
+        abrirEdicion(
+          mascota
+        );
+
+      }
+    );
+
+  }
+
+
+  const retirar =
+    tarjeta.querySelector(
+      '[data-accion="retirar"]'
+    );
+
+
+  if (
+    retirar
+  ) {
+
+    retirar.addEventListener(
+      "click",
+      function() {
+
+        retirarMascota(
+          mascota
+        );
+
+      }
+    );
+
+  }
+
+
+  return tarjeta;
+
+}
+
+
+
+/*************************************************
+ * MODAL REGISTRO / EDICIÓN
+ *************************************************/
+
+function abrirRegistro() {
+
+
+  document
+    .getElementById(
+      "modalTitulo"
+    )
+    .textContent =
+      "Registrar mascota";
+
+
+  document
+    .getElementById(
+      "idMascotaEditar"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "nombreMascota"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "tipoMascota"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "razaMascota"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "edadMascota"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "observacionesMascota"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "grupoFoto"
+    )
+    .style.display =
+      "block";
+
+
+  document
+    .getElementById(
+      "preview"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "fotoMascota"
+    )
+    .value =
+      "";
+
+
+  fotoBase64 =
+    "";
+
+
+  fotoMime =
+    "";
+
+
+  document
+    .getElementById(
+      "modalMascota"
+    )
+    .style.display =
+      "flex";
+
+}
+
+
+
+function abrirEdicion(
+  mascota
+) {
+
+
+  document
+    .getElementById(
+      "modalTitulo"
+    )
+    .textContent =
+      "Editar mascota";
+
+
+  document
+    .getElementById(
+      "idMascotaEditar"
+    )
+    .value =
+      mascota.idMascota;
+
+
+  document
+    .getElementById(
+      "nombreMascota"
+    )
+    .value =
+      mascota.nombreMascota ||
+      "";
+
+
+  document
+    .getElementById(
+      "tipoMascota"
+    )
+    .value =
+      String(
+        mascota.tipo || ""
+      ).toUpperCase();
+
+
+  document
+    .getElementById(
+      "razaMascota"
+    )
+    .value =
+      mascota.raza ||
+      "";
+
+
+  document
+    .getElementById(
+      "edadMascota"
+    )
+    .value =
+      mascota.edad ||
+      "";
+
+
+  document
+    .getElementById(
+      "observacionesMascota"
+    )
+    .value =
+      mascota.observaciones ||
+      "";
+
+
+  /*
+   * Por ahora la edición conserva la foto.
+   * Así evitamos reemplazar archivos en Drive
+   * innecesariamente.
+   */
+  document
+    .getElementById(
+      "grupoFoto"
+    )
+    .style.display =
+      "none";
+
+
+  fotoBase64 =
+    "";
+
+
+  fotoMime =
+    "";
+
+
+  document
+    .getElementById(
+      "modalMascota"
+    )
+    .style.display =
+      "flex";
+
+}
+
+
+
+function cerrarModal() {
+
+
+  document
+    .getElementById(
+      "modalMascota"
+    )
+    .style.display =
+      "none";
+
+}
+
+
+
+/*************************************************
+ * FOTO
+ *************************************************/
+
+function procesarFotoMascota(
+  input
+) {
+
+
+  const archivo =
+    input.files &&
+    input.files[0];
+
+
+  if (
+    !archivo
+  ) {
+
+    return;
+
+  }
+
+
+  const lector =
+    new FileReader();
+
+
+  lector.onload =
+    function(evento) {
+
+
+      const imagen =
+        new Image();
+
+
+      imagen.onload =
+        function() {
+
+
+          const canvas =
+            document.createElement(
+              "canvas"
+            );
+
+
+          const maximo =
+            1600;
+
+
+          let ancho =
+            imagen.width;
+
+
+          let alto =
+            imagen.height;
+
+
+          if (
+            ancho > maximo ||
+            alto > maximo
+          ) {
+
+            const escala =
+              Math.min(
+                maximo / ancho,
+                maximo / alto
+              );
+
+
+            ancho =
+              Math.round(
+                ancho *
+                escala
+              );
+
+
+            alto =
+              Math.round(
+                alto *
+                escala
+              );
+
+          }
+
+
+          canvas.width =
+            ancho;
+
+
+          canvas.height =
+            alto;
+
+
+          const ctx =
+            canvas.getContext(
+              "2d"
+            );
+
+
+          ctx.drawImage(
+            imagen,
+            0,
+            0,
+            ancho,
+            alto
+          );
+
+
+          const dataUrl =
+            canvas.toDataURL(
+              "image/jpeg",
+              0.82
+            );
+
+
+          fotoMime =
+            "image/jpeg";
+
+
+          fotoBase64 =
+            dataUrl.split(
+              ","
+            )[1];
+
+
+          document
+            .getElementById(
+              "previewImagen"
+            )
+            .src =
+              dataUrl;
+
+
+          document
+            .getElementById(
+              "preview"
+            )
+            .style.display =
+              "block";
+
+        };
+
+
+      imagen.src =
+        evento.target.result;
+
+    };
+
+
+  lector.readAsDataURL(
+    archivo
+  );
+
+}
+
+
+
+/*************************************************
+ * GUARDAR
+ *************************************************/
+
+function guardarMascota() {
+
+  const idMascota =
+    document
+      .getElementById(
+        "idMascotaEditar"
+      )
+      .value;
+
+
+  const nombreMascota =
+    document
+      .getElementById(
+        "nombreMascota"
+      )
+      .value
+      .trim();
+
+
+  const tipo =
+    document
+      .getElementById(
+        "tipoMascota"
+      )
+      .value;
+
+
+  const raza =
+    document
+      .getElementById(
+        "razaMascota"
+      )
+      .value
+      .trim();
+
+
+  const edad =
+    document
+      .getElementById(
+        "edadMascota"
+      )
+      .value
+      .trim();
+
+
+  const observaciones =
+    document
+      .getElementById(
+        "observacionesMascota"
+      )
+      .value
+      .trim();
+
+
+  if (
+    !nombreMascota
+  ) {
+
+    mostrarMensaje(
+      "Ingresa el nombre de la mascota.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !tipo
+  ) {
+
+    mostrarMensaje(
+      "Selecciona el tipo de mascota.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !idMascota &&
+    !fotoBase64
+  ) {
+
+    mostrarMensaje(
+      "Agrega una fotografía de la mascota.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const boton =
+    document.getElementById(
+      "btnGuardarMascota"
+    );
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "GUARDANDO...";
+
+
+  const accion =
+    idMascota
+      ? "mascotaEditar"
+      : "mascotaRegistrar";
+
+
+  ejecutarOperacionMascotasV3(
+    accion,
+    {
+
+      idMascota:
+        idMascota,
+
+      nombreMascota:
+        nombreMascota,
+
+      tipo:
+        tipo,
+
+      raza:
+        raza,
+
+      edad:
+        edad,
+
+      observaciones:
+        observaciones,
+
+      base64:
+        idMascota
+          ? ""
+          : fotoBase64,
+
+      tipoMime:
+        idMascota
+          ? ""
+          : fotoMime
+
+    },
+
+    finalizarGuardado,
+
+    falloGuardado
+  );
+
+}
+
+
+
+function finalizarGuardado(
+  resultado
+) {
+
+
+  restaurarBotonGuardar();
+
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    mostrarMensaje(
+      resultado &&
+      resultado.mensaje
+        ? resultado.mensaje
+        : "No fue posible guardar la mascota.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  cerrarModal();
+
+
+  mostrarMensaje(
+    "Mascota guardada correctamente.",
+    "ok"
+  );
+
+
+  recargarMascotas();
+
+}
+
+
+
+function falloGuardado(
+  error
+) {
+
+
+  console.error(
+    error
+  );
+
+
+  restaurarBotonGuardar();
+
+
+  mostrarMensaje(
+    "No fue posible guardar la mascota.",
+    "error"
+  );
+
+}
+
+
+
+function restaurarBotonGuardar() {
+
+
+  const boton =
+    document.getElementById(
+      "btnGuardarMascota"
+    );
+
+
+  boton.disabled =
+    false;
+
+
+  boton.textContent =
+    "GUARDAR";
+
+}
+
+
+
+/*************************************************
+ * RETIRAR
+ *************************************************/
+
+function retirarMascota(
+  mascota
+) {
+
+  const confirmar =
+    window.confirm(
+      "¿Retirar a " +
+      mascota.nombreMascota +
+      " del directorio?"
+    );
+
+
+  if (
+    !confirmar
+  ) {
+
+    return;
+
+  }
+
+
+  ejecutarOperacionMascotasV3(
+    "mascotaDesactivar",
+    {
+      idMascota:
+        mascota.idMascota
+    },
+
+    function(resultado) {
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible retirar la mascota.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      mostrarMensaje(
+        "Mascota retirada del directorio.",
+        "ok"
+      );
+
+
+      recargarMascotas();
+
+    },
+
+    function() {
+
+      mostrarMensaje(
+        "No fue posible retirar la mascota.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+
+/*************************************************
+ * RECARGAR
+ *************************************************/
+
+function recargarMascotas() {
+
+
+  document
+    .getElementById(
+      "contenido"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "cargando"
+    )
+    .textContent =
+      "Actualizando mascotas...";
+
+
+  document
+    .getElementById(
+      "cargando"
+    )
+    .style.display =
+      "block";
+
+
+  cargarMascotas();
+
+}
+
+
+
+/*************************************************
+ * MOTOR DE OPERACIONES EXTERNAS V3
+ *************************************************/
+
+let OPERACION_MASCOTAS =
+  null;
+
+
+const MAX_CONSULTAS_MASCOTAS =
+  40;
+
+
+function ejecutarOperacionMascotasV3(
+  accion,
+  datos,
+  alTerminar,
+  alFallar
+) {
+
+  if (
+    OPERACION_MASCOTAS
+  ) {
+
+    if (
+      typeof alFallar ===
+        "function"
+    ) {
+
+      alFallar();
+
+    }
+
+    return;
+
+  }
+
+
+  const requestId =
+    generarRequestIdMascotasV3();
+
+
+  OPERACION_MASCOTAS = {
+    requestId:
+      requestId,
+
+    alTerminar:
+      alTerminar,
+
+    alFallar:
+      alFallar,
+
+    consultas:
+      0
+  };
+
+
+  document
+    .getElementById(
+      "masAccion"
+    )
+    .value =
+      accion;
+
+
+  document
+    .getElementById(
+      "masToken"
+    )
+    .value =
+      TOKEN;
+
+
+  document
+    .getElementById(
+      "masRequestId"
+    )
+    .value =
+      requestId;
+
+
+  document
+    .getElementById(
+      "masIdMascota"
+    )
+    .value =
+      datos &&
+      datos.idMascota
+        ? datos.idMascota
+        : "";
+
+
+  document
+    .getElementById(
+      "masNombreMascota"
+    )
+    .value =
+      datos &&
+      datos.nombreMascota
+        ? datos.nombreMascota
+        : "";
+
+
+  document
+    .getElementById(
+      "masTipo"
+    )
+    .value =
+      datos &&
+      datos.tipo
+        ? datos.tipo
+        : "";
+
+
+  document
+    .getElementById(
+      "masRaza"
+    )
+    .value =
+      datos &&
+      datos.raza
+        ? datos.raza
+        : "";
+
+
+  document
+    .getElementById(
+      "masEdad"
+    )
+    .value =
+      datos &&
+      datos.edad
+        ? datos.edad
+        : "";
+
+
+  document
+    .getElementById(
+      "masObservaciones"
+    )
+    .value =
+      datos &&
+      datos.observaciones
+        ? datos.observaciones
+        : "";
+
+
+  document
+    .getElementById(
+      "masBase64"
+    )
+    .value =
+      datos &&
+      datos.base64
+        ? datos.base64
+        : "";
+
+
+  document
+    .getElementById(
+      "masTipoMime"
+    )
+    .value =
+      datos &&
+      datos.tipoMime
+        ? datos.tipoMime
+        : "";
+
+
+  document
+    .getElementById(
+      "formMascotas"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarEstadoMascotasV3,
+    850
+  );
+
+}
+
+
+function consultarEstadoMascotasV3() {
+
+  if (
+    !OPERACION_MASCOTAS
+  ) {
+
+    return;
+
+  }
+
+
+  OPERACION_MASCOTAS.consultas++;
+
+
+  if (
+    OPERACION_MASCOTAS.consultas >
+      MAX_CONSULTAS_MASCOTAS
+  ) {
+
+    terminarMascotasConError();
+
+    return;
+
+  }
+
+
+  window.recibirEstadoMascotasV3 =
+    function(resultado) {
+
+      procesarEstadoMascotasV3(
+        resultado
+      );
+
+    };
+
+
+  const anterior =
+    document.getElementById(
+      "consultaMascotasV3"
+    );
+
+
+  if (
+    anterior
+  ) {
+
+    anterior.remove();
+
+  }
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.id =
+    "consultaMascotasV3";
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=operacionEstado" +
+    "&requestId=" +
+    encodeURIComponent(
+      OPERACION_MASCOTAS.requestId
+    ) +
+    "&callback=recibirEstadoMascotasV3" +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function() {
+
+      script.remove();
+
+
+      if (
+        OPERACION_MASCOTAS
+      ) {
+
+        setTimeout(
+          consultarEstadoMascotasV3,
+          800
+        );
+
+      }
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function procesarEstadoMascotasV3(
+  resultado
+) {
+
+  const script =
+    document.getElementById(
+      "consultaMascotasV3"
+    );
+
+
+  if (
+    script
+  ) {
+
+    script.remove();
+
+  }
+
+
+  if (
+    !OPERACION_MASCOTAS
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    terminarMascotasConError();
+
+    return;
+
+  }
+
+
+  const datos =
+    resultado.datos || {};
+
+
+  if (
+    datos.estado ===
+      "PENDIENTE"
+  ) {
+
+    setTimeout(
+      consultarEstadoMascotasV3,
+      800
+    );
+
+    return;
+
+  }
+
+
+  if (
+    datos.estado !==
+      "LISTO" ||
+    !datos.resultado
+  ) {
+
+    terminarMascotasConError();
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_MASCOTAS;
+
+
+  OPERACION_MASCOTAS =
+    null;
+
+
+  if (
+    typeof operacion.alTerminar ===
+      "function"
+  ) {
+
+    operacion.alTerminar(
+      datos.resultado
+    );
+
+  }
+
+}
+
+
+function terminarMascotasConError() {
+
+  if (
+    !OPERACION_MASCOTAS
+  ) {
+
+    return;
+
+  }
+
+
+  const operacion =
+    OPERACION_MASCOTAS;
+
+
+  OPERACION_MASCOTAS =
+    null;
+
+
+  if (
+    typeof operacion.alFallar ===
+      "function"
+  ) {
+
+    operacion.alFallar();
+
+  }
+
+}
+
+
+function generarRequestIdMascotasV3() {
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+
+  return (
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2) +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
+}
+
+
+
+/*************************************************
+ * MENSAJES
+ *************************************************/
+
+function mostrarMensaje(
+  textoMensaje,
+  tipo
+) {
+
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.textContent =
+    textoMensaje;
+
+
+  mensaje.className =
+    "mensaje " +
+    tipo;
+
+
+  setTimeout(
+    function() {
+
+      mensaje.className =
+        "mensaje";
+
+    },
+    3500
+  );
+
+}
+
+
+
+/*************************************************
+ * TEXTO SEGURO
+ *************************************************/
+
+function escaparHtml(
+  valor
+) {
+
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    valor || "";
+
+
+  return div.innerHTML;
+
+}
+
+
+
+function escaparAtributo(
+  valor
+) {
+
+
+  return String(
+    valor || ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    );
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
