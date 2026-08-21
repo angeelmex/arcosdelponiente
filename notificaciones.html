@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <meta
+    name="theme-color"
+    content="#204d5d"
+  >
+
+  <title>Notificaciones</title>
+
+  <style>
+
+    * {
+      box-sizing:
+        border-box;
+    }
+
+    body {
+      margin:
+        0;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      background:
+        #f4f7fb;
+
+      color:
+        #204d5d;
+    }
+
+    .pagina {
+      min-height:
+        100vh;
+
+      padding:
+        16px 14px 30px;
+    }
+
+    .contenedor {
+      width:
+        100%;
+
+      max-width:
+        560px;
+
+      margin:
+        0 auto;
+    }
+
+    .cabecera {
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        space-between;
+
+      gap:
+        12px;
+
+      margin-bottom:
+        14px;
+    }
+
+    .volver {
+      border:
+        none;
+
+      background:
+        transparent;
+
+      color:
+        #204d5d;
+
+      font-size:
+        15px;
+
+      font-weight:
+        800;
+
+      padding:
+        8px 0;
+
+      cursor:
+        pointer;
+    }
+
+    h1 {
+      margin:
+        0;
+
+      font-size:
+        26px;
+    }
+
+    .sub {
+      margin:
+        4px 0 18px;
+
+      color:
+        #718198;
+
+      font-size:
+        14px;
+    }
+
+    .lista {
+      display:
+        grid;
+
+      gap:
+        10px;
+    }
+
+    .notificacion {
+      background:
+        white;
+
+      border-radius:
+        18px;
+
+      padding:
+        15px 16px;
+
+      box-shadow:
+        0 5px 18px
+        rgba(20,55,95,.08);
+
+      border-left:
+        5px solid #204d5d;
+    }
+
+    .notificacion.ingreso {
+      border-left-color:
+        #238c45;
+    }
+
+    .notificacion.salida {
+      border-left-color:
+        #718198;
+    }
+
+    .notificacion.aviso {
+      border-left-color:
+        #d19a00;
+    }
+
+    .titulo {
+      font-size:
+        16px;
+
+      font-weight:
+        800;
+
+      margin-bottom:
+        7px;
+    }
+
+    .mensaje {
+      white-space:
+        pre-line;
+
+      color:
+        #425b6c;
+
+      font-size:
+        14px;
+
+      line-height:
+        1.48;
+    }
+
+    .fecha {
+      margin-top:
+        9px;
+
+      color:
+        #8a98a8;
+
+      font-size:
+        12px;
+
+      font-weight:
+        700;
+    }
+
+    .estado {
+      background:
+        white;
+
+      border-radius:
+        20px;
+
+      padding:
+        32px 18px;
+
+      text-align:
+        center;
+
+      color:
+        #718198;
+
+      box-shadow:
+        0 5px 18px
+        rgba(20,55,95,.08);
+    }
+
+    .estado .icono {
+      font-size:
+        44px;
+
+      margin-bottom:
+        10px;
+    }
+
+    .error {
+      color:
+        #9b3333;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<div class="pagina">
+
+  <div class="contenedor">
+
+    <div class="cabecera">
+
+      <div>
+
+        <h1>
+          🔔 Notificaciones
+        </h1>
+
+        <div class="sub">
+          Tus 50 avisos más recientes
+        </div>
+
+      </div>
+
+      <button
+        class="volver"
+        onclick="volverMenu()"
+      >
+        MENÚ
+      </button>
+
+    </div>
+
+
+    <div
+      id="lista"
+      class="lista"
+    >
+
+      <div
+        id="estado"
+        class="estado"
+      >
+        Cargando notificaciones...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<iframe
+  id="frameOperacion"
+  name="frameOperacion"
+  style="display:none;"
+></iframe>
+
+
+<form
+  id="formOperacion"
+  method="post"
+  target="frameOperacion"
+  style="display:none;"
+>
+
+  <input
+    id="campoAccion"
+    name="accion"
+  >
+
+  <input
+    id="campoRequestId"
+    name="requestId"
+  >
+
+  <input
+    id="campoToken"
+    name="token"
+  >
+
+</form>
+
+
+<script>
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+const TOKEN =
+  sessionStorage.getItem(
+    "tokenResidente"
+  ) || "";
+
+
+let operacionActual =
+  "";
+
+
+let consultas =
+  0;
+
+
+const MAX_CONSULTAS =
+  30;
+
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    if (
+      !TOKEN
+    ) {
+
+      window.location.href =
+        "login.html";
+
+      return;
+
+    }
+
+
+    cargarNotificaciones();
+
+  }
+);
+
+
+
+function volverMenu() {
+
+  window.location.href =
+    "menu.html";
+
+}
+
+
+
+function cargarNotificaciones() {
+
+  ejecutarOperacion(
+    "notificacionesListar"
+  );
+
+}
+
+
+
+function ejecutarOperacion(
+  accion
+) {
+
+  if (
+    operacionActual
+  ) {
+
+    return;
+
+  }
+
+
+  operacionActual =
+    generarRequestId();
+
+
+  consultas =
+    0;
+
+
+  document
+    .getElementById(
+      "formOperacion"
+    )
+    .action =
+      URL_BACKEND;
+
+
+  document
+    .getElementById(
+      "campoAccion"
+    )
+    .value =
+      accion;
+
+
+  document
+    .getElementById(
+      "campoRequestId"
+    )
+    .value =
+      operacionActual;
+
+
+  document
+    .getElementById(
+      "campoToken"
+    )
+    .value =
+      TOKEN;
+
+
+  document
+    .getElementById(
+      "formOperacion"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarEstado,
+    500
+  );
+
+}
+
+
+
+function consultarEstado() {
+
+  if (
+    !operacionActual
+  ) {
+
+    return;
+
+  }
+
+
+  consultas++;
+
+
+  if (
+    consultas >
+      MAX_CONSULTAS
+  ) {
+
+    mostrarError(
+      "El servidor está tardando. Intenta nuevamente."
+    );
+
+
+    operacionActual =
+      "";
+
+    return;
+
+  }
+
+
+  const callback =
+    "cbNotificaciones_" +
+    Date.now() +
+    "_" +
+    Math.floor(
+      Math.random() *
+      100000
+    );
+
+
+  window[
+    callback
+  ] =
+    function(resultado) {
+
+      try {
+
+        delete window[
+          callback
+        ];
+
+      }
+      catch (error) {}
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarError(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cargar."
+        );
+
+
+        operacionActual =
+          "";
+
+        return;
+
+      }
+
+
+      const datos =
+        resultado.datos || {};
+
+
+      if (
+        datos.estado ===
+          "PENDIENTE"
+      ) {
+
+        setTimeout(
+          consultarEstado,
+          500
+        );
+
+        return;
+
+      }
+
+
+      if (
+        datos.estado !==
+          "LISTO"
+      ) {
+
+        mostrarError(
+          "No fue posible recuperar las notificaciones."
+        );
+
+
+        operacionActual =
+          "";
+
+        return;
+
+      }
+
+
+      operacionActual =
+        "";
+
+
+      procesarResultado(
+        datos.resultado
+      );
+
+    };
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=operacionEstado" +
+    "&requestId=" +
+    encodeURIComponent(
+      operacionActual
+    ) +
+    "&callback=" +
+    encodeURIComponent(
+      callback
+    ) +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function() {
+
+      try {
+
+        script.remove();
+
+      }
+      catch (error) {}
+
+
+      setTimeout(
+        consultarEstado,
+        700
+      );
+
+    };
+
+
+  script.onload =
+    function() {
+
+      try {
+
+        script.remove();
+
+      }
+      catch (error) {}
+
+    };
+
+
+  document.body
+    .appendChild(
+      script
+    );
+
+}
+
+
+
+function procesarResultado(
+  resultado
+) {
+
+  if (
+    !resultado ||
+    !resultado.ok
+  ) {
+
+    mostrarError(
+      resultado &&
+      resultado.mensaje
+        ? resultado.mensaje
+        : "No fue posible cargar tus notificaciones."
+    );
+
+    return;
+
+  }
+
+
+  pintarNotificaciones(
+    resultado.datos &&
+    resultado.datos.notificaciones
+      ? resultado.datos.notificaciones
+      : []
+  );
+
+}
+
+
+
+function pintarNotificaciones(
+  notificaciones
+) {
+
+  const lista =
+    document.getElementById(
+      "lista"
+    );
+
+
+  lista.innerHTML =
+    "";
+
+
+  if (
+    !notificaciones.length
+  ) {
+
+    lista.innerHTML =
+      '<div class="estado">' +
+        '<div class="icono">🔔</div>' +
+        'Todavía no tienes notificaciones.' +
+      '</div>';
+
+    return;
+
+  }
+
+
+  notificaciones.forEach(
+    function(item) {
+
+      const tipo =
+        String(
+          item.tipo || ""
+        )
+        .toUpperCase();
+
+
+      let clase =
+        "";
+
+
+      if (
+        tipo ===
+          "INGRESO"
+      ) {
+
+        clase =
+          " ingreso";
+
+      }
+      else if (
+        tipo ===
+          "SALIDA"
+      ) {
+
+        clase =
+          " salida";
+
+      }
+      else {
+
+        clase =
+          " aviso";
+
+      }
+
+
+      const tarjeta =
+        document.createElement(
+          "div"
+        );
+
+
+      tarjeta.className =
+        "notificacion" +
+        clase;
+
+
+      const titulo =
+        document.createElement(
+          "div"
+        );
+
+
+      titulo.className =
+        "titulo";
+
+
+      titulo.textContent =
+        item.titulo ||
+        "Arcos del Poniente";
+
+
+      const mensaje =
+        document.createElement(
+          "div"
+        );
+
+
+      mensaje.className =
+        "mensaje";
+
+
+      mensaje.textContent =
+        item.mensaje ||
+        "";
+
+
+      const fecha =
+        document.createElement(
+          "div"
+        );
+
+
+      fecha.className =
+        "fecha";
+
+
+      fecha.textContent =
+        item.fechaTexto ||
+        "";
+
+
+      tarjeta.appendChild(
+        titulo
+      );
+
+
+      tarjeta.appendChild(
+        mensaje
+      );
+
+
+      tarjeta.appendChild(
+        fecha
+      );
+
+
+      lista.appendChild(
+        tarjeta
+      );
+
+    }
+  );
+
+}
+
+
+
+function mostrarError(
+  texto
+) {
+
+  document
+    .getElementById(
+      "lista"
+    )
+    .innerHTML =
+      '<div class="estado error">' +
+        escapar(
+          texto
+        ) +
+      '</div>';
+
+}
+
+
+
+function generarRequestId() {
+
+  if (
+    window.crypto &&
+    window.crypto.randomUUID
+  ) {
+
+    return window.crypto
+      .randomUUID()
+      .replace(
+        /-/g,
+        ""
+      );
+
+  }
+
+
+  return (
+    Date.now()
+      .toString(
+        36
+      ) +
+    Math.random()
+      .toString(
+        36
+      )
+      .substring(
+        2
+      ) +
+    Math.random()
+      .toString(
+        36
+      )
+      .substring(
+        2
+      )
+  );
+
+}
+
+
+
+function escapar(
+  valor
+) {
+
+  return String(
+    valor == null
+      ? ""
+      : valor
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+</script>
+
+</body>
+
+</html>
