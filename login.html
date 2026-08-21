@@ -488,8 +488,16 @@ let consultasRealizadas =
   0;
 
 
+let temporizadorLimiteLogin =
+  null;
+
+
 const MAX_CONSULTAS =
-  30;
+  22;
+
+
+const LIMITE_TOTAL_LOGIN_MS =
+  18000;
 
 
 /*************************************************
@@ -711,6 +719,36 @@ function iniciarSesion() {
     .submit();
 
 
+  if (
+    temporizadorLimiteLogin
+  ) {
+
+    clearTimeout(
+      temporizadorLimiteLogin
+    );
+
+  }
+
+
+  temporizadorLimiteLogin =
+    setTimeout(
+      function() {
+
+        if (
+          loginEnProceso
+        ) {
+
+          finalizarConError(
+            "El servidor está tardando más de lo normal. Presiona INGRESAR para intentar nuevamente."
+          );
+
+        }
+
+      },
+      LIMITE_TOTAL_LOGIN_MS
+    );
+
+
   /*
    * Damos un pequeño margen para que el POST
    * llegue al backend y después comenzamos
@@ -749,7 +787,7 @@ function consultarEstadoLogin() {
   ) {
 
     finalizarConError(
-      "La validación tardó demasiado. Intenta nuevamente."
+      "El servidor está tardando más de lo normal. Presiona INGRESAR para intentar nuevamente."
     );
 
     return;
@@ -914,6 +952,21 @@ function procesarResultadoLogin(
 
 
   if (
+    temporizadorLimiteLogin
+  ) {
+
+    clearTimeout(
+      temporizadorLimiteLogin
+    );
+
+
+    temporizadorLimiteLogin =
+      null;
+
+  }
+
+
+  if (
     !resultado ||
     !resultado.ok
   ) {
@@ -994,7 +1047,7 @@ function procesarResultadoLogin(
     function() {
 
       window.location.href =
-        "menu.html";
+        "menu.html?v=20260820-1120";
 
     },
     350
@@ -1038,9 +1091,31 @@ function finalizarConError(
     false;
 
 
+  if (
+    temporizadorLimiteLogin
+  ) {
+
+    clearTimeout(
+      temporizadorLimiteLogin
+    );
+
+
+    temporizadorLimiteLogin =
+      null;
+
+  }
+
+
+  eliminarScriptConsulta();
+
+
   mostrarError(
     texto
   );
+
+
+  requestLoginActual =
+    "";
 
 
   restaurarBoton();
