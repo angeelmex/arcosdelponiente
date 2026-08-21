@@ -601,6 +601,21 @@
 
 
       <a
+        id="linkNotificaciones"
+        class="boton-menu verde"
+        href="notificaciones.html"
+      >
+
+        <div class="icono">
+          🔔
+        </div>
+
+        NOTIFICACIONES
+
+      </a>
+
+
+      <a
         id="linkDirectorio"
         class="boton-menu verde"
         target="_top"
@@ -979,6 +994,23 @@ function iniciarMenu() {
   document
     .getElementById(
       "linkMisPases"
+    )
+    .removeAttribute(
+      "target"
+    );
+
+
+  document
+    .getElementById(
+      "linkNotificaciones"
+    )
+    .href =
+      "notificaciones.html";
+
+
+  document
+    .getElementById(
+      "linkNotificaciones"
     )
     .removeAttribute(
       "target"
