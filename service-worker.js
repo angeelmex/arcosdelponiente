@@ -2,11 +2,10 @@
  * Arcos del Poniente - Service Worker V3
  * Firebase Cloud Messaging
  *
- * Corrección:
- * - Si Firebase ya trae un bloque "notification", NO mostramos otra
- *   notificación manual. El navegador/FCM ya la presenta.
- * - Solo mostramos manualmente cuando el mensaje viene como "data".
- * Esto evita notificaciones duplicadas.
+ * - Evita notificaciones duplicadas.
+ * - Las notificaciones manuales guardan la URL de destino.
+ * - Si una notificación de FCM llega sin data.url,
+ *   al tocarla abre NOTIFICACIONES.
  */
 
 importScripts(
@@ -42,6 +41,10 @@ firebase.initializeApp({
 
 const messaging =
   firebase.messaging();
+
+
+const URL_NOTIFICACIONES =
+  "./notificaciones.html";
 
 
 self.addEventListener(
@@ -81,8 +84,9 @@ self.addEventListener(
 
 /*
  * FCM:
- * - Mensajes con "notification": FCM ya los muestra.
- * - Mensajes solo con "data": aquí sí creamos la notificación.
+ * - Si el payload incluye "notification", FCM / el navegador
+ *   ya la presenta y NO mostramos una segunda.
+ * - Si llega solo como "data", nosotros la mostramos.
  */
 messaging.onBackgroundMessage(
   function(payload) {
@@ -129,7 +133,7 @@ messaging.onBackgroundMessage(
       data: {
         url:
           datos.url ||
-          "./"
+          URL_NOTIFICACIONES
       }
     };
 
@@ -144,6 +148,12 @@ messaging.onBackgroundMessage(
 );
 
 
+/*
+ * Al tocar cualquier notificación:
+ * - si trae una URL específica, la usamos;
+ * - si no trae URL (caso común de notificación automática FCM),
+ *   abrimos la bandeja de NOTIFICACIONES.
+ */
 self.addEventListener(
   "notificationclick",
   function(event) {
@@ -152,10 +162,11 @@ self.addEventListener(
 
 
     const destino =
+      event.notification &&
       event.notification.data &&
       event.notification.data.url
         ? event.notification.data.url
-        : "./";
+        : URL_NOTIFICACIONES;
 
 
     event.waitUntil(
@@ -176,15 +187,26 @@ self.addEventListener(
           ) {
 
             if (
-              "focus" in cliente
+              "navigate" in cliente
             ) {
 
-              cliente.navigate(
-                destino
-              );
+              return cliente
+                .navigate(
+                  destino
+                )
+                .then(
+                  function() {
 
+                    if (
+                      "focus" in cliente
+                    ) {
 
-              return cliente.focus();
+                      return cliente.focus();
+
+                    }
+
+                  }
+                );
 
             }
 
