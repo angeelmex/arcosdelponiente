@@ -544,6 +544,87 @@
       font-size: 14px;
     }
 
+    .modal-autorizacion-caseta {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 6200;
+      background: rgba(14,35,48,.72);
+      padding: 18px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-autorizacion-caseta.activo {
+      display: flex;
+    }
+
+    .autorizacion-caseta-card {
+      width: 100%;
+      max-width: 470px;
+      background: white;
+      border-radius: 24px;
+      padding: 24px 20px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.24);
+      text-align: center;
+    }
+
+    .autorizacion-caseta-icono {
+      width: 78px;
+      height: 78px;
+      margin: 0 auto 15px;
+      border-radius: 50%;
+      background: #e9f7ee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+    }
+
+    .autorizacion-caseta-card h2 {
+      margin: 0 0 10px;
+      color: #204d5d;
+      font-size: 23px;
+    }
+
+    .autorizacion-caseta-card p {
+      margin: 0 0 18px;
+      color: #64788b;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .btn-usar-autorizacion {
+      width: 100%;
+      min-height: 64px;
+      border: none;
+      border-radius: 18px;
+      background: #238c45;
+      color: white;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-escribir-nip {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 10px;
+      border: 2px solid #dce5ec;
+      border-radius: 18px;
+      background: white;
+      color: #204d5d;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .autorizacion-expira {
+      margin-top: 10px !important;
+      color: #8795a4 !important;
+      font-size: 12px !important;
+    }
+
 </style>
 
   <meta name="theme-color" content="#204d5d">
@@ -900,6 +981,50 @@
 
   </div>
 </div>
+
+<div
+  id="modalAutorizacionCaseta"
+  class="modal-autorizacion-caseta"
+>
+  <div class="autorizacion-caseta-card">
+
+    <div class="autorizacion-caseta-icono">
+      ✓
+    </div>
+
+    <h2>
+      Autorización del residente
+    </h2>
+
+    <p>
+      El residente compartió una autorización directamente con caseta.
+      Puedes usarla sin ver ni escribir el NIP.
+    </p>
+
+    <button
+      type="button"
+      class="btn-usar-autorizacion"
+      onclick="usarAutorizacionCaseta()"
+    >
+      USAR AUTORIZACIÓN
+    </button>
+
+    <button
+      type="button"
+      class="btn-escribir-nip"
+      onclick="usarNipManualEnLugarDeCaseta()"
+    >
+      ESCRIBIR NIP MANUALMENTE
+    </button>
+
+    <p
+      id="expiraAutorizacionCaseta"
+      class="autorizacion-expira"
+    ></p>
+
+  </div>
+</div>
+
 
 <div
   id="modalConfirmacionNip"
@@ -1575,6 +1700,9 @@ let requiereConfirmacionTelefonica = false;
 let llamadaConfirmacionIniciada = false;
 let requiereConfirmacionNip = false;
 let nipAutorizadoEntradaManual = "";
+let autorizacionCasetaId = "";
+let autorizacionCasetaDisponible = false;
+let autorizacionCasetaExpiracion = 0;
 let fotoPlacasProveedorBase64 = "";
 let fotoPlacasProveedorMime = "";
 let fotoIdentificacionProveedorBase64 = "";
@@ -2220,6 +2348,10 @@ function cargarNumeros() {
   requiereConfirmacionNip = false;
   nipAutorizadoEntradaManual = "";
   cerrarModalConfirmacionNip();
+  autorizacionCasetaId = "";
+  autorizacionCasetaDisponible = false;
+  autorizacionCasetaExpiracion = 0;
+  cerrarModalAutorizacionCaseta();
 
   const calle = document.getElementById("calle").value;
   const numero = document.getElementById("numero");
@@ -2366,12 +2498,41 @@ function cargarContactoEntradaManual() {
               true;
 
 
+          autorizacionCasetaDisponible =
+            resultado.datos
+              .autorizacionCasetaDisponible ===
+              true;
+
+
+          autorizacionCasetaId =
+            resultado.datos
+              .autorizacionCasetaId ||
+            "";
+
+
+          autorizacionCasetaExpiracion =
+            Number(
+              resultado.datos
+                .autorizacionCasetaExpiracion ||
+              0
+            );
+
+
           /*
            * Si este domicilio requiere llamada,
            * bloqueamos visualmente el flujo hasta que
            * el guardia toque LLAMAR y luego CONTINUAR.
            */
-                   if (
+          if (
+            requiereConfirmacionNip &&
+            autorizacionCasetaDisponible &&
+            autorizacionCasetaId
+          ) {
+
+            mostrarModalAutorizacionCaseta();
+
+          }
+          else if (
             requiereConfirmacionNip
           ) {
 
@@ -2572,6 +2733,147 @@ function continuarDespuesDeLlamada() {
     false;
 
 }
+
+/*************************************************
+ * AUTORIZACIÓN NIP COMPARTIDA CON CASETA
+ *************************************************/
+
+function mostrarModalAutorizacionCaseta() {
+
+  const expira =
+    document.getElementById(
+      "expiraAutorizacionCaseta"
+    );
+
+
+  if (
+    autorizacionCasetaExpiracion
+  ) {
+
+    const fecha =
+      new Date(
+        autorizacionCasetaExpiracion
+      );
+
+
+    expira.textContent =
+      "Disponible hasta " +
+      fecha.toLocaleTimeString(
+        "es-MX",
+        {
+          hour:
+            "2-digit",
+
+          minute:
+            "2-digit"
+        }
+      );
+
+  }
+  else {
+
+    expira.textContent =
+      "";
+
+  }
+
+
+  document
+    .getElementById(
+      "modalAutorizacionCaseta"
+    )
+    .classList
+    .add(
+      "activo"
+    );
+
+}
+
+
+
+function cerrarModalAutorizacionCaseta() {
+
+  const modal =
+    document.getElementById(
+      "modalAutorizacionCaseta"
+    );
+
+
+  if (
+    modal
+  ) {
+
+    modal.classList.remove(
+      "activo"
+    );
+
+  }
+
+}
+
+
+
+function usarAutorizacionCaseta() {
+
+  if (
+    !autorizacionCasetaId
+  ) {
+
+    cerrarModalAutorizacionCaseta();
+
+
+    mensaje(
+      "La autorización ya no está disponible.",
+      "error"
+    );
+
+
+    return;
+
+  }
+
+
+  requiereConfirmacionNip =
+    false;
+
+
+  nipAutorizadoEntradaManual =
+    "";
+
+
+  cerrarModalAutorizacionCaseta();
+
+
+  mensaje(
+    "Autorización de caseta seleccionada. Continúa con el registro.",
+    "ok"
+  );
+
+}
+
+
+
+function usarNipManualEnLugarDeCaseta() {
+
+  autorizacionCasetaId =
+    "";
+
+
+  autorizacionCasetaDisponible =
+    false;
+
+
+  autorizacionCasetaExpiracion =
+    0;
+
+
+  cerrarModalAutorizacionCaseta();
+
+
+  mostrarModalConfirmacionNip();
+
+}
+
 
 /*************************************************
  * MODAL NIP
@@ -3215,7 +3517,10 @@ function registrarEntrada() {
       fotoIdentificacionMime,
 
     nipAutorizacion:
-      nipAutorizadoEntradaManual
+      nipAutorizadoEntradaManual,
+
+    autorizacionCasetaId:
+      autorizacionCasetaId
 
   };
 
@@ -3422,6 +3727,18 @@ function registrarEntrada() {
          * El aviso al residente ya se procesa por push.
          * No dependemos de ninguna función antigua de WhatsApp.
          */
+        autorizacionCasetaId =
+          "";
+
+
+        autorizacionCasetaDisponible =
+          false;
+
+
+        autorizacionCasetaExpiracion =
+          0;
+
+
         guardarEstadoEntradaManual(
           "COMPLETADO"
         );
@@ -3986,6 +4303,10 @@ function limpiarEntrada() {
   requiereConfirmacionNip = false;
   nipAutorizadoEntradaManual = "";
   cerrarModalConfirmacionNip();
+  autorizacionCasetaId = "";
+  autorizacionCasetaDisponible = false;
+  autorizacionCasetaExpiracion = 0;
+  cerrarModalAutorizacionCaseta();
   tipoAcceso = "";
   document.getElementById("btnPeatonal").classList.remove("sel");
   document.getElementById("btnVehicular").classList.remove("sel");
