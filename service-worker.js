@@ -2,21 +2,20 @@
  * Arcos del Poniente - Service Worker V3
  * Firebase Cloud Messaging
  *
- * - Evita notificaciones duplicadas.
- * - Las notificaciones manuales guardan la URL de destino.
- * - Si una notificación de FCM llega sin data.url,
- *   al tocarla abre NOTIFICACIONES.
+ * CORRECCIÓN SEGURA:
+ * - No toca Code.gs, Accesos.gs, chat, NIP ni guardias.
+ * - Muestra explícitamente tanto mensajes DATA-ONLY como
+ *   mensajes que contienen payload.notification.
+ * - Mantiene apertura por URL y badge.
  */
 
 importScripts(
   "https://www.gstatic.com/firebasejs/12.17.0/firebase-app-compat.js"
 );
 
-
 importScripts(
   "https://www.gstatic.com/firebasejs/12.17.0/firebase-messaging-compat.js"
 );
-
 
 firebase.initializeApp({
   apiKey:
@@ -38,16 +37,14 @@ firebase.initializeApp({
     "1:359067671558:web:f0395d4220d5b5f40d7787"
 });
 
-
 const messaging =
   firebase.messaging();
-
 
 const URL_NOTIFICACIONES =
   "./notificaciones.html";
 
 const VERSION_SW =
-  "2026.08.26-chat-iphone-1";
+  "2026.08.26-residente-push-estable-2";
 
 
 self.addEventListener(
@@ -86,10 +83,14 @@ self.addEventListener(
 
 
 /*
- * FCM:
- * - Si el payload incluye "notification", FCM / el navegador
- *   ya la presenta y NO mostramos una segunda.
- * - Si llega solo como "data", nosotros la mostramos.
+ * FCM
+ *
+ * IMPORTANTE:
+ * Antes se hacía "return" cuando payload.notification existía,
+ * suponiendo que iOS/navegador la mostraría automáticamente.
+ * En la práctica eso puede dejar la notificación sin mostrar.
+ *
+ * Ahora SIEMPRE la presentamos explícitamente desde el SW.
  */
 messaging.onBackgroundMessage(
   async function(payload) {
@@ -107,30 +108,28 @@ messaging.onBackgroundMessage(
         : {};
 
 
-    /*
-     * Cuando el backend manda un payload "notification",
-     * FCM/navegador normalmente ya lo muestra por sí mismo.
-     * Evitamos duplicarlo.
-     */
-    if (
+    const notificacion =
       payload &&
       payload.notification
-    ) {
-
-      return;
-
-    }
+        ? payload.notification
+        : {};
 
 
     const titulo =
       datos.titulo ||
+      notificacion.title ||
       "Arcos del Poniente";
+
+
+    const cuerpo =
+      datos.cuerpo ||
+      notificacion.body ||
+      "Tienes una nueva notificación.";
 
 
     const opciones = {
       body:
-        datos.cuerpo ||
-        "Tienes una nueva notificación.",
+        cuerpo,
 
       icon:
         "./icon-192.png",
@@ -142,7 +141,17 @@ messaging.onBackgroundMessage(
         datos.tipo ===
           "CHAT_CASETA"
           ? "chat-caseta"
-          : undefined,
+          : (
+              datos.tipo ===
+                "INGRESO"
+                ? "acceso-ingreso"
+                : (
+                    datos.tipo ===
+                      "SALIDA"
+                      ? "acceso-salida"
+                      : undefined
+                  )
+            ),
 
       data: {
         url:
@@ -155,17 +164,15 @@ messaging.onBackgroundMessage(
 
         idResidente:
           datos.idResidente ||
+          "",
+
+        idAcceso:
+          datos.idAcceso ||
           ""
       }
     };
 
 
-    /*
-     * En una PWA instalada, intentamos marcar inmediatamente
-     * el icono aun cuando la app esté cerrada.
-     * Al volver a abrirla, menu.html reemplaza este indicador
-     * por el número real de mensajes pendientes.
-     */
     try {
 
       if (
@@ -204,8 +211,7 @@ messaging.onBackgroundMessage(
 /*
  * Al tocar cualquier notificación:
  * - si trae una URL específica, la usamos;
- * - si no trae URL (caso común de notificación automática FCM),
- *   abrimos la bandeja de NOTIFICACIONES.
+ * - si no, abrimos NOTIFICACIONES.
  */
 self.addEventListener(
   "notificationclick",
