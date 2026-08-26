@@ -407,6 +407,38 @@
   cursor: pointer;
 }
 
+.btn-compartir-nip {
+  display: none;
+  width: 100%;
+  min-height: 50px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 14px;
+  background: #238c45;
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-compartir-nip.compartido {
+  background: #e9f7ee;
+  color: #267245;
+  border: 1px solid #bfe4ca;
+}
+
+.nip-caseta-estado {
+  display: none;
+  margin-top: 9px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #edf3f6;
+  color: #486272;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
 
   
     .barra-superior-menu {
@@ -717,6 +749,20 @@
       >
         CANCELAR NIP
       </button>
+
+      <button
+        id="btnCompartirNipCaseta"
+        type="button"
+        class="btn-compartir-nip"
+        onclick="alternarNipCaseta()"
+      >
+        COMPARTIR CON CASETA
+      </button>
+
+      <div
+        id="estadoNipCaseta"
+        class="nip-caseta-estado"
+      ></div>
 
     </div>
 
@@ -1537,6 +1583,18 @@ function pintarEstadoNip(
     );
 
 
+  const botonCompartir =
+    document.getElementById(
+      "btnCompartirNipCaseta"
+    );
+
+
+  const estadoCaseta =
+    document.getElementById(
+      "estadoNipCaseta"
+    );
+
+
   botonGenerar.disabled =
     false;
 
@@ -1613,6 +1671,57 @@ function pintarEstadoNip(
     botonCancelar.style.display =
       "block";
 
+
+    botonCompartir.style.display =
+      "block";
+
+
+    botonCompartir.disabled =
+      false;
+
+
+    if (
+      datos.compartidoCaseta ===
+        true
+    ) {
+
+      botonCompartir.textContent =
+        "✓ COMPARTIDO CON CASETA";
+
+
+      botonCompartir.classList.add(
+        "compartido"
+      );
+
+
+      estadoCaseta.textContent =
+        "Caseta puede usar esta autorización sin ver ni escribir el NIP.";
+
+
+      estadoCaseta.style.display =
+        "block";
+
+    }
+    else {
+
+      botonCompartir.textContent =
+        "COMPARTIR CON CASETA";
+
+
+      botonCompartir.classList.remove(
+        "compartido"
+      );
+
+
+      estadoCaseta.textContent =
+        "";
+
+
+      estadoCaseta.style.display =
+        "none";
+
+    }
+
   }
   else {
 
@@ -1646,6 +1755,23 @@ function pintarEstadoNip(
 
     botonCancelar.style.display =
       "none";
+
+
+    botonCompartir.style.display =
+      "none";
+
+
+    botonCompartir.classList.remove(
+      "compartido"
+    );
+
+
+    estadoCaseta.style.display =
+      "none";
+
+
+    estadoCaseta.textContent =
+      "";
 
   }
 
@@ -1730,6 +1856,115 @@ function generarNip() {
 
       mostrarMensajeNip(
         "No fue posible generar el NIP."
+      );
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * COMPARTIR / QUITAR NIP DE CASETA
+ *************************************************/
+
+function alternarNipCaseta() {
+
+  const boton =
+    document.getElementById(
+      "btnCompartirNipCaseta"
+    );
+
+
+  if (
+    !boton ||
+    boton.disabled ||
+    OPERACION
+  ) {
+
+    return;
+
+  }
+
+
+  const compartido =
+    boton.classList.contains(
+      "compartido"
+    );
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    compartido
+      ? "QUITANDO..."
+      : "COMPARTIENDO...";
+
+
+  ejecutarOperacionV3(
+    compartido
+      ? "nipQuitarCaseta"
+      : "nipCompartirCaseta",
+
+    function(resultado) {
+
+      boton.disabled =
+        false;
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        boton.textContent =
+          compartido
+            ? "✓ COMPARTIDO CON CASETA"
+            : "COMPARTIR CON CASETA";
+
+
+        mostrarMensajeNip(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible actualizar la autorización."
+        );
+
+
+        return;
+
+      }
+
+
+      pintarEstadoNip(
+        resultado.datos
+      );
+
+
+      mostrarMensajeNip(
+        compartido
+          ? "El NIP ya no está disponible para caseta."
+          : "NIP compartido con caseta."
+      );
+
+    },
+
+    function() {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        compartido
+          ? "✓ COMPARTIDO CON CASETA"
+          : "COMPARTIR CON CASETA";
+
+
+      mostrarMensajeNip(
+        "No fue posible actualizar la autorización."
       );
 
     }
