@@ -3142,6 +3142,49 @@ const FIREBASE_CHAT_CONFIG = {
 };
 
 
+async function actualizarServiceWorkerResidente() {
+
+  try {
+
+    if (
+      !("serviceWorker" in navigator)
+    ) {
+
+      return;
+
+    }
+
+
+    const registro =
+      await navigator.serviceWorker
+        .register(
+          "./service-worker.js",
+          {
+            scope:
+              "./",
+
+            updateViaCache:
+              "none"
+          }
+        );
+
+
+    await registro.update();
+
+  }
+  catch (error) {
+
+    console.warn(
+      "No fue posible actualizar Service Worker:",
+      error
+    );
+
+  }
+
+}
+
+
+
 async function iniciarMensajesForegroundResidente() {
 
   try {
@@ -3213,7 +3256,10 @@ async function iniciarMensajesForegroundResidente() {
           payload.notification &&
           payload.notification.title
             ? payload.notification.title
-            : "Nuevo mensaje de caseta";
+            : (
+                datos.titulo ||
+                "Nuevo mensaje de caseta"
+              );
 
 
         const cuerpo =
@@ -3221,7 +3267,10 @@ async function iniciarMensajesForegroundResidente() {
           payload.notification &&
           payload.notification.body
             ? payload.notification.body
-            : "Caseta te envió un mensaje.";
+            : (
+                datos.cuerpo ||
+                "Caseta te envió un mensaje."
+              );
 
 
         if (
@@ -3279,7 +3328,14 @@ async function iniciarMensajesForegroundResidente() {
 
 document.addEventListener(
   "DOMContentLoaded",
-  iniciarMensajesForegroundResidente
+  async function() {
+
+    await actualizarServiceWorkerResidente();
+
+
+    iniciarMensajesForegroundResidente();
+
+  }
 );
 
 </script>
