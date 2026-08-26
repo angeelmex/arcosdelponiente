@@ -4583,6 +4583,53 @@ function enviarMensajeGuardia() {
         resultado.datos || {}
       );
 
+
+      const estadoPush =
+        resultado.datos &&
+        resultado.datos.notificacionPush
+          ? resultado.datos.notificacionPush
+          : null;
+
+
+      if (
+        estadoPush
+      ) {
+
+        if (
+          Number(
+            estadoPush.enviados || 0
+          ) > 0
+        ) {
+
+          mensaje(
+            "Mensaje enviado · notificación enviada al residente.",
+            "ok"
+          );
+
+        }
+        else if (
+          Number(
+            estadoPush.tokensEncontrados || 0
+          ) === 0
+        ) {
+
+          mensaje(
+            "Mensaje enviado · el residente no tiene dispositivo de notificaciones registrado.",
+            "error"
+          );
+
+        }
+        else {
+
+          mensaje(
+            "Mensaje enviado · Firebase no pudo entregar la notificación.",
+            "error"
+          );
+
+        }
+
+      }
+
     },
     function() {
 
