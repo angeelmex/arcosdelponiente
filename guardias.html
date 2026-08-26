@@ -231,6 +231,11 @@
       cursor:wait
     }
 
+    .chat-escribir textarea:disabled{
+      opacity:.65;
+      background:#f2f4f6
+    }
+
     .panel{
       display:none;
       background:white;
@@ -802,6 +807,18 @@
       font-size: 12px !important;
     }
 
+
+    .version-guardias {
+      position: fixed;
+      left: 8px;
+      bottom: 6px;
+      z-index: 2;
+      font-size: 9px;
+      color: rgba(90,108,120,.48);
+      pointer-events: none;
+      user-select: none;
+    }
+
 </style>
 
   <meta name="theme-color" content="#204d5d">
@@ -817,6 +834,14 @@
 
 </head>
 <body>
+
+<div
+  class="version-guardias"
+  id="versionGuardias"
+>
+  v 2026.08.26-1328
+</div>
+
 
 <div
   id="bloqueoGuardias"
@@ -1350,6 +1375,52 @@
 
 const URL_BACKEND =
   "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+const VERSION_GUARDIAS =
+  "2026.08.26-1328";
+
+
+function asegurarVersionGuardias() {
+
+  try {
+
+    const url =
+      new URL(
+        window.location.href
+      );
+
+
+    if (
+      url.searchParams.get(
+        "appv"
+      ) !==
+        VERSION_GUARDIAS
+    ) {
+
+      url.searchParams.set(
+        "appv",
+        VERSION_GUARDIAS
+      );
+
+
+      window.location.replace(
+        url.toString()
+      );
+
+
+      return false;
+
+    }
+
+  }
+  catch (error) {}
+
+
+  return true;
+
+}
+
 
 
 const CLAVE_LOCAL_GUARDIAS =
@@ -1957,6 +2028,7 @@ let chatGuardiaActivoId = "";
 let temporizadorChatGuardia = null;
 let chatGuardiaCargando = false;
 let intentosCargaChatGuardia = 0;
+let watchdogChatGuardia = null;
 let fotoPlacasProveedorBase64 = "";
 let fotoPlacasProveedorMime = "";
 let fotoIdentificacionProveedorBase64 = "";
@@ -1969,6 +2041,15 @@ const CLAVE_ESTADO_ENTRADA_MANUAL =
 document.addEventListener(
   "DOMContentLoaded",
   function() {
+
+    if (
+      !asegurarVersionGuardias()
+    ) {
+
+      return;
+
+    }
+
 
     registrarServiceWorkerGuardias();
 
@@ -4081,6 +4162,33 @@ function cargarChatGuardiaActivo(
 
 
   if (
+    watchdogChatGuardia
+  ) {
+
+    clearTimeout(
+      watchdogChatGuardia
+    );
+
+  }
+
+
+  watchdogChatGuardia =
+    setTimeout(
+      function() {
+
+        chatGuardiaCargando =
+          false;
+
+
+        watchdogChatGuardia =
+          null;
+
+      },
+      12000
+    );
+
+
+  if (
     mostrarCargando ===
       true
   ) {
@@ -4105,6 +4213,21 @@ function cargarChatGuardiaActivo(
 
       chatGuardiaCargando =
         false;
+
+
+      if (
+        watchdogChatGuardia
+      ) {
+
+        clearTimeout(
+          watchdogChatGuardia
+        );
+
+
+        watchdogChatGuardia =
+          null;
+
+      }
 
 
       intentosCargaChatGuardia =
@@ -4132,6 +4255,21 @@ function cargarChatGuardiaActivo(
 
       chatGuardiaCargando =
         false;
+
+
+      if (
+        watchdogChatGuardia
+      ) {
+
+        clearTimeout(
+          watchdogChatGuardia
+        );
+
+
+        watchdogChatGuardia =
+          null;
+
+      }
 
 
       programarReintentoChatGuardia();
@@ -4195,7 +4333,7 @@ function iniciarActualizacionChatGuardia() {
         }
 
       },
-      5000
+      4000
     );
 
 }
@@ -4377,11 +4515,25 @@ function enviarMensajeGuardia() {
     true;
 
 
+  input.disabled =
+    true;
+
+
   boton.textContent =
     "ENVIANDO...";
 
 
-  apiGuardias(
+  /*
+   * Permitimos que el navegador pinte ENVIANDO...
+   * antes de comenzar la operación de red.
+   */
+  requestAnimationFrame(
+    function() {
+
+      setTimeout(
+        function() {
+
+          apiGuardias(
     "guardiasChatEnviar",
     {
       idResidente:
@@ -4393,6 +4545,10 @@ function enviarMensajeGuardia() {
     function(resultado) {
 
       boton.disabled =
+        false;
+
+
+      input.disabled =
         false;
 
 
@@ -4434,6 +4590,10 @@ function enviarMensajeGuardia() {
         false;
 
 
+      input.disabled =
+        false;
+
+
       boton.textContent =
         "ENVIAR";
 
@@ -4441,6 +4601,13 @@ function enviarMensajeGuardia() {
       mensaje(
         "No fue posible enviar el mensaje.",
         "error"
+      );
+
+    }
+          );
+
+        },
+        40
       );
 
     }
