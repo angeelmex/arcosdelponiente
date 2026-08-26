@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <meta
+    name="theme-color"
+    content="#204d5d"
+  >
+
+  <title>Chat con caseta</title>
+
+  <style>
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:#f4f7fb;
+      color:#204d5d
+    }
+
+    .pagina{
+      min-height:100vh;
+      padding:14px 12px 22px
+    }
+
+    .contenedor{
+      max-width:620px;
+      margin:0 auto
+    }
+
+    .cabecera{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px
+    }
+
+    .cabecera h1{
+      margin:0;
+      font-size:24px
+    }
+
+    .sub{
+      color:#718198;
+      font-size:13px;
+      margin-top:4px
+    }
+
+    .volver{
+      border:none;
+      border-radius:14px;
+      background:white;
+      color:#204d5d;
+      font-weight:800;
+      padding:12px 14px;
+      box-shadow:0 5px 18px rgba(20,55,95,.08)
+    }
+
+    .chat-card{
+      background:white;
+      border-radius:22px;
+      box-shadow:0 6px 22px rgba(20,55,95,.08);
+      overflow:hidden
+    }
+
+    .mensajes{
+      min-height:55vh;
+      max-height:66vh;
+      overflow:auto;
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px
+    }
+
+    .vacio{
+      margin:auto;
+      text-align:center;
+      color:#7b8998;
+      line-height:1.5;
+      max-width:330px
+    }
+
+    .burbuja{
+      max-width:82%;
+      border-radius:18px;
+      padding:11px 13px;
+      line-height:1.4;
+      font-size:14px
+    }
+
+    .residente{
+      align-self:flex-end;
+      background:#204d5d;
+      color:white;
+      border-bottom-right-radius:6px
+    }
+
+    .guardia{
+      align-self:flex-start;
+      background:#edf3f6;
+      color:#20384f;
+      border-bottom-left-radius:6px
+    }
+
+    .sistema{
+      align-self:center;
+      max-width:94%;
+      background:#e9f7ee;
+      color:#267245;
+      text-align:center;
+      border:1px solid #c8e7d1;
+      font-size:13px
+    }
+
+    .hora{
+      margin-top:5px;
+      opacity:.72;
+      font-size:10px
+    }
+
+    .entrada{
+      border-top:1px solid #edf0f2;
+      padding:12px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:9px;
+      background:white
+    }
+
+    .entrada textarea{
+      width:100%;
+      min-height:50px;
+      max-height:110px;
+      resize:none;
+      border:2px solid #dce5ec;
+      border-radius:16px;
+      padding:12px 13px;
+      font-family:inherit;
+      font-size:15px;
+      outline:none
+    }
+
+    .enviar{
+      min-width:78px;
+      border:none;
+      border-radius:16px;
+      background:#238c45;
+      color:white;
+      font-weight:900;
+      padding:0 14px
+    }
+
+    .enviar:disabled{opacity:.55}
+
+    .nota{
+      padding:10px 14px 0;
+      color:#7b8998;
+      font-size:11px;
+      line-height:1.4
+    }
+
+    .estado{
+      text-align:center;
+      padding:28px;
+      color:#718198
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="pagina">
+  <div class="contenedor">
+
+    <div class="cabecera">
+      <div>
+        <h1>💬 Chat con caseta</h1>
+        <div id="domicilioChat" class="sub">
+          Mensajería de acceso
+        </div>
+      </div>
+
+      <button class="volver" onclick="volverMenu()">
+        MENÚ
+      </button>
+    </div>
+
+    <div class="chat-card">
+
+      <div id="mensajes" class="mensajes">
+        <div class="estado">Cargando mensajes...</div>
+      </div>
+
+      <div class="entrada">
+        <textarea
+          id="mensajeChat"
+          maxlength="500"
+          placeholder="Escribe un mensaje a caseta..."
+        ></textarea>
+
+        <button
+          id="btnEnviarChat"
+          class="enviar"
+          onclick="enviarMensaje()"
+        >
+          ENVIAR
+        </button>
+      </div>
+
+    </div>
+
+    <div class="nota">
+      Solo texto. Las autorizaciones de NIP aparecen como avisos del sistema y el número no se muestra al guardia.
+    </div>
+
+  </div>
+</div>
+
+<iframe
+  id="frameChat"
+  name="frameChat"
+  style="display:none;"
+></iframe>
+
+<form
+  id="formChat"
+  method="post"
+  target="frameChat"
+  style="display:none;"
+></form>
+
+<script>
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+const TOKEN =
+  sessionStorage.getItem(
+    "tokenResidente"
+  ) || "";
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    if (
+      !TOKEN
+    ) {
+
+      window.location.href =
+        "login.html";
+
+      return;
+
+    }
+
+
+    cargarChat();
+
+  }
+);
+
+
+
+function volverMenu() {
+
+  window.location.href =
+    "menu.html";
+
+}
+
+
+
+function generarId() {
+
+  if (
+    window.crypto &&
+    window.crypto.randomUUID
+  ) {
+
+    return window.crypto
+      .randomUUID()
+      .replace(
+        /-/g,
+        ""
+      );
+
+  }
+
+
+  return (
+    Date.now().toString(36) +
+    Math.random().toString(36).substring(2)
+  );
+
+}
+
+
+
+function operacion(
+  accion,
+  extras,
+  alTerminar,
+  alError
+) {
+
+  const requestId =
+    generarId();
+
+
+  const form =
+    document.getElementById(
+      "formChat"
+    );
+
+
+  form.action =
+    URL_BACKEND;
+
+
+  form.innerHTML =
+    "";
+
+
+  const datos =
+    Object.assign(
+      {},
+      extras || {},
+      {
+        accion:
+          accion,
+
+        requestId:
+          requestId,
+
+        token:
+          TOKEN
+      }
+    );
+
+
+  Object.keys(
+    datos
+  )
+  .forEach(
+    function(nombre) {
+
+      const input =
+        document.createElement(
+          "input"
+        );
+
+
+      input.type =
+        "hidden";
+
+
+      input.name =
+        nombre;
+
+
+      input.value =
+        datos[nombre] == null
+          ? ""
+          : String(
+              datos[nombre]
+            );
+
+
+      form.appendChild(
+        input
+      );
+
+    }
+  );
+
+
+  form.submit();
+
+
+  let intentos =
+    0;
+
+
+  function consultar() {
+
+    intentos++;
+
+
+    if (
+      intentos > 35
+    ) {
+
+      alError(
+        "El servidor está tardando más de lo normal."
+      );
+
+
+      return;
+
+    }
+
+
+    const callback =
+      "cbChat_" +
+      Date.now() +
+      "_" +
+      Math.floor(
+        Math.random() *
+        100000
+      );
+
+
+    window[
+      callback
+    ] =
+      function(resultado) {
+
+        try {
+          delete window[callback];
+        }
+        catch(e) {}
+
+
+        if (
+          !resultado ||
+          !resultado.ok
+        ) {
+
+          alError(
+            resultado &&
+            resultado.mensaje
+              ? resultado.mensaje
+              : "No fue posible consultar."
+          );
+
+
+          return;
+
+        }
+
+
+        const estado =
+          resultado.datos || {};
+
+
+        if (
+          estado.estado ===
+            "PENDIENTE"
+        ) {
+
+          setTimeout(
+            consultar,
+            400
+          );
+
+
+          return;
+
+        }
+
+
+        if (
+          estado.estado !==
+            "LISTO"
+        ) {
+
+          alError(
+            "No fue posible recuperar la operación."
+          );
+
+
+          return;
+
+        }
+
+
+        alTerminar(
+          estado.resultado
+        );
+
+      };
+
+
+    const script =
+      document.createElement(
+        "script"
+      );
+
+
+    script.src =
+      URL_BACKEND +
+      "?api=operacionEstado" +
+      "&requestId=" +
+      encodeURIComponent(
+        requestId
+      ) +
+      "&callback=" +
+      encodeURIComponent(
+        callback
+      ) +
+      "&t=" +
+      Date.now();
+
+
+    script.onload =
+      function() {
+
+        try {
+          script.remove();
+        }
+        catch(e) {}
+
+      };
+
+
+    script.onerror =
+      function() {
+
+        try {
+          script.remove();
+        }
+        catch(e) {}
+
+
+        setTimeout(
+          consultar,
+          550
+        );
+
+      };
+
+
+    document.body
+      .appendChild(
+        script
+      );
+
+  }
+
+
+  setTimeout(
+    consultar,
+    400
+  );
+
+}
+
+
+
+function cargarChat() {
+
+  operacion(
+    "chatCasetaListar",
+    {},
+    function(resultado) {
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarError(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cargar el chat."
+        );
+
+
+        return;
+
+      }
+
+
+      pintarChat(
+        resultado.datos || {}
+      );
+
+    },
+    mostrarError
+  );
+
+}
+
+
+
+function enviarMensaje() {
+
+  const input =
+    document.getElementById(
+      "mensajeChat"
+    );
+
+
+  const boton =
+    document.getElementById(
+      "btnEnviarChat"
+    );
+
+
+  const mensaje =
+    String(
+      input.value || ""
+    )
+    .trim();
+
+
+  if (
+    !mensaje
+  ) {
+
+    return;
+
+  }
+
+
+  boton.disabled =
+    true;
+
+
+  operacion(
+    "chatCasetaEnviar",
+    {
+      mensaje:
+        mensaje
+    },
+    function(resultado) {
+
+      boton.disabled =
+        false;
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarError(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible enviar."
+        );
+
+
+        return;
+
+      }
+
+
+      input.value =
+        "";
+
+
+      pintarChat(
+        resultado.datos || {}
+      );
+
+    },
+    function(texto) {
+
+      boton.disabled =
+        false;
+
+
+      mostrarError(
+        texto
+      );
+
+    }
+  );
+
+}
+
+
+
+function pintarChat(
+  datos
+) {
+
+  document
+    .getElementById(
+      "domicilioChat"
+    )
+    .textContent =
+      (
+        datos.calle ||
+        ""
+      ) +
+      (
+        datos.numero
+          ? " #" +
+            datos.numero
+          : ""
+      );
+
+
+  const contenedor =
+    document.getElementById(
+      "mensajes"
+    );
+
+
+  const mensajes =
+    datos.mensajes ||
+    [];
+
+
+  if (
+    !mensajes.length
+  ) {
+
+    contenedor.innerHTML =
+      '<div class="vacio">' +
+        'Todavía no hay mensajes con caseta.<br><br>' +
+        'Puedes escribir aquí o compartir un NIP desde el menú.' +
+      '</div>';
+
+
+    return;
+
+  }
+
+
+  contenedor.innerHTML =
+    mensajes
+      .map(
+        function(m) {
+
+          let clase =
+            "sistema";
+
+
+          if (
+            m.origen ===
+              "RESIDENTE"
+          ) {
+
+            clase =
+              "residente";
+
+          }
+          else if (
+            m.origen ===
+              "GUARDIA"
+          ) {
+
+            clase =
+              "guardia";
+
+          }
+
+
+          return (
+            '<div class="burbuja ' +
+              clase +
+            '">' +
+              escapar(
+                m.mensaje
+              ) +
+              '<div class="hora">' +
+                escapar(
+                  m.fecha
+                ) +
+              '</div>' +
+            '</div>'
+          );
+
+        }
+      )
+      .join(
+        ""
+      );
+
+
+  contenedor.scrollTop =
+    contenedor.scrollHeight;
+
+}
+
+
+
+function mostrarError(
+  texto
+) {
+
+  document
+    .getElementById(
+      "mensajes"
+    )
+    .innerHTML =
+      '<div class="estado">' +
+        escapar(
+          texto ||
+          "Ocurrió un error."
+        ) +
+      '</div>';
+
+}
+
+
+
+function escapar(
+  valor
+) {
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    valor == null
+      ? ""
+      : String(
+          valor
+        );
+
+
+  return div.innerHTML;
+
+}
+
+</script>
+
+</body>
+</html>
