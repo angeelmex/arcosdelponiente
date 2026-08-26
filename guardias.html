@@ -226,6 +226,11 @@
       padding:0 15px
     }
 
+    .chat-enviar:disabled{
+      opacity:.55;
+      cursor:wait
+    }
+
     .panel{
       display:none;
       background:white;
@@ -1949,6 +1954,9 @@ let autorizacionCasetaId = "";
 let autorizacionCasetaDisponible = false;
 let autorizacionCasetaExpiracion = 0;
 let chatGuardiaActivoId = "";
+let temporizadorChatGuardia = null;
+let chatGuardiaCargando = false;
+let intentosCargaChatGuardia = 0;
 let fotoPlacasProveedorBase64 = "";
 let fotoPlacasProveedorMime = "";
 let fotoIdentificacionProveedorBase64 = "";
@@ -2694,6 +2702,8 @@ function abrirProveedor() {
 
 
 function volverMenu() {
+
+  detenerActualizacionChatGuardia();
   document.getElementById("panelEntrada").classList.remove("activo");
   document.getElementById("panelSalida").classList.remove("activo");
   document.getElementById("panelProveedor").classList.remove("activo");
@@ -4033,32 +4043,80 @@ function abrirChatGuardia(
     );
 
 
-  const contenedor =
-    document.getElementById(
+  document
+    .getElementById(
       "mensajesChatGuardia"
-    );
+    )
+    .innerHTML =
+      '<div class="mini">Cargando conversación...</div>';
 
 
-  contenedor.innerHTML =
-    '<div class="mini">Cargando conversación...</div>';
+  cargarChatGuardiaActivo(
+    true
+  );
+
+
+  iniciarActualizacionChatGuardia();
+
+}
+
+
+
+function cargarChatGuardiaActivo(
+  mostrarCargando
+) {
+
+  if (
+    !chatGuardiaActivoId ||
+    chatGuardiaCargando
+  ) {
+
+    return;
+
+  }
+
+
+  chatGuardiaCargando =
+    true;
+
+
+  if (
+    mostrarCargando ===
+      true
+  ) {
+
+    document
+      .getElementById(
+        "mensajesChatGuardia"
+      )
+      .innerHTML =
+        '<div class="mini">Cargando conversación...</div>';
+
+  }
 
 
   apiGuardias(
     "guardiasChatAbrir",
     {
       idResidente:
-        idResidente
+        chatGuardiaActivoId
     },
     function(resultado) {
+
+      chatGuardiaCargando =
+        false;
+
+
+      intentosCargaChatGuardia =
+        0;
+
 
       if (
         !resultado ||
         !resultado.ok
       ) {
 
-        contenedor.innerHTML =
-          '<div class="mini">No fue posible abrir la conversación.</div>';
-
+        programarReintentoChatGuardia();
 
         return;
 
@@ -4072,11 +4130,93 @@ function abrirChatGuardia(
     },
     function() {
 
-      contenedor.innerHTML =
-        '<div class="mini">No fue posible abrir la conversación.</div>';
+      chatGuardiaCargando =
+        false;
+
+
+      programarReintentoChatGuardia();
 
     }
   );
+
+}
+
+
+
+function programarReintentoChatGuardia() {
+
+  intentosCargaChatGuardia++;
+
+
+  if (
+    intentosCargaChatGuardia > 3
+  ) {
+
+    return;
+
+  }
+
+
+  setTimeout(
+    function() {
+
+      cargarChatGuardiaActivo(
+        false
+      );
+
+    },
+    intentosCargaChatGuardia *
+      900
+  );
+
+}
+
+
+
+function iniciarActualizacionChatGuardia() {
+
+  detenerActualizacionChatGuardia();
+
+
+  temporizadorChatGuardia =
+    setInterval(
+      function() {
+
+        if (
+          document.visibilityState ===
+            "visible" &&
+          chatGuardiaActivoId
+        ) {
+
+          cargarChatGuardiaActivo(
+            false
+          );
+
+        }
+
+      },
+      5000
+    );
+
+}
+
+
+
+function detenerActualizacionChatGuardia() {
+
+  if (
+    temporizadorChatGuardia
+  ) {
+
+    clearInterval(
+      temporizadorChatGuardia
+    );
+
+
+    temporizadorChatGuardia =
+      null;
+
+  }
 
 }
 
@@ -4237,6 +4377,10 @@ function enviarMensajeGuardia() {
     true;
 
 
+  boton.textContent =
+    "ENVIANDO...";
+
+
   apiGuardias(
     "guardiasChatEnviar",
     {
@@ -4250,6 +4394,10 @@ function enviarMensajeGuardia() {
 
       boton.disabled =
         false;
+
+
+      boton.textContent =
+        "ENVIAR";
 
 
       if (
@@ -4286,6 +4434,10 @@ function enviarMensajeGuardia() {
         false;
 
 
+      boton.textContent =
+        "ENVIAR";
+
+
       mensaje(
         "No fue posible enviar el mensaje.",
         "error"
@@ -4299,6 +4451,9 @@ function enviarMensajeGuardia() {
 
 
 function volverAListaChatsGuardias() {
+
+  detenerActualizacionChatGuardia();
+
 
   chatGuardiaActivoId =
     "";
@@ -6179,6 +6334,38 @@ document.addEventListener(
       },
       500
     );
+
+  }
+);
+
+
+
+document.addEventListener(
+  "visibilitychange",
+  function() {
+
+    if (
+      document.visibilityState ===
+        "visible" &&
+      chatGuardiaActivoId
+    ) {
+
+      cargarChatGuardiaActivo(
+        false
+      );
+
+
+      iniciarActualizacionChatGuardia();
+
+    }
+    else if (
+      document.visibilityState !==
+        "visible"
+    ) {
+
+      detenerActualizacionChatGuardia();
+
+    }
 
   }
 );
