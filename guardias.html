@@ -1983,6 +1983,108 @@ document.addEventListener(
 
 
 
+function obtenerChatPendienteDesdeUrlGuardias() {
+
+  try {
+
+    const parametros =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    return String(
+      parametros.get(
+        "chat"
+      ) || ""
+    ).trim();
+
+  }
+  catch (error) {
+
+    return "";
+
+  }
+
+}
+
+
+
+function limpiarChatPendienteDeUrlGuardias() {
+
+  try {
+
+    const url =
+      new URL(
+        window.location.href
+      );
+
+
+    url.searchParams.delete(
+      "chat"
+    );
+
+
+    window.history.replaceState(
+      {},
+      "",
+      url.pathname +
+      (
+        url.search
+          ? url.search
+          : ""
+      ) +
+      (
+        url.hash
+          ? url.hash
+          : ""
+      )
+    );
+
+  }
+  catch (error) {}
+
+}
+
+
+
+function abrirChatPendienteDesdeUrlGuardias() {
+
+  const idResidente =
+    obtenerChatPendienteDesdeUrlGuardias();
+
+
+  if (
+    !idResidente
+  ) {
+
+    return;
+
+  }
+
+
+  /*
+   * Limpiamos la URL antes de abrirlo para que al recargar
+   * la app no vuelva a forzar la misma conversación.
+   */
+  limpiarChatPendienteDeUrlGuardias();
+
+
+  setTimeout(
+    function() {
+
+      abrirChatGuardia(
+        idResidente
+      );
+
+    },
+    250
+  );
+
+}
+
+
+
 function cargarDatosInicialesGuardias() {
 
   apiGuardias(
@@ -2085,6 +2187,9 @@ function cargarDatosInicialesGuardias() {
         revisarPendientesGuardias,
         500
       );
+
+
+      abrirChatPendienteDesdeUrlGuardias();
 
     },
     function(textoError) {
