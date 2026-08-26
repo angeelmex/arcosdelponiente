@@ -54,6 +54,137 @@
       background:#5f6f7a;
       color:white
     }
+    .menu button.mensajes-menu{
+      grid-column:1 / -1;
+      background:#ffffff;
+      color:#204d5d;
+      border:2px solid #204d5d
+    }
+
+    .chat-lista{
+      display:grid;
+      gap:9px
+    }
+
+    .chat-item{
+      width:100%;
+      border:2px solid #e3e9ee;
+      border-radius:17px;
+      background:white;
+      padding:13px;
+      text-align:left;
+      color:#20384f
+    }
+
+    .chat-item-arriba{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start
+    }
+
+    .chat-dom{
+      font-weight:900;
+      color:#204d5d
+    }
+
+    .chat-fecha{
+      color:#84909c;
+      font-size:11px
+    }
+
+    .chat-ultimo{
+      margin-top:5px;
+      color:#718198;
+      font-size:13px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis
+    }
+
+    .badge-chat{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:24px;
+      height:24px;
+      border-radius:999px;
+      background:#238c45;
+      color:white;
+      font-size:11px;
+      font-weight:900;
+      padding:0 7px
+    }
+
+    .chat-conversacion{
+      min-height:45vh;
+      max-height:57vh;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:9px;
+      margin:10px 0 12px;
+      padding:4px
+    }
+
+    .chat-burbuja{
+      max-width:84%;
+      border-radius:17px;
+      padding:10px 12px;
+      font-size:14px;
+      line-height:1.4
+    }
+
+    .chat-burbuja.residente{
+      align-self:flex-start;
+      background:#edf3f6;
+      color:#20384f;
+      border-bottom-left-radius:6px
+    }
+
+    .chat-burbuja.guardia{
+      align-self:flex-end;
+      background:#204d5d;
+      color:white;
+      border-bottom-right-radius:6px
+    }
+
+    .chat-burbuja.sistema{
+      align-self:center;
+      max-width:95%;
+      background:#e9f7ee;
+      color:#267245;
+      border:1px solid #c8e7d1;
+      text-align:center;
+      font-size:13px
+    }
+
+    .chat-hora{
+      margin-top:4px;
+      font-size:10px;
+      opacity:.7
+    }
+
+    .chat-escribir{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px
+    }
+
+    .chat-escribir textarea{
+      min-height:54px;
+      max-height:100px
+    }
+
+    .chat-enviar{
+      border:none;
+      border-radius:16px;
+      background:#238c45;
+      color:white;
+      font-weight:900;
+      padding:0 15px
+    }
+
     .panel{
       display:none;
       background:white;
@@ -687,6 +818,7 @@
     <button onclick="abrirEntrada()">REGISTRAR ENTRADA</button>
     <button class="sec" onclick="abrirSalida()">REGISTRAR SALIDA</button>
     <button class="proveedor-menu" onclick="abrirProveedor()">REGISTRAR PROVEEDOR</button>
+    <button class="mensajes-menu" onclick="abrirMensajesGuardias()">💬 MENSAJES CON RESIDENTES</button>
   </div>
 
   <section
@@ -825,6 +957,63 @@
     >
       REGISTRAR PROVEEDOR
     </button>
+  </section>
+
+
+  <section id="panelMensajesGuardias" class="panel">
+    <button class="volver" onclick="volverMenu()">← VOLVER</button>
+
+    <h2 style="margin:0 0 6px;">
+      💬 Mensajes
+    </h2>
+
+    <div class="mini" style="margin-bottom:14px;">
+      Conversaciones recientes con residentes
+    </div>
+
+    <div
+      id="listaChatsGuardias"
+      class="chat-lista"
+    ></div>
+  </section>
+
+
+  <section id="panelChatGuardia" class="panel">
+    <button class="volver" onclick="volverAListaChatsGuardias()">← CHATS</button>
+
+    <h2
+      id="tituloChatGuardia"
+      style="margin:0 0 4px;"
+    >
+      Conversación
+    </h2>
+
+    <div
+      id="subChatGuardia"
+      class="mini"
+    ></div>
+
+    <div
+      id="mensajesChatGuardia"
+      class="chat-conversacion"
+    ></div>
+
+    <div class="chat-escribir">
+      <textarea
+        id="inputChatGuardia"
+        maxlength="500"
+        placeholder="Escribe una respuesta..."
+      ></textarea>
+
+      <button
+        id="btnEnviarChatGuardia"
+        class="chat-enviar"
+        type="button"
+        onclick="enviarMensajeGuardia()"
+      >
+        ENVIAR
+      </button>
+    </div>
   </section>
 
 
@@ -1703,6 +1892,7 @@ let nipAutorizadoEntradaManual = "";
 let autorizacionCasetaId = "";
 let autorizacionCasetaDisponible = false;
 let autorizacionCasetaExpiracion = 0;
+let chatGuardiaActivoId = "";
 let fotoPlacasProveedorBase64 = "";
 let fotoPlacasProveedorMime = "";
 let fotoIdentificacionProveedorBase64 = "";
@@ -2298,6 +2488,8 @@ function abrirEntrada() {
   document.getElementById("menu").style.display = "none";
   document.getElementById("panelSalida").classList.remove("activo");
   document.getElementById("panelProveedor").classList.remove("activo");
+  document.getElementById("panelMensajesGuardias").classList.remove("activo");
+  document.getElementById("panelChatGuardia").classList.remove("activo");
   document.getElementById("panelEntrada").classList.add("activo");
 }
 
@@ -2307,6 +2499,8 @@ function abrirSalida() {
   document.getElementById("estadoRegistroProveedor").style.display = "none";
   document.getElementById("panelEntrada").classList.remove("activo");
   document.getElementById("panelProveedor").classList.remove("activo");
+  document.getElementById("panelMensajesGuardias").classList.remove("activo");
+  document.getElementById("panelChatGuardia").classList.remove("activo");
   document.getElementById("panelSalida").classList.add("activo");
   document.getElementById("buscarPlacas").focus();
 }
@@ -2319,6 +2513,8 @@ function abrirProveedor() {
   document.getElementById("estadoRegistroProveedor").style.display = "none";
   document.getElementById("panelEntrada").classList.remove("activo");
   document.getElementById("panelSalida").classList.remove("activo");
+  document.getElementById("panelMensajesGuardias").classList.remove("activo");
+  document.getElementById("panelChatGuardia").classList.remove("activo");
   document.getElementById("panelProveedor").classList.add("activo");
 
   setTimeout(
@@ -2334,6 +2530,8 @@ function volverMenu() {
   document.getElementById("panelEntrada").classList.remove("activo");
   document.getElementById("panelSalida").classList.remove("activo");
   document.getElementById("panelProveedor").classList.remove("activo");
+  document.getElementById("panelMensajesGuardias").classList.remove("activo");
+  document.getElementById("panelChatGuardia").classList.remove("activo");
   document.getElementById("estadoRegistroProveedor").style.display = "none";
   document.getElementById("menu").style.display = "grid";
 }
@@ -3339,6 +3537,521 @@ function seleccionarAcceso(tipo) {
   document.getElementById("bloqueVehicular").style.display =
     tipo === "VEHICULAR" ? "block" : "none";
 }
+
+
+
+function abrirMensajesGuardias() {
+
+  document
+    .getElementById(
+      "menu"
+    )
+    .style.display =
+      "none";
+
+
+  [
+    "panelEntrada",
+    "panelSalida",
+    "panelProveedor",
+    "panelChatGuardia"
+  ]
+  .forEach(
+    function(id) {
+
+      document
+        .getElementById(
+          id
+        )
+        .classList
+        .remove(
+          "activo"
+        );
+
+    }
+  );
+
+
+  document
+    .getElementById(
+      "panelMensajesGuardias"
+    )
+    .classList
+    .add(
+      "activo"
+    );
+
+
+  cargarListaChatsGuardias();
+
+}
+
+
+
+function cargarListaChatsGuardias() {
+
+  const contenedor =
+    document.getElementById(
+      "listaChatsGuardias"
+    );
+
+
+  contenedor.innerHTML =
+    '<div class="mini">Cargando conversaciones...</div>';
+
+
+  apiGuardias(
+    "guardiasChatsListar",
+    {},
+    function(resultado) {
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        contenedor.innerHTML =
+          '<div class="mini">No fue posible cargar los mensajes.</div>';
+
+
+        return;
+
+      }
+
+
+      const chats =
+        resultado.datos &&
+        resultado.datos.chats
+          ? resultado.datos.chats
+          : [];
+
+
+      if (
+        !chats.length
+      ) {
+
+        contenedor.innerHTML =
+          '<div class="mini">Todavía no hay conversaciones.</div>';
+
+
+        return;
+
+      }
+
+
+      contenedor.innerHTML =
+        "";
+
+
+      chats.forEach(
+        function(chat) {
+
+          const boton =
+            document.createElement(
+              "button"
+            );
+
+
+          boton.type =
+            "button";
+
+
+          boton.className =
+            "chat-item";
+
+
+          boton.innerHTML =
+            '<div class="chat-item-arriba">' +
+              '<div>' +
+                '<div class="chat-dom">' +
+                  escapar(
+                    chat.calle
+                  ) +
+                  ' #' +
+                  escapar(
+                    chat.numero
+                  ) +
+                '</div>' +
+                '<div class="chat-fecha">' +
+                  escapar(
+                    chat.fecha
+                  ) +
+                '</div>' +
+              '</div>' +
+              (
+                Number(
+                  chat.noLeidos || 0
+                ) > 0
+                  ? (
+                      '<span class="badge-chat">' +
+                        escapar(
+                          chat.noLeidos
+                        ) +
+                      '</span>'
+                    )
+                  : ''
+              ) +
+            '</div>' +
+            '<div class="chat-ultimo">' +
+              escapar(
+                chat.ultimoMensaje
+              ) +
+            '</div>';
+
+
+          boton.onclick =
+            function() {
+
+              abrirChatGuardia(
+                chat.idResidente
+              );
+
+            };
+
+
+          contenedor.appendChild(
+            boton
+          );
+
+        }
+      );
+
+    },
+    function() {
+
+      contenedor.innerHTML =
+        '<div class="mini">No fue posible cargar los mensajes.</div>';
+
+    }
+  );
+
+}
+
+
+
+function abrirChatGuardia(
+  idResidente
+) {
+
+  chatGuardiaActivoId =
+    idResidente;
+
+
+  document
+    .getElementById(
+      "panelMensajesGuardias"
+    )
+    .classList
+    .remove(
+      "activo"
+    );
+
+
+  document
+    .getElementById(
+      "panelChatGuardia"
+    )
+    .classList
+    .add(
+      "activo"
+    );
+
+
+  const contenedor =
+    document.getElementById(
+      "mensajesChatGuardia"
+    );
+
+
+  contenedor.innerHTML =
+    '<div class="mini">Cargando conversación...</div>';
+
+
+  apiGuardias(
+    "guardiasChatAbrir",
+    {
+      idResidente:
+        idResidente
+    },
+    function(resultado) {
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        contenedor.innerHTML =
+          '<div class="mini">No fue posible abrir la conversación.</div>';
+
+
+        return;
+
+      }
+
+
+      pintarChatGuardia(
+        resultado.datos || {}
+      );
+
+    },
+    function() {
+
+      contenedor.innerHTML =
+        '<div class="mini">No fue posible abrir la conversación.</div>';
+
+    }
+  );
+
+}
+
+
+
+function pintarChatGuardia(
+  datos
+) {
+
+  document
+    .getElementById(
+      "tituloChatGuardia"
+    )
+    .textContent =
+      (
+        datos.calle ||
+        "Domicilio"
+      ) +
+      (
+        datos.numero
+          ? " #" +
+            datos.numero
+          : ""
+      );
+
+
+  document
+    .getElementById(
+      "subChatGuardia"
+    )
+    .textContent =
+      datos.idResidente ||
+      "";
+
+
+  const contenedor =
+    document.getElementById(
+      "mensajesChatGuardia"
+    );
+
+
+  const mensajes =
+    datos.mensajes ||
+    [];
+
+
+  if (
+    !mensajes.length
+  ) {
+
+    contenedor.innerHTML =
+      '<div class="mini">Todavía no hay mensajes.</div>';
+
+
+    return;
+
+  }
+
+
+  contenedor.innerHTML =
+    mensajes
+      .map(
+        function(m) {
+
+          let clase =
+            "sistema";
+
+
+          if (
+            m.origen ===
+              "RESIDENTE"
+          ) {
+
+            clase =
+              "residente";
+
+          }
+          else if (
+            m.origen ===
+              "GUARDIA"
+          ) {
+
+            clase =
+              "guardia";
+
+          }
+
+
+          return (
+            '<div class="chat-burbuja ' +
+              clase +
+            '">' +
+              escapar(
+                m.mensaje
+              ) +
+              '<div class="chat-hora">' +
+                escapar(
+                  m.fecha
+                ) +
+              '</div>' +
+            '</div>'
+          );
+
+        }
+      )
+      .join(
+        ""
+      );
+
+
+  contenedor.scrollTop =
+    contenedor.scrollHeight;
+
+}
+
+
+
+function enviarMensajeGuardia() {
+
+  if (
+    !chatGuardiaActivoId
+  ) {
+
+    return;
+
+  }
+
+
+  const input =
+    document.getElementById(
+      "inputChatGuardia"
+    );
+
+
+  const boton =
+    document.getElementById(
+      "btnEnviarChatGuardia"
+    );
+
+
+  const mensajeTexto =
+    String(
+      input.value || ""
+    )
+    .trim();
+
+
+  if (
+    !mensajeTexto
+  ) {
+
+    return;
+
+  }
+
+
+  boton.disabled =
+    true;
+
+
+  apiGuardias(
+    "guardiasChatEnviar",
+    {
+      idResidente:
+        chatGuardiaActivoId,
+
+      mensaje:
+        mensajeTexto
+    },
+    function(resultado) {
+
+      boton.disabled =
+        false;
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible enviar.",
+          "error"
+        );
+
+
+        return;
+
+      }
+
+
+      input.value =
+        "";
+
+
+      pintarChatGuardia(
+        resultado.datos || {}
+      );
+
+    },
+    function() {
+
+      boton.disabled =
+        false;
+
+
+      mensaje(
+        "No fue posible enviar el mensaje.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+
+function volverAListaChatsGuardias() {
+
+  chatGuardiaActivoId =
+    "";
+
+
+  document
+    .getElementById(
+      "panelChatGuardia"
+    )
+    .classList
+    .remove(
+      "activo"
+    );
+
+
+  document
+    .getElementById(
+      "panelMensajesGuardias"
+    )
+    .classList
+    .add(
+      "activo"
+    );
+
+
+  cargarListaChatsGuardias();
+
+}
+
 
 
 function normalizarPlacasInput(input) {
