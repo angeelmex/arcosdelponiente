@@ -61,6 +61,47 @@
       border:2px solid #204d5d
     }
 
+    .menu button.mensajes-menu{
+      position:relative
+    }
+
+    .badge-menu-guardias{
+      display:none;
+      position:absolute;
+      top:9px;
+      right:11px;
+      min-width:24px;
+      height:24px;
+      padding:0 7px;
+      border-radius:999px;
+      background:#d84444;
+      color:white;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      font-weight:900
+    }
+
+    .badge-menu-guardias.activo{
+      display:flex
+    }
+
+    .menu button.notificaciones-menu{
+      grid-column:1 / -1;
+      min-height:58px;
+      background:#edf3f6;
+      color:#204d5d;
+      border:1px solid #d4e0e6;
+      font-size:14px
+    }
+
+    .menu button.notificaciones-menu.activo{
+      background:#e9f7ee;
+      color:#267245;
+      border-color:#c8e7d1
+    }
+
+
     .chat-lista{
       display:grid;
       gap:9px
@@ -818,7 +859,22 @@
     <button onclick="abrirEntrada()">REGISTRAR ENTRADA</button>
     <button class="sec" onclick="abrirSalida()">REGISTRAR SALIDA</button>
     <button class="proveedor-menu" onclick="abrirProveedor()">REGISTRAR PROVEEDOR</button>
-    <button class="mensajes-menu" onclick="abrirMensajesGuardias()">💬 MENSAJES CON RESIDENTES</button>
+    <button class="mensajes-menu" onclick="abrirMensajesGuardias()">
+      💬 MENSAJES CON RESIDENTES
+      <span
+        id="badgeMensajesGuardias"
+        class="badge-menu-guardias"
+      ></span>
+    </button>
+
+    <button
+      id="btnNotificacionesGuardias"
+      class="notificaciones-menu"
+      type="button"
+      onclick="activarNotificacionesGuardias()"
+    >
+      🔔 ACTIVAR NOTIFICACIONES
+    </button>
   </div>
 
   <section
@@ -2023,6 +2079,12 @@ function cargarDatosInicialesGuardias() {
 
           }
         );
+
+
+      setTimeout(
+        revisarPendientesGuardias,
+        500
+      );
 
     },
     function(textoError) {
@@ -3540,6 +3602,105 @@ function seleccionarAcceso(tipo) {
 
 
 
+function pintarBadgeMensajesGuardias(
+  total
+) {
+
+  const badge =
+    document.getElementById(
+      "badgeMensajesGuardias"
+    );
+
+
+  if (
+    !badge
+  ) {
+
+    return;
+
+  }
+
+
+  total =
+    Number(
+      total || 0
+    );
+
+
+  if (
+    total <= 0
+  ) {
+
+    badge.textContent =
+      "";
+
+
+    badge.classList.remove(
+      "activo"
+    );
+
+
+    return;
+
+  }
+
+
+  badge.textContent =
+    total > 99
+      ? "99+"
+      : String(
+          total
+        );
+
+
+  badge.classList.add(
+    "activo"
+  );
+
+}
+
+
+
+function revisarPendientesGuardias() {
+
+  if (
+    !claveGuardias
+  ) {
+
+    return;
+
+  }
+
+
+  apiGuardias(
+    "guardiasChatsListar",
+    {},
+    function(resultado) {
+
+      if (
+        resultado &&
+        resultado.ok
+      ) {
+
+        pintarBadgeMensajesGuardias(
+          Number(
+            resultado.datos &&
+            resultado.datos.totalNoLeidos
+              ? resultado.datos.totalNoLeidos
+              : 0
+          )
+        );
+
+      }
+
+    },
+    function() {}
+  );
+
+}
+
+
+
 function abrirMensajesGuardias() {
 
   document
@@ -3624,6 +3785,16 @@ function cargarListaChatsGuardias() {
         resultado.datos.chats
           ? resultado.datos.chats
           : [];
+
+
+      pintarBadgeMensajesGuardias(
+        Number(
+          resultado.datos &&
+          resultado.datos.totalNoLeidos
+            ? resultado.datos.totalNoLeidos
+            : 0
+        )
+      );
 
 
       if (
@@ -5438,6 +5609,474 @@ function mensaje(texto, tipo) {
     3500
   );
 }
+
+</script>
+
+
+<script type="module">
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+
+
+import {
+  getMessaging,
+  getToken,
+  isSupported
+} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-messaging.js";
+
+
+const FIREBASE_CONFIG_GUARDIAS = {
+  apiKey:
+    "AIzaSyDse3UCwboAneei4QM0KG468IkB8UeyG50",
+
+  authDomain:
+    "arcos-residentes.firebaseapp.com",
+
+  projectId:
+    "arcos-residentes",
+
+  storageBucket:
+    "arcos-residentes.firebasestorage.app",
+
+  messagingSenderId:
+    "359067671558",
+
+  appId:
+    "1:359067671558:web:f0395d4220d5b5f40d7787",
+
+  measurementId:
+    "G-LXQ2EWZLS0"
+};
+
+
+const VAPID_GUARDIAS =
+  "BNdhd8uJxRm7NgTovRjqUOvNkXQczHSaDHhDDnq1BtywcBNVLtby-_OdY5CCLCN7ElzNIaf_eqtYKAeaSdiqNnQ";
+
+
+const CLAVE_TOKEN_GUARDIAS =
+  "tokenNotificacionesGuardiasArcos";
+
+
+const CLAVE_DEVICE_GUARDIAS =
+  "deviceIdNotificacionesGuardiasArcos";
+
+
+function obtenerDeviceIdGuardias() {
+
+  let id =
+    localStorage.getItem(
+      CLAVE_DEVICE_GUARDIAS
+    ) || "";
+
+
+  if (
+    id
+  ) {
+
+    return id;
+
+  }
+
+
+  id =
+    (
+      window.crypto &&
+      crypto.randomUUID
+    )
+      ? crypto.randomUUID()
+      : (
+          "guardias_" +
+          Date.now() +
+          "_" +
+          Math.random()
+            .toString(36)
+            .slice(2)
+        );
+
+
+  localStorage.setItem(
+    CLAVE_DEVICE_GUARDIAS,
+    id
+  );
+
+
+  return id;
+
+}
+
+
+
+function detectarGuardiaDispositivo() {
+
+  const ua =
+    navigator.userAgent ||
+    "";
+
+
+  if (
+    /iPhone/i.test(
+      ua
+    )
+  ) {
+
+    return {
+      dispositivo:
+        "iPhone",
+
+      plataforma:
+        "iOS"
+    };
+
+  }
+
+
+  if (
+    /iPad/i.test(
+      ua
+    )
+  ) {
+
+    return {
+      dispositivo:
+        "iPad",
+
+      plataforma:
+        "iPadOS"
+    };
+
+  }
+
+
+  if (
+    /Android/i.test(
+      ua
+    )
+  ) {
+
+    return {
+      dispositivo:
+        "Android",
+
+      plataforma:
+        "Android"
+    };
+
+  }
+
+
+  return {
+    dispositivo:
+      "Navegador",
+
+    plataforma:
+      navigator.platform ||
+      ""
+  };
+
+}
+
+
+
+function pintarEstadoNotificacionesGuardias(
+  activo
+) {
+
+  const boton =
+    document.getElementById(
+      "btnNotificacionesGuardias"
+    );
+
+
+  if (
+    !boton
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    activo
+  ) {
+
+    boton.textContent =
+      "🔔 NOTIFICACIONES ACTIVADAS";
+
+
+    boton.classList.add(
+      "activo"
+    );
+
+  }
+  else {
+
+    boton.textContent =
+      "🔔 ACTIVAR NOTIFICACIONES";
+
+
+    boton.classList.remove(
+      "activo"
+    );
+
+  }
+
+}
+
+
+
+async function activarNotificacionesGuardiasInterno() {
+
+  const boton =
+    document.getElementById(
+      "btnNotificacionesGuardias"
+    );
+
+
+  try {
+
+    if (
+      !("Notification" in window) ||
+      !("serviceWorker" in navigator) ||
+      !(await isSupported())
+    ) {
+
+      mensaje(
+        "Este dispositivo no permite notificaciones web.",
+        "error"
+      );
+
+
+      return;
+
+    }
+
+
+    boton.disabled =
+      true;
+
+
+    boton.textContent =
+      "ACTIVANDO...";
+
+
+    const permiso =
+      await Notification.requestPermission();
+
+
+    if (
+      permiso !==
+        "granted"
+    ) {
+
+      boton.disabled =
+        false;
+
+
+      pintarEstadoNotificacionesGuardias(
+        false
+      );
+
+
+      return;
+
+    }
+
+
+    const registro =
+      await navigator.serviceWorker.register(
+        "./service-worker.js",
+        {
+          scope:
+            "./"
+        }
+      );
+
+
+    await navigator.serviceWorker.ready;
+
+
+    const app =
+      initializeApp(
+        FIREBASE_CONFIG_GUARDIAS,
+        "guardiasApp"
+      );
+
+
+    const messaging =
+      getMessaging(
+        app
+      );
+
+
+    const tokenFcm =
+      await getToken(
+        messaging,
+        {
+          vapidKey:
+            VAPID_GUARDIAS,
+
+          serviceWorkerRegistration:
+            registro
+        }
+      );
+
+
+    if (
+      !tokenFcm
+    ) {
+
+      throw new Error(
+        "No se generó el token."
+      );
+
+    }
+
+
+    const dispositivo =
+      detectarGuardiaDispositivo();
+
+
+    apiGuardias(
+      "guardiasNotificacionesRegistrar",
+      {
+        fcmToken:
+          tokenFcm,
+
+        deviceId:
+          obtenerDeviceIdGuardias(),
+
+        dispositivo:
+          dispositivo.dispositivo,
+
+        plataforma:
+          dispositivo.plataforma
+      },
+      function(resultado) {
+
+        boton.disabled =
+          false;
+
+
+        if (
+          !resultado ||
+          !resultado.ok
+        ) {
+
+          pintarEstadoNotificacionesGuardias(
+            false
+          );
+
+
+          mensaje(
+            resultado &&
+            resultado.mensaje
+              ? resultado.mensaje
+              : "No fue posible activar las notificaciones.",
+            "error"
+          );
+
+
+          return;
+
+        }
+
+
+        localStorage.setItem(
+          CLAVE_TOKEN_GUARDIAS,
+          tokenFcm
+        );
+
+
+        pintarEstadoNotificacionesGuardias(
+          true
+        );
+
+
+        mensaje(
+          "Notificaciones de caseta activadas.",
+          "ok"
+        );
+
+      },
+      function() {
+
+        boton.disabled =
+          false;
+
+
+        pintarEstadoNotificacionesGuardias(
+          false
+        );
+
+
+        mensaje(
+          "No fue posible activar las notificaciones.",
+          "error"
+        );
+
+      }
+    );
+
+  }
+  catch (error) {
+
+    console.error(
+      error
+    );
+
+
+    boton.disabled =
+      false;
+
+
+    pintarEstadoNotificacionesGuardias(
+      false
+    );
+
+
+    mensaje(
+      "No fue posible activar las notificaciones.",
+      "error"
+    );
+
+  }
+
+}
+
+
+
+window.activarNotificacionesGuardias =
+  activarNotificacionesGuardiasInterno;
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    setTimeout(
+      function() {
+
+        const token =
+          localStorage.getItem(
+            CLAVE_TOKEN_GUARDIAS
+          ) || "";
+
+
+        pintarEstadoNotificacionesGuardias(
+          Notification.permission ===
+            "granted" &&
+          !!token
+        );
+
+      },
+      500
+    );
+
+  }
+);
 
 </script>
 
