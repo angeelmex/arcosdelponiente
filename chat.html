@@ -251,6 +251,18 @@ const TOKEN =
   ) || "";
 
 
+let temporizadorChat =
+  null;
+
+
+let chatCargando =
+  false;
+
+
+let intentosCargaChat =
+  0;
+
+
 document.addEventListener(
   "DOMContentLoaded",
   function() {
@@ -267,7 +279,49 @@ document.addEventListener(
     }
 
 
-    cargarChat();
+    try {
+
+      sessionStorage.setItem(
+        "chatPendientesForzarCero",
+        "1"
+      );
+
+    }
+    catch (e) {}
+
+
+    cargarChat(
+      true
+    );
+
+
+    iniciarActualizacionChat();
+
+  }
+);
+
+
+document.addEventListener(
+  "visibilitychange",
+  function() {
+
+    if (
+      document.visibilityState ===
+        "visible"
+    ) {
+
+      cargarChat(
+        false
+      );
+
+      iniciarActualizacionChat();
+
+    }
+    else {
+
+      detenerActualizacionChat();
+
+    }
 
   }
 );
@@ -560,25 +614,57 @@ function operacion(
 
 
 
-function cargarChat() {
+function cargarChat(
+  mostrarCargando
+) {
+
+  if (
+    chatCargando
+  ) {
+
+    return;
+
+  }
+
+
+  chatCargando =
+    true;
+
+
+  if (
+    mostrarCargando ===
+      true
+  ) {
+
+    document
+      .getElementById(
+        "mensajes"
+      )
+      .innerHTML =
+        '<div class="estado">Cargando mensajes...</div>';
+
+  }
+
 
   operacion(
     "chatCasetaListar",
     {},
     function(resultado) {
 
+      chatCargando =
+        false;
+
+
+      intentosCargaChat =
+        0;
+
+
       if (
         !resultado ||
         !resultado.ok
       ) {
 
-        mostrarError(
-          resultado &&
-          resultado.mensaje
-            ? resultado.mensaje
-            : "No fue posible cargar el chat."
-        );
-
+        programarReintentoChat();
 
         return;
 
@@ -590,8 +676,94 @@ function cargarChat() {
       );
 
     },
-    mostrarError
+    function() {
+
+      chatCargando =
+        false;
+
+
+      programarReintentoChat();
+
+    }
   );
+
+}
+
+
+
+function programarReintentoChat() {
+
+  intentosCargaChat++;
+
+
+  if (
+    intentosCargaChat > 3
+  ) {
+
+    return;
+
+  }
+
+
+  setTimeout(
+    function() {
+
+      cargarChat(
+        false
+      );
+
+    },
+    intentosCargaChat *
+      900
+  );
+
+}
+
+
+
+function iniciarActualizacionChat() {
+
+  detenerActualizacionChat();
+
+
+  temporizadorChat =
+    setInterval(
+      function() {
+
+        if (
+          document.visibilityState ===
+            "visible"
+        ) {
+
+          cargarChat(
+            false
+          );
+
+        }
+
+      },
+      5000
+    );
+
+}
+
+
+
+function detenerActualizacionChat() {
+
+  if (
+    temporizadorChat
+  ) {
+
+    clearInterval(
+      temporizadorChat
+    );
+
+
+    temporizadorChat =
+      null;
+
+  }
 
 }
 
@@ -631,6 +803,10 @@ function enviarMensaje() {
     true;
 
 
+  boton.textContent =
+    "ENVIANDO...";
+
+
   operacion(
     "chatCasetaEnviar",
     {
@@ -641,6 +817,10 @@ function enviarMensaje() {
 
       boton.disabled =
         false;
+
+
+      boton.textContent =
+        "ENVIAR";
 
 
       if (
@@ -674,6 +854,10 @@ function enviarMensaje() {
 
       boton.disabled =
         false;
+
+
+      boton.textContent =
+        "ENVIAR";
 
 
       mostrarError(
