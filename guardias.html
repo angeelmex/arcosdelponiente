@@ -1568,7 +1568,7 @@ function apiGuardias(
 
 
     if (
-      intentos > 36
+      intentos > 120
     ) {
 
       if (
@@ -1577,7 +1577,7 @@ function apiGuardias(
       ) {
 
         error(
-          "El servidor está tardando más de lo normal."
+          "La operación sigue procesándose. No repitas el registro de inmediato; verifica primero si ya aparece en accesos."
         );
 
       }
@@ -5108,7 +5108,7 @@ function registrarEntrada() {
 
       
     },
-    function() {
+    function(textoError) {
 
 
 
@@ -5149,6 +5149,7 @@ function registrarEntrada() {
 
 
         mensaje(
+          textoError ||
           "No fue posible registrar la entrada.",
           "error"
         );
