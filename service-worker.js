@@ -2,11 +2,10 @@
  * Arcos del Poniente - Service Worker V3
  * Firebase Cloud Messaging
  *
- * CORRECCIÓN SEGURA:
- * - No toca Code.gs, Accesos.gs, chat, NIP ni guardias.
- * - Muestra explícitamente tanto mensajes DATA-ONLY como
- *   mensajes que contienen payload.notification.
- * - Mantiene apertura por URL y badge.
+ * - Evita notificaciones duplicadas.
+ * - Los mensajes con payload.notification los muestra FCM/iOS.
+ * - Los mensajes DATA-ONLY (chat/accesos) los muestra este Service Worker.
+ * - Mantiene URL de destino y badge.
  */
 
 importScripts(
@@ -44,54 +43,31 @@ const URL_NOTIFICACIONES =
   "./notificaciones.html";
 
 const VERSION_SW =
-  "2026.08.26-residente-push-estable-2";
-
+  "2026.08.26-residente-push-sin-duplicados-1";
 
 self.addEventListener(
   "install",
   function() {
-
     self.skipWaiting();
-
   }
 );
-
 
 self.addEventListener(
   "activate",
   function(event) {
-
     event.waitUntil(
       self.clients.claim()
     );
-
   }
 );
 
-
-/*
- * No almacenamos HTML en caché.
- */
 self.addEventListener(
   "fetch",
   function(event) {
-
     return;
-
   }
 );
 
-
-/*
- * FCM
- *
- * IMPORTANTE:
- * Antes se hacía "return" cuando payload.notification existía,
- * suponiendo que iOS/navegador la mostraría automáticamente.
- * En la práctica eso puede dejar la notificación sin mostrar.
- *
- * Ahora SIEMPRE la presentamos explícitamente desde el SW.
- */
 messaging.onBackgroundMessage(
   async function(payload) {
 
@@ -100,6 +76,17 @@ messaging.onBackgroundMessage(
       payload
     );
 
+    /*
+     * Si FCM/iOS ya recibió un payload.notification,
+     * lo presenta automáticamente. Salimos aquí para
+     * evitar mostrarla por segunda vez.
+     */
+    if (
+      payload &&
+      payload.notification
+    ) {
+      return;
+    }
 
     const datos =
       payload &&
@@ -107,29 +94,14 @@ messaging.onBackgroundMessage(
         ? payload.data
         : {};
 
-
-    const notificacion =
-      payload &&
-      payload.notification
-        ? payload.notification
-        : {};
-
-
     const titulo =
       datos.titulo ||
-      notificacion.title ||
       "Arcos del Poniente";
-
-
-    const cuerpo =
-      datos.cuerpo ||
-      notificacion.body ||
-      "Tienes una nueva notificación.";
-
 
     const opciones = {
       body:
-        cuerpo,
+        datos.cuerpo ||
+        "Tienes una nueva notificación.",
 
       icon:
         "./icon-192.png",
@@ -172,19 +144,13 @@ messaging.onBackgroundMessage(
       }
     };
 
-
     try {
 
       if (
         self.navigator &&
         "setAppBadge" in self.navigator
       ) {
-
-        await self.navigator
-          .setAppBadge(
-            1
-          );
-
+        await self.navigator.setAppBadge(1);
       }
 
     }
@@ -197,28 +163,18 @@ messaging.onBackgroundMessage(
 
     }
 
-
-    return self.registration
-      .showNotification(
-        titulo,
-        opciones
-      );
-
+    return self.registration.showNotification(
+      titulo,
+      opciones
+    );
   }
 );
 
-
-/*
- * Al tocar cualquier notificación:
- * - si trae una URL específica, la usamos;
- * - si no, abrimos NOTIFICACIONES.
- */
 self.addEventListener(
   "notificationclick",
   function(event) {
 
     event.notification.close();
-
 
     const destino =
       event.notification &&
@@ -226,7 +182,6 @@ self.addEventListener(
       event.notification.data.url
         ? event.notification.data.url
         : URL_NOTIFICACIONES;
-
 
     event.waitUntil(
       self.clients.matchAll(
@@ -259,32 +214,22 @@ self.addEventListener(
                     if (
                       "focus" in cliente
                     ) {
-
                       return cliente.focus();
-
                     }
 
                   }
                 );
-
             }
-
           }
-
 
           if (
             self.clients.openWindow
           ) {
-
-            return self.clients.openWindow(
-              destino
-            );
-
+            return self.clients.openWindow(destino);
           }
 
         }
       )
     );
-
   }
 );
