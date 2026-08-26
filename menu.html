@@ -541,6 +541,8 @@
 
     .chat-superior {
 
+      position: relative;
+
       width: 48px;
 
       height: 48px;
@@ -577,6 +579,29 @@
 
       transform: scale(0.97);
 
+    }
+
+    .chat-pendientes {
+      display: none;
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      min-width: 21px;
+      height: 21px;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: #d84444;
+      color: white;
+      border: 2px solid #f4f7fb;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .chat-pendientes.activo {
+      display: flex;
     }
 
     .estado-cuenta-superior {
@@ -648,6 +673,10 @@
           onclick="abrirChatCaseta()"
         >
           💬
+          <span
+            id="chatPendientes"
+            class="chat-pendientes"
+          ></span>
         </button>
 
         <button
@@ -1087,6 +1116,24 @@
 ></iframe>
 
 
+<iframe
+  id="frameChatPendientes"
+  name="frameChatPendientes"
+  style="display:none;"
+></iframe>
+
+<form
+  id="formChatPendientes"
+  method="post"
+  target="frameChatPendientes"
+  style="display:none;"
+>
+  <input id="chatPendientesAccion" name="accion">
+  <input id="chatPendientesRequestId" name="requestId">
+  <input id="chatPendientesToken" name="token">
+</form>
+
+
 <script>
 
 
@@ -1117,6 +1164,19 @@ const MAX_CONSULTAS_OPERACION =
 document.addEventListener(
   "DOMContentLoaded",
   iniciarMenu
+);
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    setTimeout(
+      cargarPendientesChatMenu,
+      1800
+    );
+
+  }
 );
 
 
@@ -2562,6 +2622,283 @@ window.addEventListener(
 
   }
 );
+
+
+
+function cargarPendientesChatMenu() {
+
+  const token =
+    sessionStorage.getItem(
+      "tokenResidente"
+    ) || "";
+
+
+  if (
+    !token
+  ) {
+
+    return;
+
+  }
+
+
+  const requestId =
+    generarRequestId();
+
+
+  const form =
+    document.getElementById(
+      "formChatPendientes"
+    );
+
+
+  form.action =
+    URL_BACKEND;
+
+
+  document
+    .getElementById(
+      "chatPendientesAccion"
+    )
+    .value =
+      "chatCasetaPendientes";
+
+
+  document
+    .getElementById(
+      "chatPendientesRequestId"
+    )
+    .value =
+      requestId;
+
+
+  document
+    .getElementById(
+      "chatPendientesToken"
+    )
+    .value =
+      token;
+
+
+  form.submit();
+
+
+  let intentos =
+    0;
+
+
+  function consultar() {
+
+    intentos++;
+
+
+    if (
+      intentos >
+        20
+    ) {
+
+      return;
+
+    }
+
+
+    const callback =
+      "cbPendientesChat_" +
+      Date.now() +
+      "_" +
+      Math.floor(
+        Math.random() *
+        100000
+      );
+
+
+    window[
+      callback
+    ] =
+      function(resultado) {
+
+        try {
+          delete window[callback];
+        }
+        catch (e) {}
+
+
+        if (
+          !resultado ||
+          !resultado.ok
+        ) {
+
+          return;
+
+        }
+
+
+        const estado =
+          resultado.datos ||
+          {};
+
+
+        if (
+          estado.estado ===
+            "PENDIENTE"
+        ) {
+
+          setTimeout(
+            consultar,
+            400
+          );
+
+
+          return;
+
+        }
+
+
+        if (
+          estado.estado !==
+            "LISTO" ||
+          !estado.resultado ||
+          !estado.resultado.ok
+        ) {
+
+          return;
+
+        }
+
+
+        pintarPendientesChatMenu(
+          Number(
+            estado.resultado.datos &&
+            estado.resultado.datos.noLeidos
+              ? estado.resultado.datos.noLeidos
+              : 0
+          )
+        );
+
+      };
+
+
+    const script =
+      document.createElement(
+        "script"
+      );
+
+
+    script.src =
+      URL_BACKEND +
+      "?api=operacionEstado" +
+      "&requestId=" +
+      encodeURIComponent(
+        requestId
+      ) +
+      "&callback=" +
+      encodeURIComponent(
+        callback
+      ) +
+      "&t=" +
+      Date.now();
+
+
+    script.onload =
+      function() {
+
+        try {
+          script.remove();
+        }
+        catch (e) {}
+
+      };
+
+
+    script.onerror =
+      function() {
+
+        try {
+          script.remove();
+        }
+        catch (e) {}
+
+
+        setTimeout(
+          consultar,
+          500
+        );
+
+      };
+
+
+    document.body.appendChild(
+      script
+    );
+
+  }
+
+
+  setTimeout(
+    consultar,
+    450
+  );
+
+}
+
+
+
+function pintarPendientesChatMenu(
+  total
+) {
+
+  const badge =
+    document.getElementById(
+      "chatPendientes"
+    );
+
+
+  if (
+    !badge
+  ) {
+
+    return;
+
+  }
+
+
+  total =
+    Number(
+      total || 0
+    );
+
+
+  if (
+    total <= 0
+  ) {
+
+    badge.textContent =
+      "";
+
+
+    badge.classList.remove(
+      "activo"
+    );
+
+
+    return;
+
+  }
+
+
+  badge.textContent =
+    total > 99
+      ? "99+"
+      : String(
+          total
+        );
+
+
+  badge.classList.add(
+    "activo"
+  );
+
+}
 
 
 
