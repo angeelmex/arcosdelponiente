@@ -1,0 +1,4411 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:#f4f7fb;
+      color:#204d5d
+    }
+    .pagina{
+      min-height:100vh;
+      padding:16px 14px 28px
+    }
+    .contenedor{
+      max-width:560px;
+      margin:0 auto
+    }
+    h1{
+      margin:0 0 6px;
+      font-size:28px
+    }
+    .sub{
+      color:#718198;
+      margin-bottom:18px
+    }
+    .menu{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-bottom:18px
+    }
+    .menu button{
+      min-height:96px;
+      border:none;
+      border-radius:20px;
+      background:#204d5d;
+      color:white;
+      font-size:18px;
+      font-weight:800
+    }
+    .menu button.sec{
+      background:white;
+      color:#204d5d;
+      border:2px solid #204d5d
+    }
+    .menu button.proveedor-menu{
+      grid-column:1 / -1;
+      background:#5f6f7a;
+      color:white
+    }
+    .panel{
+      display:none;
+      background:white;
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 6px 22px rgba(20,55,95,.10)
+    }
+    .panel.activo{display:block}
+    .volver{
+      border:none;
+      background:none;
+      color:#204d5d;
+      font-weight:800;
+      font-size:16px;
+      padding:0;
+      margin-bottom:14px
+    }
+    .grupo{margin-bottom:14px}
+    label{
+      display:block;
+      margin:0 0 7px 2px;
+      font-size:15px;
+      font-weight:800
+    }
+    select,input,textarea{
+      width:100%;
+      border:2px solid #dce5ec;
+      border-radius:16px;
+      background:white;
+      color:#20384f;
+      font-size:19px;
+      outline:none
+    }
+    select,input{
+      height:62px;
+      padding:0 15px
+    }
+    textarea{
+      min-height:90px;
+      padding:13px 15px;
+      resize:vertical
+    }
+    .selector{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px
+    }
+    .selector button{
+      min-height:64px;
+      border:2px solid #dce5ec;
+      border-radius:17px;
+      background:white;
+      color:#204d5d;
+      font-size:16px;
+      font-weight:800
+    }
+    .selector button.sel{
+      border-color:#204d5d;
+      background:#edf3f6
+    }
+    .foto-input{display:none}
+    .foto-btn{
+      min-height:64px;
+      border:2px solid #204d5d;
+      border-radius:17px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:16px;
+      font-weight:800
+    }
+    .preview{
+      display:none;
+      margin-top:9px;
+      border-radius:15px;
+      overflow:hidden
+    }
+    .preview img{
+      width:100%;
+      max-height:240px;
+      object-fit:cover;
+      display:block
+    }
+    .principal{
+      width:100%;
+      min-height:68px;
+      border:none;
+      border-radius:18px;
+      background:#238c45;
+      color:white;
+      font-size:19px;
+      font-weight:800
+    }
+    .principal:disabled{opacity:.55}
+    .resultados{
+      display:grid;
+      gap:10px;
+      margin-top:14px
+    }
+    .tarjeta{
+      border:2px solid #dce5ec;
+      border-radius:17px;
+      padding:14px
+    }
+    .tarjeta .fila{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:6px
+    }
+    .tarjeta strong{font-size:17px}
+    .mini{
+      color:#718198;
+      font-size:13px;
+      line-height:1.45
+    }
+    .fotos{
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+      margin-top:10px
+    }
+    .fotos a{
+      text-decoration:none;
+      padding:9px 10px;
+      border-radius:12px;
+      background:#edf3f6;
+      color:#204d5d;
+      font-size:12px;
+      font-weight:800
+    }
+    .salida{
+      width:100%;
+      min-height:60px;
+      margin-top:11px;
+      border:none;
+      border-radius:16px;
+      background:#204d5d;
+      color:white;
+      font-size:17px;
+      font-weight:800
+    }
+    .mensaje{
+      display:none;
+      position:fixed;
+      left:14px;
+      right:14px;
+      bottom:18px;
+      max-width:520px;
+      margin:auto;
+      z-index:4000;
+      padding:14px;
+      border-radius:15px;
+      text-align:center;
+      font-weight:800
+    }
+    .mensaje.ok{
+      display:block;
+      background:#e9f7ee;
+      color:#267245
+    }
+    .mensaje.error{
+      display:block;
+      background:#fdeaea;
+      color:#9b3333
+    }
+    .whatsapp-fijo{
+      display:none;
+      position:fixed;
+      left:14px;
+      right:14px;
+      bottom:78px;
+      max-width:520px;
+      margin:auto;
+      z-index:4100;
+      min-height:60px;
+      border-radius:17px;
+      background:#25D366;
+      color:white;
+      text-decoration:none;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      font-size:17px;
+      font-weight:800;
+      box-shadow:0 7px 24px rgba(0,0,0,.16)
+    }
+    @media(max-width:390px){
+      .menu{grid-template-columns:1fr}
+    }
+  
+    .estado-registro-manual {
+      display: none;
+      min-height: calc(100vh - 145px);
+      background: white;
+      border-radius: 24px;
+      padding: 38px 22px;
+      text-align: center;
+      box-shadow: 0 6px 22px rgba(20,55,95,.10);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .estado-registro-icono {
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: #e9f7ee;
+      color: #267245;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      font-weight: 800;
+    }
+
+    .estado-registro-manual h2 {
+      margin: 0 0 9px;
+      font-size: 24px;
+      color: #204d5d;
+    }
+
+    .estado-registro-manual p {
+      margin: 0;
+      color: #718198;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .estado-registro-manual .nuevo-registro {
+      width: 100%;
+      min-height: 60px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 17px;
+      background: #204d5d;
+      color: white;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+
+    .modal-confirmacion-telefono {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 6000;
+      background: rgba(14, 35, 48, .72);
+      padding: 18px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-confirmacion-telefono.activo {
+      display: flex;
+    }
+
+    .confirmacion-telefono-card {
+      width: 100%;
+      max-width: 470px;
+      background: white;
+      border-radius: 24px;
+      padding: 24px 20px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.24);
+      text-align: center;
+    }
+
+    .confirmacion-telefono-icono {
+      width: 78px;
+      height: 78px;
+      margin: 0 auto 15px;
+      border-radius: 50%;
+      background: #fff2cc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+    }
+
+    .confirmacion-telefono-card h2 {
+      margin: 0 0 10px;
+      color: #204d5d;
+      font-size: 23px;
+    }
+
+    .confirmacion-telefono-card p {
+      margin: 0 0 18px;
+      color: #64788b;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .btn-llamar-residente {
+      width: 100%;
+      min-height: 64px;
+      border: none;
+      border-radius: 18px;
+      background: #238c45;
+      color: white;
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .btn-continuar-confirmacion {
+      width: 100%;
+      min-height: 60px;
+      border: 2px solid #204d5d;
+      border-radius: 18px;
+      background: white;
+      color: #204d5d;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-continuar-confirmacion:disabled {
+      opacity: .45;
+      cursor: default;
+    }
+
+    .nota-confirmacion-telefono {
+      margin-top: 10px !important;
+      font-size: 13px !important;
+      color: #8795a4 !important;
+    }
+
+/*************************************************
+ * CONFIRMACIÓN POR NIP
+ *************************************************/
+
+.modal-confirmacion-nip {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 6100;
+  background: rgba(14, 35, 48, .72);
+  padding: 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-confirmacion-nip.activo {
+  display: flex;
+}
+
+.confirmacion-nip-card {
+  width: 100%;
+  max-width: 470px;
+  background: white;
+  border-radius: 24px;
+  padding: 24px 20px;
+  box-shadow: 0 14px 40px rgba(0,0,0,.24);
+  text-align: center;
+}
+
+.confirmacion-nip-icono {
+  width: 78px;
+  height: 78px;
+  margin: 0 auto 15px;
+  border-radius: 50%;
+  background: #edf3f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+}
+
+.confirmacion-nip-card h2 {
+  margin: 0 0 10px;
+  color: #204d5d;
+  font-size: 23px;
+}
+
+.confirmacion-nip-card p {
+  margin: 0 0 18px;
+  color: #64788b;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.input-nip {
+  width: 100%;
+  height: 66px;
+  border: 2px solid #dce5ec;
+  border-radius: 17px;
+  padding: 0 15px;
+  font-size: 28px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 6px;
+  margin-bottom: 12px;
+}
+
+.btn-validar-nip {
+  width: 100%;
+  min-height: 64px;
+  border: none;
+  border-radius: 18px;
+  background: #238c45;
+  color: white;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-validar-nip:disabled {
+  opacity: .55;
+}
+
+
+    .bloqueo-guardias {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: #f4f7fb;
+      padding: 22px 16px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bloqueo-guardias.activo {
+      display: flex;
+    }
+
+    .bloqueo-card {
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      border-radius: 26px;
+      padding: 28px 22px;
+      box-shadow: 0 12px 34px rgba(20,55,95,.14);
+      text-align: center;
+    }
+
+    .bloqueo-icono {
+      width: 82px;
+      height: 82px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: #edf3f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+
+    .bloqueo-card h2 {
+      margin: 0 0 8px;
+      color: #204d5d;
+      font-size: 24px;
+    }
+
+    .bloqueo-card p {
+      color: #718198;
+      line-height: 1.45;
+      margin: 0 0 16px;
+    }
+
+    .bloqueo-card input {
+      text-align: center;
+      letter-spacing: 3px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .bloqueo-card button {
+      width: 100%;
+      min-height: 62px;
+      border: none;
+      border-radius: 17px;
+      background: #204d5d;
+      color: white;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .bloqueo-error {
+      display: none;
+      margin-top: 12px;
+      color: #9b3333;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+</style>
+
+  <meta name="theme-color" content="#204d5d">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Control de Acceso">
+
+  <link rel="manifest" href="guardias-manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <title>Control de Acceso</title>
+
+</head>
+<body>
+
+<div
+  id="bloqueoGuardias"
+  class="bloqueo-guardias"
+>
+  <div class="bloqueo-card">
+    <div class="bloqueo-icono">🛡️</div>
+
+    <h2>Control de Acceso</h2>
+
+    <p>
+      Ingresa la clave de guardias para autorizar este dispositivo.
+    </p>
+
+    <input
+      id="claveGuardiasInput"
+      type="password"
+      autocomplete="off"
+      placeholder="CLAVE DE GUARDIAS"
+    >
+
+    <button
+      id="btnValidarClaveGuardias"
+      type="button"
+      onclick="validarClaveGuardias()"
+    >
+      INGRESAR
+    </button>
+
+    <div
+      id="errorClaveGuardias"
+      class="bloqueo-error"
+    ></div>
+  </div>
+</div>
+
+
+<div class="pagina">
+<div class="contenedor">
+
+  <h1>Control de acceso</h1>
+  <div class="sub">Registro rápido para guardias</div>
+
+  <div id="menu" class="menu">
+    <button onclick="abrirEntrada()">REGISTRAR ENTRADA</button>
+    <button class="sec" onclick="abrirSalida()">REGISTRAR SALIDA</button>
+    <button class="proveedor-menu" onclick="abrirProveedor()">REGISTRAR PROVEEDOR</button>
+  </div>
+
+  <section
+    id="estadoRegistroManual"
+    class="estado-registro-manual"
+  >
+    <div class="estado-registro-icono">✓</div>
+
+    <h2 id="tituloEstadoRegistroManual">
+      Procesando registro...
+    </h2>
+
+    <p id="textoEstadoRegistroManual">
+      El acceso fue enviado al sistema.<br>
+      No vuelvas a presionar DAR ACCESO.
+    </p>
+
+    <button
+      id="btnNuevoRegistroManual"
+      type="button"
+      class="nuevo-registro"
+      onclick="volverMenuPrincipalDespuesRegistro()"
+      style="display:none;"
+    >
+      IR AL MENÚ PRINCIPAL
+    </button>
+  </section>
+
+  <section
+    id="estadoRegistroSalida"
+    class="estado-registro-manual"
+    style="display:none;"
+  >
+    <div class="estado-registro-icono">✓</div>
+
+    <h2>
+      Salida registrada
+    </h2>
+
+    <p>
+      ✓ La salida quedó guardada correctamente.<br><br>
+      🔔 La notificación al residente fue procesada automáticamente.
+    </p>
+
+    <button
+      type="button"
+      class="nuevo-registro"
+      onclick="volverMenuPrincipalDespuesSalida()"
+    >
+      IR AL MENÚ PRINCIPAL
+    </button>
+  </section>
+
+
+
+  <section
+    id="estadoRegistroProveedor"
+    class="estado-registro-manual"
+    style="display:none;"
+  >
+    <div class="estado-registro-icono">✓</div>
+
+    <h2>Proveedor registrado</h2>
+
+    <p>
+      ✓ El ingreso del proveedor quedó guardado correctamente.<br><br>
+      No se vinculó a ningún domicilio.
+    </p>
+
+    <button
+      type="button"
+      class="nuevo-registro"
+      onclick="volverMenuPrincipalDespuesProveedor()"
+    >
+      IR AL MENÚ PRINCIPAL
+    </button>
+  </section>
+
+
+  <section id="panelProveedor" class="panel">
+    <button class="volver" onclick="volverMenu()">← VOLVER</button>
+
+    <div class="grupo">
+      <label>Placas del proveedor</label>
+      <input
+        id="placasProveedor"
+        maxlength="12"
+        autocapitalize="characters"
+        autocomplete="off"
+        inputmode="text"
+        placeholder="ABC123"
+        oninput="normalizarPlacasInput(this)"
+      >
+    </div>
+
+    <div class="grupo">
+      <label>Foto de placas</label>
+      <input
+        id="fotoPlacasProveedor"
+        class="foto-input"
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onchange="procesarFotoProveedor(this,'placas')"
+      >
+      <label class="foto-btn" for="fotoPlacasProveedor">
+        📷 TOMAR FOTO DE PLACAS
+      </label>
+      <div id="previewPlacasProveedor" class="preview">
+        <img id="imgPlacasProveedor">
+      </div>
+    </div>
+
+    <div class="grupo">
+      <label>Foto de identificación</label>
+      <input
+        id="fotoIdentificacionProveedor"
+        class="foto-input"
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onchange="procesarFotoProveedor(this,'identificacion')"
+      >
+      <label class="foto-btn" for="fotoIdentificacionProveedor">
+        📷 TOMAR FOTO DE IDENTIFICACIÓN
+      </label>
+      <div id="previewIdentificacionProveedor" class="preview">
+        <img id="imgIdentificacionProveedor">
+      </div>
+    </div>
+
+    <button
+      id="btnRegistrarProveedor"
+      class="principal"
+      onclick="registrarProveedor()"
+    >
+      REGISTRAR PROVEEDOR
+    </button>
+  </section>
+
+
+  <section id="panelEntrada" class="panel">
+    <button class="volver" onclick="volverMenu()">← VOLVER</button>
+
+    <div class="grupo">
+      <label>Calle</label>
+      <select id="calle" onchange="cargarNumeros()">
+        <option value="">Selecciona calle</option>
+      </select>
+    </div>
+
+    <div class="grupo">
+      <label>Número</label>
+      <select id="numero" onchange="cargarContactoEntradaManual()">
+        <option value="">Selecciona número</option>
+      </select>
+    </div>
+
+    <div class="grupo">
+      <label>Nombre del visitante</label>
+      <input id="nombreVisitante" maxlength="100">
+    </div>
+
+    <div class="grupo">
+      <label>Tipo de visita</label>
+      <select id="tipoVisita"></select>
+    </div>
+
+    <div class="grupo">
+      <label>Tipo de acceso</label>
+      <div class="selector">
+        <button id="btnPeatonal" type="button" onclick="seleccionarAcceso('PEATONAL')">PEATONAL</button>
+        <button id="btnVehicular" type="button" onclick="seleccionarAcceso('VEHICULAR')">VEHICULAR</button>
+      </div>
+    </div>
+
+    <div id="bloqueVehicular" style="display:none;">
+      <div class="grupo">
+        <label>Placas</label>
+        <input
+          id="placas"
+          maxlength="12"
+          autocapitalize="characters"
+          oninput="normalizarPlacasInput(this)"
+          placeholder="ABC123"
+        >
+      </div>
+
+      <div class="grupo">
+        <label>Foto de placas</label>
+        <input
+          id="fotoPlacas"
+          class="foto-input"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onchange="procesarFoto(this,'placas')"
+        >
+        <label class="foto-btn" for="fotoPlacas">📷 TOMAR FOTO DE PLACAS</label>
+        <div id="previewPlacas" class="preview"><img id="imgPlacas"></div>
+      </div>
+    </div>
+
+    <div class="grupo">
+      <label>Foto de identificación</label>
+      <input
+        id="fotoIdentificacion"
+        class="foto-input"
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onchange="procesarFoto(this,'identificacion')"
+      >
+      <label class="foto-btn" for="fotoIdentificacion">📷 TOMAR FOTO DE IDENTIFICACIÓN</label>
+      <div id="previewIdentificacion" class="preview"><img id="imgIdentificacion"></div>
+    </div>
+
+    <div class="grupo">
+      <label>Observaciones</label>
+      <textarea id="observaciones" placeholder="Opcional"></textarea>
+    </div>
+
+    <button id="btnDarAcceso" class="principal" onclick="registrarEntrada()">
+      DAR ACCESO
+    </button>
+  </section>
+
+
+  <section id="panelSalida" class="panel">
+    <button class="volver" onclick="volverMenu()">← VOLVER</button>
+
+    <div class="grupo">
+      <label>Buscar placas</label>
+      <input
+        id="buscarPlacas"
+        maxlength="12"
+        autocapitalize="characters"
+        placeholder="Escribe una parte de las placas"
+        oninput="buscarSalidas()"
+      >
+    </div>
+
+    <div id="resultados" class="resultados"></div>
+  </section>
+
+</div>
+</div>
+
+<div
+  id="modalConfirmacionTelefono"
+  class="modal-confirmacion-telefono"
+>
+  <div class="confirmacion-telefono-card">
+
+    <div class="confirmacion-telefono-icono">
+      📞
+    </div>
+
+    <h2>
+      Confirmación telefónica requerida
+    </h2>
+
+    <p>
+      Este domicilio requiere confirmación vía telefónica antes de continuar con el registro.
+    </p>
+
+    <button
+      id="btnLlamarResidente"
+      type="button"
+      class="btn-llamar-residente"
+      onclick="llamarResidenteConfirmacion()"
+    >
+      📞 LLAMAR AL RESIDENTE
+    </button>
+
+    <button
+      id="btnContinuarConfirmacion"
+      type="button"
+      class="btn-continuar-confirmacion"
+      onclick="continuarDespuesDeLlamada()"
+      disabled
+    >
+      CONTINUAR REGISTRO
+    </button>
+
+    <p
+      id="notaConfirmacionTelefono"
+      class="nota-confirmacion-telefono"
+    >
+      Después de presionar LLAMAR, regresa aquí y toca CONTINUAR REGISTRO.
+    </p>
+
+  </div>
+</div>
+
+<div
+  id="modalConfirmacionNip"
+  class="modal-confirmacion-nip"
+>
+
+  <div class="confirmacion-nip-card">
+
+    <div class="confirmacion-nip-icono">
+      🔐
+    </div>
+
+    <h2>
+      NIP de autorización requerido
+    </h2>
+
+    <p>
+      Este domicilio utiliza un NIP temporal.
+      Solicita al visitante el código proporcionado por el residente.
+    </p>
+
+    <input
+      id="inputNipAutorizacion"
+      class="input-nip"
+      type="tel"
+      inputmode="numeric"
+      maxlength="6"
+      autocomplete="off"
+      placeholder="000000"
+      oninput="normalizarNipGuardia(this)"
+    >
+
+    <button
+      id="btnValidarNip"
+      type="button"
+      class="btn-validar-nip"
+      onclick="validarNipGuardia()"
+    >
+      VALIDAR NIP
+    </button>
+
+  </div>
+
+</div>
+
+<a
+  id="btnWhatsapp"
+  class="whatsapp-fijo"
+  href="#"
+  target="_top"
+  rel="noopener"
+>
+  💬 ABRIR WHATSAPP
+</a>
+
+<div id="mensaje" class="mensaje"></div>
+
+
+<iframe
+  id="frameApiGuardias"
+  name="frameApiGuardias"
+  style="display:none;"
+></iframe>
+
+<form
+  id="formApiGuardias"
+  method="post"
+  target="frameApiGuardias"
+  style="display:none;"
+></form>
+
+<script>
+
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+
+
+const CLAVE_LOCAL_GUARDIAS =
+  "claveGuardiasArcosV3";
+
+
+let claveGuardias =
+  localStorage.getItem(
+    CLAVE_LOCAL_GUARDIAS
+  ) || "";
+
+
+let apiGuardiasOcupada =
+  false;
+
+
+
+function generarRequestIdGuardias() {
+
+  if (
+    window.crypto &&
+    window.crypto.randomUUID
+  ) {
+
+    return window.crypto
+      .randomUUID()
+      .replace(
+        /-/g,
+        ""
+      );
+
+  }
+
+
+  return (
+    Date.now().toString(36) +
+    Math.random().toString(36).substring(2) +
+    Math.random().toString(36).substring(2)
+  );
+
+}
+
+
+
+function apiGuardias(
+  accion,
+  parametros,
+  exito,
+  error,
+  opciones
+) {
+
+  opciones =
+    opciones || {};
+
+
+  const requestId =
+    generarRequestIdGuardias();
+
+
+  const form =
+    document.getElementById(
+      "formApiGuardias"
+    );
+
+
+  form.action =
+    URL_BACKEND;
+
+
+  form.innerHTML =
+    "";
+
+
+  const datos =
+    Object.assign(
+      {},
+      parametros || {},
+      {
+        accion:
+          accion,
+
+        requestId:
+          requestId,
+
+        claveGuardias:
+          opciones.sinClave
+            ? (
+                parametros &&
+                parametros.claveGuardias
+                  ? parametros.claveGuardias
+                  : ""
+              )
+            : claveGuardias
+      }
+    );
+
+
+  Object.keys(
+    datos
+  )
+  .forEach(
+    function(nombre) {
+
+      const input =
+        document.createElement(
+          "input"
+        );
+
+
+      input.type =
+        "hidden";
+
+
+      input.name =
+        nombre;
+
+
+      input.value =
+        datos[nombre] == null
+          ? ""
+          : String(
+              datos[nombre]
+            );
+
+
+      form.appendChild(
+        input
+      );
+
+    }
+  );
+
+
+  form.submit();
+
+
+  let intentos =
+    0;
+
+
+  function consultar() {
+
+    intentos++;
+
+
+    if (
+      intentos > 36
+    ) {
+
+      if (
+        typeof error ===
+          "function"
+      ) {
+
+        error(
+          "El servidor está tardando más de lo normal."
+        );
+
+      }
+
+
+      return;
+
+    }
+
+
+    const callback =
+      "cbGuardias_" +
+      Date.now() +
+      "_" +
+      Math.floor(
+        Math.random() *
+        100000
+      );
+
+
+    window[
+      callback
+    ] =
+      function(resultado) {
+
+        try {
+          delete window[
+            callback
+          ];
+        }
+        catch (e) {}
+
+
+        if (
+          !resultado ||
+          !resultado.ok
+        ) {
+
+          if (
+            typeof error ===
+              "function"
+          ) {
+
+            error(
+              resultado &&
+              resultado.mensaje
+                ? resultado.mensaje
+                : "No fue posible consultar el servidor."
+            );
+
+          }
+
+
+          return;
+
+        }
+
+
+        const datosEstado =
+          resultado.datos || {};
+
+
+        if (
+          datosEstado.estado ===
+            "PENDIENTE"
+        ) {
+
+          setTimeout(
+            consultar,
+            350
+          );
+
+
+          return;
+
+        }
+
+
+        if (
+          datosEstado.estado !==
+            "LISTO"
+        ) {
+
+          if (
+            typeof error ===
+              "function"
+          ) {
+
+            error(
+              "No fue posible recuperar la operación."
+            );
+
+          }
+
+
+          return;
+
+        }
+
+
+        const respuesta =
+          datosEstado.resultado;
+
+
+        if (
+          respuesta &&
+          respuesta.ok ===
+            false &&
+          String(
+            respuesta.mensaje || ""
+          )
+          .toLowerCase()
+          .indexOf(
+            "no autorizado"
+          ) >= 0
+        ) {
+
+          localStorage.removeItem(
+            CLAVE_LOCAL_GUARDIAS
+          );
+
+
+          claveGuardias =
+            "";
+
+
+          mostrarBloqueoGuardias();
+
+
+          if (
+            typeof error ===
+              "function"
+          ) {
+
+            error(
+              "La clave del dispositivo ya no es válida."
+            );
+
+          }
+
+
+          return;
+
+        }
+
+
+        if (
+          typeof exito ===
+            "function"
+        ) {
+
+          exito(
+            respuesta
+          );
+
+        }
+
+      };
+
+
+    const script =
+      document.createElement(
+        "script"
+      );
+
+
+    script.src =
+      URL_BACKEND +
+      "?api=operacionEstado" +
+      "&requestId=" +
+      encodeURIComponent(
+        requestId
+      ) +
+      "&callback=" +
+      encodeURIComponent(
+        callback
+      ) +
+      "&t=" +
+      Date.now();
+
+
+    script.onerror =
+      function() {
+
+        try {
+          script.remove();
+        }
+        catch (e) {}
+
+
+        setTimeout(
+          consultar,
+          500
+        );
+
+      };
+
+
+    script.onload =
+      function() {
+
+        try {
+          script.remove();
+        }
+        catch (e) {}
+
+      };
+
+
+    document.body
+      .appendChild(
+        script
+      );
+
+  }
+
+
+  setTimeout(
+    consultar,
+    450
+  );
+
+}
+
+
+
+function mostrarBloqueoGuardias() {
+
+  document
+    .getElementById(
+      "bloqueoGuardias"
+    )
+    .classList
+    .add(
+      "activo"
+    );
+
+}
+
+
+
+function ocultarBloqueoGuardias() {
+
+  document
+    .getElementById(
+      "bloqueoGuardias"
+    )
+    .classList
+    .remove(
+      "activo"
+    );
+
+}
+
+
+
+function validarClaveGuardias() {
+
+  const input =
+    document.getElementById(
+      "claveGuardiasInput"
+    );
+
+
+  const boton =
+    document.getElementById(
+      "btnValidarClaveGuardias"
+    );
+
+
+  const errorEl =
+    document.getElementById(
+      "errorClaveGuardias"
+    );
+
+
+  const clave =
+    String(
+      input.value || ""
+    )
+    .trim();
+
+
+  if (
+    !clave
+  ) {
+
+    errorEl.textContent =
+      "Ingresa la clave.";
+
+
+    errorEl.style.display =
+      "block";
+
+
+    return;
+
+  }
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "VALIDANDO...";
+
+
+  errorEl.style.display =
+    "none";
+
+
+  apiGuardias(
+    "guardiasVerificarClave",
+    {
+      claveGuardias:
+        clave
+    },
+    function(resultado) {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "INGRESAR";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        errorEl.textContent =
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "Clave incorrecta.";
+
+
+        errorEl.style.display =
+          "block";
+
+
+        return;
+
+      }
+
+
+      claveGuardias =
+        clave;
+
+
+      localStorage.setItem(
+        CLAVE_LOCAL_GUARDIAS,
+        clave
+      );
+
+
+      input.value =
+        "";
+
+
+      ocultarBloqueoGuardias();
+
+
+      cargarDatosInicialesGuardias();
+
+    },
+    function(textoError) {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "INGRESAR";
+
+
+      errorEl.textContent =
+        textoError ||
+        "No fue posible validar la clave.";
+
+
+      errorEl.style.display =
+        "block";
+
+    },
+    {
+      sinClave:
+        true
+    }
+  );
+
+}
+
+
+
+function registrarServiceWorkerGuardias() {
+
+  if (
+    !("serviceWorker" in navigator)
+  ) {
+
+    return;
+
+  }
+
+
+  navigator.serviceWorker
+    .register(
+      "./service-worker.js",
+      {
+        scope:
+          "./"
+      }
+    )
+    .catch(
+      function(error) {
+
+        console.warn(
+          "No fue posible registrar el Service Worker:",
+          error
+        );
+
+      }
+    );
+
+}
+
+
+
+let tipoAcceso = "";
+let fotoPlacasBase64 = "";
+let fotoPlacasMime = "";
+let fotoIdentificacionBase64 = "";
+let fotoIdentificacionMime = "";
+let temporizadorBusqueda = null;
+let telefonoEntradaManual = "";
+let requiereConfirmacionTelefonica = false;
+let llamadaConfirmacionIniciada = false;
+let requiereConfirmacionNip = false;
+let nipAutorizadoEntradaManual = "";
+let fotoPlacasProveedorBase64 = "";
+let fotoPlacasProveedorMime = "";
+let fotoIdentificacionProveedorBase64 = "";
+let fotoIdentificacionProveedorMime = "";
+
+const CLAVE_ESTADO_ENTRADA_MANUAL =
+  "estadoEntradaManualGuardia";
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    registrarServiceWorkerGuardias();
+
+
+    if (
+      claveGuardias
+    ) {
+
+      cargarDatosInicialesGuardias();
+
+    }
+    else {
+
+      mostrarBloqueoGuardias();
+
+    }
+
+  }
+);
+
+
+
+function cargarDatosInicialesGuardias() {
+
+  apiGuardias(
+    "guardiasDatos",
+    {},
+    function(resultado) {
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cargar.",
+          "error"
+        );
+
+
+        return;
+
+      }
+
+
+      const calle =
+        document.getElementById(
+          "calle"
+        );
+
+
+      calle.innerHTML =
+        '<option value="">Selecciona calle</option>';
+
+
+      (resultado.datos.calles || [])
+        .forEach(
+          function(valor) {
+
+            const op =
+              document.createElement(
+                "option"
+              );
+
+
+            op.value =
+              valor;
+
+
+            op.textContent =
+              valor;
+
+
+            calle.appendChild(
+              op
+            );
+
+          }
+        );
+
+
+      const tipo =
+        document.getElementById(
+          "tipoVisita"
+        );
+
+
+      tipo.innerHTML =
+        '<option value="">Selecciona tipo</option>';
+
+
+      (resultado.datos.tiposVisita || [])
+        .forEach(
+          function(valor) {
+
+            const op =
+              document.createElement(
+                "option"
+              );
+
+
+            op.value =
+              valor;
+
+
+            op.textContent =
+              valor;
+
+
+            tipo.appendChild(
+              op
+            );
+
+          }
+        );
+
+    },
+    function(textoError) {
+
+      mensaje(
+        textoError ||
+        "No fue posible cargar.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+function guardarEstadoEntradaManual(
+  estado
+) {
+
+  try {
+
+    sessionStorage.setItem(
+      CLAVE_ESTADO_ENTRADA_MANUAL,
+      JSON.stringify({
+        estado:
+          estado,
+        fecha:
+          Date.now()
+      })
+    );
+
+  }
+  catch (errorEstado) {
+
+    console.warn(
+      "No fue posible guardar el estado del registro:",
+      errorEstado
+    );
+
+  }
+
+}
+
+
+function leerEstadoEntradaManual() {
+
+  try {
+
+    const valor =
+      sessionStorage.getItem(
+        CLAVE_ESTADO_ENTRADA_MANUAL
+      );
+
+
+    if (!valor) {
+
+      return "";
+
+    }
+
+
+    const datos =
+      JSON.parse(
+        valor
+      );
+
+
+    if (
+      !datos ||
+      !datos.fecha ||
+      (
+        Date.now() -
+        Number(datos.fecha)
+      ) >
+        10 * 60 * 1000
+    ) {
+
+      sessionStorage.removeItem(
+        CLAVE_ESTADO_ENTRADA_MANUAL
+      );
+
+      return "";
+
+    }
+
+
+    return datos.estado || "";
+
+  }
+  catch (errorEstado) {
+
+    return "";
+
+  }
+
+}
+
+
+function mostrarEstadoEntradaManual(
+  estado
+) {
+
+  document
+    .getElementById(
+      "menu"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "panelEntrada"
+    )
+    .classList
+    .remove(
+      "activo"
+    );
+
+
+  document
+    .getElementById(
+      "panelSalida"
+    )
+    .classList
+    .remove(
+      "activo"
+    );
+
+
+  document
+    .getElementById(
+      "panelProveedor"
+    )
+    .classList
+    .remove(
+      "activo"
+    );
+
+
+  document
+    .getElementById(
+      "estadoRegistroProveedor"
+    )
+    .style.display =
+      "none";
+
+
+
+  const panel =
+    document.getElementById(
+      "estadoRegistroManual"
+    );
+
+
+  const titulo =
+    document.getElementById(
+      "tituloEstadoRegistroManual"
+    );
+
+
+  const textoEstado =
+    document.getElementById(
+      "textoEstadoRegistroManual"
+    );
+
+
+  const btnNuevo =
+    document.getElementById(
+      "btnNuevoRegistroManual"
+    );
+
+
+  panel.style.display =
+    "flex";
+
+
+  if (
+    estado ===
+    "COMPLETADO"
+  ) {
+
+    titulo.textContent =
+      "Ingreso registrado";
+
+
+    textoEstado.innerHTML =
+      "✓ El acceso quedó guardado correctamente.<br><br>" +
+      "🔔 La notificación al residente fue procesada automáticamente.";
+
+
+    btnNuevo.style.display =
+      "block";
+
+  }
+  else {
+
+    titulo.textContent =
+      "Procesando registro...";
+
+
+    textoEstado.innerHTML =
+      "El acceso fue enviado al sistema.<br>" +
+      "No vuelvas a presionar DAR ACCESO.";
+
+
+    btnNuevo.style.display =
+      "none";
+
+  }
+
+
+  window.scrollTo(
+    0,
+    0
+  );
+
+}
+
+
+function restaurarEstadoEntradaManual() {
+
+  const estado =
+    leerEstadoEntradaManual();
+
+
+  if (
+    estado ===
+      "PROCESANDO" ||
+    estado ===
+      "COMPLETADO"
+  ) {
+
+    mostrarEstadoEntradaManual(
+      estado
+    );
+
+  }
+
+}
+
+
+function nuevoRegistroManual() {
+
+  try {
+
+    sessionStorage.removeItem(
+      CLAVE_ESTADO_ENTRADA_MANUAL
+    );
+
+  }
+  catch (errorEstado) {}
+
+
+  document
+    .getElementById(
+      "estadoRegistroManual"
+    )
+    .style.display =
+      "none";
+
+
+  limpiarEntrada();
+
+
+  abrirEntrada();
+
+}
+
+
+
+function mostrarSalidaRegistrada() {
+
+  document
+    .getElementById(
+      "menu"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "panelEntrada"
+    )
+    .classList
+    .remove(
+      "activo"
+    );
+
+
+  document
+    .getElementById(
+      "panelSalida"
+    )
+    .classList
+    .remove(
+      "activo"
+    );
+
+
+  document
+    .getElementById(
+      "estadoRegistroManual"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "estadoRegistroSalida"
+    )
+    .style.display =
+      "flex";
+
+
+  window.scrollTo(
+    0,
+    0
+  );
+
+}
+
+
+function volverMenuPrincipalDespuesSalida() {
+
+  document
+    .getElementById(
+      "estadoRegistroSalida"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "buscarPlacas"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "resultados"
+    )
+    .innerHTML =
+      "";
+
+
+  document
+    .getElementById(
+      "menu"
+    )
+    .style.display =
+      "grid";
+
+
+  window.scrollTo(
+    0,
+    0
+  );
+
+}
+
+
+function volverMenuPrincipalDespuesRegistro() {
+
+  try {
+
+    sessionStorage.removeItem(
+      CLAVE_ESTADO_ENTRADA_MANUAL
+    );
+
+  }
+  catch (errorEstado) {}
+
+
+  document
+    .getElementById(
+      "estadoRegistroManual"
+    )
+    .style.display =
+      "none";
+
+
+  limpiarEntrada();
+
+
+  document
+    .getElementById(
+      "panelEntrada"
+    )
+    .classList
+    .remove(
+      "activo"
+    );
+
+
+  document
+    .getElementById(
+      "panelSalida"
+    )
+    .classList
+    .remove(
+      "activo"
+    );
+
+
+  document
+    .getElementById(
+      "menu"
+    )
+    .style.display =
+      "grid";
+
+
+  window.scrollTo(
+    0,
+    0
+  );
+
+}
+
+
+window.addEventListener(
+  "pageshow",
+  function() {
+
+    restaurarEstadoEntradaManual();
+
+  }
+);
+
+
+
+function abrirEntrada() {
+
+  const estadoGuardado =
+    leerEstadoEntradaManual();
+
+
+  if (
+    estadoGuardado ===
+      "PROCESANDO" ||
+    estadoGuardado ===
+      "COMPLETADO"
+  ) {
+
+    mostrarEstadoEntradaManual(
+      estadoGuardado
+    );
+
+    return;
+
+  }
+
+
+  document.getElementById("estadoRegistroManual").style.display = "none";
+  document.getElementById("estadoRegistroProveedor").style.display = "none";
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("panelSalida").classList.remove("activo");
+  document.getElementById("panelProveedor").classList.remove("activo");
+  document.getElementById("panelEntrada").classList.add("activo");
+}
+
+
+function abrirSalida() {
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("estadoRegistroProveedor").style.display = "none";
+  document.getElementById("panelEntrada").classList.remove("activo");
+  document.getElementById("panelProveedor").classList.remove("activo");
+  document.getElementById("panelSalida").classList.add("activo");
+  document.getElementById("buscarPlacas").focus();
+}
+
+
+function abrirProveedor() {
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("estadoRegistroManual").style.display = "none";
+  document.getElementById("estadoRegistroSalida").style.display = "none";
+  document.getElementById("estadoRegistroProveedor").style.display = "none";
+  document.getElementById("panelEntrada").classList.remove("activo");
+  document.getElementById("panelSalida").classList.remove("activo");
+  document.getElementById("panelProveedor").classList.add("activo");
+
+  setTimeout(
+    function() {
+      document.getElementById("placasProveedor").focus();
+    },
+    100
+  );
+}
+
+
+function volverMenu() {
+  document.getElementById("panelEntrada").classList.remove("activo");
+  document.getElementById("panelSalida").classList.remove("activo");
+  document.getElementById("panelProveedor").classList.remove("activo");
+  document.getElementById("estadoRegistroProveedor").style.display = "none";
+  document.getElementById("menu").style.display = "grid";
+}
+
+
+function cargarNumeros() {
+
+  telefonoEntradaManual = "";
+  requiereConfirmacionTelefonica = false;
+  llamadaConfirmacionIniciada = false;
+  cerrarModalConfirmacionTelefono();
+  requiereConfirmacionNip = false;
+  nipAutorizadoEntradaManual = "";
+  cerrarModalConfirmacionNip();
+
+  const calle = document.getElementById("calle").value;
+  const numero = document.getElementById("numero");
+
+  numero.innerHTML = '<option value="">Cargando...</option>';
+
+  if (!calle) {
+    numero.innerHTML = '<option value="">Selecciona número</option>';
+    return;
+  }
+
+  apiGuardias(
+    "guardiasNumeros",
+    {
+      calle:
+        calle
+    },
+    function(resultado) {
+
+      const numeros =
+        resultado &&
+        resultado.ok &&
+        resultado.datos
+          ? (
+              resultado.datos.numeros ||
+              []
+            )
+          : [];
+
+
+
+        numero.innerHTML = '<option value="">Selecciona número</option>';
+
+        (numeros || []).forEach(
+          function(valor) {
+            const op = document.createElement("option");
+            op.value = valor;
+            op.textContent = valor;
+            numero.appendChild(op);
+          }
+        );
+      
+    },
+    function() {
+
+      numero.innerHTML =
+        '<option value="">Selecciona número</option>';
+
+
+      mensaje(
+        "No fue posible cargar los números.",
+        "error"
+      );
+
+    }
+  );
+}
+
+
+function cargarContactoEntradaManual() {
+
+  telefonoEntradaManual =
+    "";
+
+
+  requiereConfirmacionTelefonica =
+    false;
+
+
+  llamadaConfirmacionIniciada =
+    false;
+
+
+  cerrarModalConfirmacionTelefono();
+
+  requiereConfirmacionNip =
+    false;
+
+
+  nipAutorizadoEntradaManual =
+    "";
+
+
+  cerrarModalConfirmacionNip();
+
+
+  const calle =
+    document
+      .getElementById(
+        "calle"
+      )
+      .value;
+
+
+  const numero =
+    document
+      .getElementById(
+        "numero"
+      )
+      .value;
+
+
+  if (
+    !calle ||
+    !numero
+  ) {
+
+    return;
+
+  }
+
+
+  apiGuardias(
+    "guardiasContacto",
+    {
+      calle:
+        calle,
+
+      numero:
+        numero
+    },
+    function(resultado) {
+
+
+        if (
+          resultado &&
+          resultado.ok &&
+          resultado.datos
+        ) {
+
+          telefonoEntradaManual =
+            limpiarTelefonoWhatsappGuardia(
+              resultado.datos.telefono
+            );
+
+
+          requiereConfirmacionTelefonica =
+            resultado.datos
+              .requiereConfirmacionTelefonica ===
+              true;
+          requiereConfirmacionNip =
+            resultado.datos
+              .requiereConfirmacionNip ===
+              true;
+
+
+          /*
+           * Si este domicilio requiere llamada,
+           * bloqueamos visualmente el flujo hasta que
+           * el guardia toque LLAMAR y luego CONTINUAR.
+           */
+                   if (
+            requiereConfirmacionNip
+          ) {
+
+            mostrarModalConfirmacionNip();
+
+          }
+          else if (
+            requiereConfirmacionTelefonica
+          ) {
+
+            mostrarModalConfirmacionTelefono();
+
+          }
+
+        }
+
+      
+    },
+    function() {
+
+
+        telefonoEntradaManual =
+          "";
+
+
+        requiereConfirmacionTelefonica =
+          false;
+
+
+        llamadaConfirmacionIniciada =
+          false;
+
+        requiereConfirmacionNip =
+          false;
+
+
+        nipAutorizadoEntradaManual =
+          "";
+
+      
+    }
+  );
+
+}
+
+
+function mostrarModalConfirmacionTelefono() {
+
+  const modal =
+    document.getElementById(
+      "modalConfirmacionTelefono"
+    );
+
+
+  const botonContinuar =
+    document.getElementById(
+      "btnContinuarConfirmacion"
+    );
+
+
+  const nota =
+    document.getElementById(
+      "notaConfirmacionTelefono"
+    );
+
+
+  llamadaConfirmacionIniciada =
+    false;
+
+
+  botonContinuar.disabled =
+    true;
+
+
+  nota.textContent =
+    "Después de presionar LLAMAR, regresa aquí y toca CONTINUAR REGISTRO.";
+
+
+  modal.classList.add(
+    "activo"
+  );
+
+}
+
+
+
+function cerrarModalConfirmacionTelefono() {
+
+  const modal =
+    document.getElementById(
+      "modalConfirmacionTelefono"
+    );
+
+
+  if (
+    modal
+  ) {
+
+    modal.classList.remove(
+      "activo"
+    );
+
+  }
+
+}
+
+
+
+function llamarResidenteConfirmacion() {
+
+  if (
+    !telefonoEntradaManual
+  ) {
+
+    mensaje(
+      "No fue posible cargar el teléfono del residente.",
+      "error"
+    );
+
+
+    return;
+
+  }
+
+
+  llamadaConfirmacionIniciada =
+    true;
+
+
+  document
+    .getElementById(
+      "btnContinuarConfirmacion"
+    )
+    .disabled =
+      false;
+
+
+  document
+    .getElementById(
+      "notaConfirmacionTelefono"
+    )
+    .textContent =
+      "Al terminar la llamada, vuelve a esta pantalla y toca CONTINUAR REGISTRO.";
+
+
+  /*
+   * Abrimos la app Teléfono desde el mismo toque.
+   * El número queda listo para marcar.
+   */
+  const enlace =
+    document.createElement(
+      "a"
+    );
+
+
+  enlace.href =
+    "tel:" +
+    telefonoEntradaManual;
+
+
+  enlace.style.display =
+    "none";
+
+
+  document.body.appendChild(
+    enlace
+  );
+
+
+  enlace.click();
+
+
+  enlace.remove();
+
+}
+
+
+
+function continuarDespuesDeLlamada() {
+
+  if (
+    !llamadaConfirmacionIniciada
+  ) {
+
+    return;
+
+  }
+
+
+  cerrarModalConfirmacionTelefono();
+
+
+  /*
+   * La confirmación queda satisfecha para este
+   * domicilio mientras no se cambie calle/número.
+   */
+  requiereConfirmacionTelefonica =
+    false;
+
+}
+
+/*************************************************
+ * MODAL NIP
+ *************************************************/
+
+function mostrarModalConfirmacionNip() {
+
+  nipAutorizadoEntradaManual =
+    "";
+
+
+  const input =
+    document.getElementById(
+      "inputNipAutorizacion"
+    );
+
+
+  const boton =
+    document.getElementById(
+      "btnValidarNip"
+    );
+
+
+  input.value =
+    "";
+
+
+  boton.disabled =
+    false;
+
+
+  boton.textContent =
+    "VALIDAR NIP";
+
+
+  document
+    .getElementById(
+      "modalConfirmacionNip"
+    )
+    .classList
+    .add(
+      "activo"
+    );
+
+
+  setTimeout(
+    function() {
+
+      input.focus();
+
+    },
+    150
+  );
+
+}
+
+
+
+function cerrarModalConfirmacionNip() {
+
+  const modal =
+    document.getElementById(
+      "modalConfirmacionNip"
+    );
+
+
+  if (
+    modal
+  ) {
+
+    modal.classList.remove(
+      "activo"
+    );
+
+  }
+
+}
+
+
+
+function normalizarNipGuardia(
+  input
+) {
+
+  input.value =
+    String(
+      input.value || ""
+    )
+      .replace(
+        /\D/g,
+        ""
+      )
+      .slice(
+        0,
+        6
+      );
+
+}
+
+
+
+function validarNipGuardia() {
+
+  const input =
+    document.getElementById(
+      "inputNipAutorizacion"
+    );
+
+
+  const boton =
+    document.getElementById(
+      "btnValidarNip"
+    );
+
+
+  const nip =
+    String(
+      input.value || ""
+    )
+      .replace(
+        /\D/g,
+        ""
+      );
+
+
+  if (
+    nip.length !== 6
+  ) {
+
+    mensaje(
+      "El NIP debe tener 6 dígitos.",
+      "error"
+    );
+
+
+    return;
+
+  }
+
+
+  const calle =
+    document
+      .getElementById(
+        "calle"
+      )
+      .value;
+
+
+  const numero =
+    document
+      .getElementById(
+        "numero"
+      )
+      .value;
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "VALIDANDO...";
+
+
+  apiGuardias(
+    "guardiasValidarNip",
+    {
+      calle:
+        calle,
+
+      numero:
+        numero,
+
+      nip:
+        nip
+    },
+    function(resultado) {
+
+
+        boton.disabled =
+          false;
+
+
+        boton.textContent =
+          "VALIDAR NIP";
+
+
+        if (
+          !resultado ||
+          !resultado.ok ||
+          !resultado.datos ||
+          resultado.datos.autorizado !==
+            true
+        ) {
+
+          nipAutorizadoEntradaManual =
+            "";
+
+
+          mensaje(
+            resultado &&
+            resultado.mensaje
+              ? resultado.mensaje
+              : "NIP incorrecto.",
+            "error"
+          );
+
+
+          input.value =
+            "";
+
+
+          input.focus();
+
+
+          return;
+
+        }
+
+
+        /*
+         * Todavía NO consumimos el NIP.
+         * Lo conservamos para enviarlo en DAR ACCESO.
+         */
+        nipAutorizadoEntradaManual =
+          nip;
+
+
+        requiereConfirmacionNip =
+          false;
+
+
+        cerrarModalConfirmacionNip();
+
+
+        mensaje(
+          "NIP autorizado. Continúa con el registro.",
+          "ok"
+        );
+
+      
+    },
+    function() {
+
+
+        boton.disabled =
+          false;
+
+
+        boton.textContent =
+          "VALIDAR NIP";
+
+
+        nipAutorizadoEntradaManual =
+          "";
+
+
+        mensaje(
+          "No fue posible validar el NIP.",
+          "error"
+        );
+
+      
+    }
+  );
+
+}
+
+function limpiarTelefonoWhatsappGuardia(
+  telefono
+) {
+
+  let limpio =
+    String(
+      telefono || ""
+    )
+      .replace(
+        /\D/g,
+        ""
+      );
+
+
+  if (
+    limpio.length === 10
+  ) {
+
+    limpio =
+      "52" +
+      limpio;
+
+  }
+
+
+  return limpio;
+
+}
+
+
+
+function crearMensajeWhatsappEntradaManual(
+  datos
+) {
+
+  const hora =
+    new Intl.DateTimeFormat(
+      "es-MX",
+      {
+        hour:
+          "2-digit",
+        minute:
+          "2-digit"
+      }
+    )
+      .format(
+        new Date()
+      );
+
+
+  let mensajeWhatsapp =
+    "🔔 *AVISO DE ACCESO*\n";
+
+
+  mensajeWhatsapp +=
+    "*Arcos del Poniente*\n\n";
+
+
+  mensajeWhatsapp +=
+    "Se registró una entrada a tu domicilio.\n\n";
+
+
+  mensajeWhatsapp +=
+    "👤 Visitante: *" +
+    datos.nombreVisitante +
+    "*\n";
+
+
+  mensajeWhatsapp +=
+    "📌 Tipo: " +
+    datos.tipoVisita +
+    "\n";
+
+
+  if (
+    datos.tipoAcceso ===
+      "VEHICULAR" &&
+    datos.placas
+  ) {
+
+    mensajeWhatsapp +=
+      "🚘 Placas: *" +
+      datos.placas +
+      "*\n";
+
+  }
+
+
+  mensajeWhatsapp +=
+    "🕒 Hora: " +
+    hora;
+
+
+  return mensajeWhatsapp;
+
+}
+
+
+
+function abrirWhatsappEntradaManual(
+  datos
+) {
+
+  if (
+    !telefonoEntradaManual
+  ) {
+
+    console.warn(
+      "No hay teléfono precargado para WhatsApp."
+    );
+
+    return false;
+
+  }
+
+
+  const mensajeWhatsapp =
+    crearMensajeWhatsappEntradaManual(
+      datos
+    );
+
+
+  const urlWhatsapp =
+    "whatsapp://send" +
+    "?phone=" +
+    encodeURIComponent(
+      telefonoEntradaManual
+    ) +
+    "&text=" +
+    encodeURIComponent(
+      mensajeWhatsapp
+    );
+
+
+  try {
+
+    const enlace =
+      document.createElement(
+        "a"
+      );
+
+
+    enlace.href =
+      urlWhatsapp;
+
+
+    enlace.target =
+      "_blank";
+
+
+    enlace.rel =
+      "noopener";
+
+
+    enlace.style.display =
+      "none";
+
+
+    document.body.appendChild(
+      enlace
+    );
+
+
+    enlace.click();
+
+
+    enlace.remove();
+
+
+    return true;
+
+  }
+  catch (errorWhatsapp) {
+
+    console.warn(
+      "No fue posible abrir WhatsApp:",
+      errorWhatsapp
+    );
+
+
+    return false;
+
+  }
+
+}
+
+
+
+function seleccionarAcceso(tipo) {
+
+  tipoAcceso = tipo;
+
+  document.getElementById("btnPeatonal").classList.toggle("sel", tipo === "PEATONAL");
+  document.getElementById("btnVehicular").classList.toggle("sel", tipo === "VEHICULAR");
+  document.getElementById("bloqueVehicular").style.display =
+    tipo === "VEHICULAR" ? "block" : "none";
+}
+
+
+function normalizarPlacasInput(input) {
+  input.value = input.value
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
+}
+
+
+function procesarFoto(input, destino) {
+
+  const archivo = input.files && input.files[0];
+
+  if (!archivo) {
+    return;
+  }
+
+  const lector = new FileReader();
+
+  lector.onload = function(evento) {
+
+    const imagen = new Image();
+
+    imagen.onload = function() {
+
+      const canvas = document.createElement("canvas");
+      const max = 1600;
+      let ancho = imagen.width;
+      let alto = imagen.height;
+
+      if (ancho > max || alto > max) {
+        const escala = Math.min(max / ancho, max / alto);
+        ancho = Math.round(ancho * escala);
+        alto = Math.round(alto * escala);
+      }
+
+      canvas.width = ancho;
+      canvas.height = alto;
+
+      canvas.getContext("2d").drawImage(imagen, 0, 0, ancho, alto);
+
+      const dataUrl = canvas.toDataURL("image/jpeg", .82);
+      const base64 = dataUrl.split(",")[1];
+
+      if (destino === "placas") {
+        fotoPlacasBase64 = base64;
+        fotoPlacasMime = "image/jpeg";
+        document.getElementById("imgPlacas").src = dataUrl;
+        document.getElementById("previewPlacas").style.display = "block";
+      }
+      else {
+        fotoIdentificacionBase64 = base64;
+        fotoIdentificacionMime = "image/jpeg";
+        document.getElementById("imgIdentificacion").src = dataUrl;
+        document.getElementById("previewIdentificacion").style.display = "block";
+      }
+    };
+
+    imagen.src = evento.target.result;
+  };
+
+  lector.readAsDataURL(archivo);
+}
+
+
+function registrarEntrada() {
+
+  const boton =
+    document.getElementById(
+      "btnDarAcceso"
+    );
+
+
+  if (
+    boton.disabled
+  ) {
+
+    return;
+
+  }
+
+  if (
+    requiereConfirmacionNip
+  ) {
+
+    mostrarModalConfirmacionNip();
+
+
+    mensaje(
+      "Este domicilio requiere autorización por NIP.",
+      "error"
+    );
+
+
+    return;
+
+  }
+
+  if (
+    requiereConfirmacionTelefonica
+  ) {
+
+    mostrarModalConfirmacionTelefono();
+
+
+    mensaje(
+      "Este domicilio requiere confirmación telefónica.",
+      "error"
+    );
+
+
+    return;
+
+  }
+
+
+  const datos = {
+
+    calle:
+      document
+        .getElementById(
+          "calle"
+        )
+        .value,
+
+    numero:
+      document
+        .getElementById(
+          "numero"
+        )
+        .value,
+
+    nombreVisitante:
+      document
+        .getElementById(
+          "nombreVisitante"
+        )
+        .value
+        .trim(),
+
+    tipoVisita:
+      document
+        .getElementById(
+          "tipoVisita"
+        )
+        .value,
+
+    tipoAcceso:
+      tipoAcceso,
+
+    placas:
+      document
+        .getElementById(
+          "placas"
+        )
+        .value,
+
+    observaciones:
+      document
+        .getElementById(
+          "observaciones"
+        )
+        .value
+        .trim(),
+
+    fotoPlacasBase64:
+      fotoPlacasBase64,
+
+    fotoPlacasMime:
+      fotoPlacasMime,
+
+    fotoIdentificacionBase64:
+      fotoIdentificacionBase64,
+
+    fotoIdentificacionMime:
+      fotoIdentificacionMime,
+
+    nipAutorizacion:
+      nipAutorizadoEntradaManual
+
+  };
+
+
+  if (
+    !datos.calle ||
+    !datos.numero
+  ) {
+
+    mensaje(
+      "Selecciona calle y número.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !datos.nombreVisitante
+  ) {
+
+    mensaje(
+      "Ingresa el nombre del visitante.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !datos.tipoVisita
+  ) {
+
+    mensaje(
+      "Selecciona el tipo de visita.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !datos.tipoAcceso
+  ) {
+
+    mensaje(
+      "Selecciona PEATONAL o VEHICULAR.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    datos.tipoAcceso ===
+      "VEHICULAR" &&
+    !datos.placas
+  ) {
+
+    mensaje(
+      "Escribe las placas.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    datos.tipoAcceso ===
+      "VEHICULAR" &&
+    !fotoPlacasBase64
+  ) {
+
+    mensaje(
+      "Toma una foto de las placas.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !fotoIdentificacionBase64
+  ) {
+
+    mensaje(
+      "Toma una foto de la identificación.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "REGISTRANDO...";
+
+
+  /*
+   * Marcamos el registro como procesando.
+   * El aviso al residente ahora se envía por notificación
+   * push desde el servidor, sin abrir WhatsApp.
+   */
+  guardarEstadoEntradaManual(
+    "PROCESANDO"
+  );
+
+
+  /*
+   * Mostramos el estado de proceso mientras Apps Script
+   * termina de guardar el acceso y enviar la notificación.
+   */
+  setTimeout(
+    function() {
+
+      mostrarEstadoEntradaManual(
+        "PROCESANDO"
+      );
+
+    },
+    250
+  );
+
+
+  apiGuardias(
+    "guardiasEntrada",
+    datos,
+    function(resultado) {
+
+
+
+        boton.disabled =
+          false;
+
+
+        boton.textContent =
+          "DAR ACCESO";
+
+
+        if (
+          !resultado ||
+          !resultado.ok
+        ) {
+
+          try {
+
+            sessionStorage.removeItem(
+              CLAVE_ESTADO_ENTRADA_MANUAL
+            );
+
+          }
+          catch (errorEstado) {}
+
+
+          document
+            .getElementById(
+              "estadoRegistroManual"
+            )
+            .style.display =
+              "none";
+
+
+          document
+            .getElementById(
+              "panelEntrada"
+            )
+            .classList
+            .add(
+              "activo"
+            );
+
+
+          mensaje(
+            resultado &&
+            resultado.mensaje
+              ? resultado.mensaje
+              : "No fue posible registrar.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        /*
+         * El aviso al residente ya se procesa por push.
+         * No dependemos de ninguna función antigua de WhatsApp.
+         */
+        guardarEstadoEntradaManual(
+          "COMPLETADO"
+        );
+
+
+        mostrarEstadoEntradaManual(
+          "COMPLETADO"
+        );
+
+      
+    },
+    function() {
+
+
+
+        boton.disabled =
+          false;
+
+
+        boton.textContent =
+          "DAR ACCESO";
+
+
+        try {
+
+          sessionStorage.removeItem(
+            CLAVE_ESTADO_ENTRADA_MANUAL
+          );
+
+        }
+        catch (errorEstado) {}
+
+
+        document
+          .getElementById(
+            "estadoRegistroManual"
+          )
+          .style.display =
+            "none";
+
+
+        document
+          .getElementById(
+            "panelEntrada"
+          )
+          .classList
+          .add(
+            "activo"
+          );
+
+
+        mensaje(
+          "No fue posible registrar la entrada.",
+          "error"
+        );
+
+      
+    }
+  );
+
+}
+
+
+
+function procesarFotoProveedor(
+  input,
+  destino
+) {
+
+  const archivo =
+    input.files &&
+    input.files[0];
+
+
+  if (
+    !archivo
+  ) {
+
+    return;
+
+  }
+
+
+  const lector =
+    new FileReader();
+
+
+  lector.onload =
+    function(evento) {
+
+      const imagen =
+        new Image();
+
+
+      imagen.onload =
+        function() {
+
+          const canvas =
+            document.createElement(
+              "canvas"
+            );
+
+
+          const max =
+            1600;
+
+
+          let ancho =
+            imagen.width;
+
+
+          let alto =
+            imagen.height;
+
+
+          if (
+            ancho > max ||
+            alto > max
+          ) {
+
+            const escala =
+              Math.min(
+                max / ancho,
+                max / alto
+              );
+
+
+            ancho =
+              Math.round(
+                ancho * escala
+              );
+
+
+            alto =
+              Math.round(
+                alto * escala
+              );
+
+          }
+
+
+          canvas.width =
+            ancho;
+
+
+          canvas.height =
+            alto;
+
+
+          canvas
+            .getContext(
+              "2d"
+            )
+            .drawImage(
+              imagen,
+              0,
+              0,
+              ancho,
+              alto
+            );
+
+
+          const dataUrl =
+            canvas.toDataURL(
+              "image/jpeg",
+              .82
+            );
+
+
+          const base64 =
+            dataUrl.split(
+              ","
+            )[1];
+
+
+          if (
+            destino ===
+              "placas"
+          ) {
+
+            fotoPlacasProveedorBase64 =
+              base64;
+
+
+            fotoPlacasProveedorMime =
+              "image/jpeg";
+
+
+            document
+              .getElementById(
+                "imgPlacasProveedor"
+              )
+              .src =
+                dataUrl;
+
+
+            document
+              .getElementById(
+                "previewPlacasProveedor"
+              )
+              .style.display =
+                "block";
+
+          }
+          else {
+
+            fotoIdentificacionProveedorBase64 =
+              base64;
+
+
+            fotoIdentificacionProveedorMime =
+              "image/jpeg";
+
+
+            document
+              .getElementById(
+                "imgIdentificacionProveedor"
+              )
+              .src =
+                dataUrl;
+
+
+            document
+              .getElementById(
+                "previewIdentificacionProveedor"
+              )
+              .style.display =
+                "block";
+
+          }
+
+        };
+
+
+      imagen.src =
+        evento.target.result;
+
+    };
+
+
+  lector.readAsDataURL(
+    archivo
+  );
+
+}
+
+
+
+function registrarProveedor() {
+
+  const boton =
+    document.getElementById(
+      "btnRegistrarProveedor"
+    );
+
+
+  if (
+    boton.disabled
+  ) {
+
+    return;
+
+  }
+
+
+  const placas =
+    document
+      .getElementById(
+        "placasProveedor"
+      )
+      .value
+      .trim();
+
+
+  if (
+    !placas
+  ) {
+
+    mensaje(
+      "Escribe las placas del proveedor.",
+      "error"
+    );
+
+
+    return;
+
+  }
+
+
+  if (
+    !/^[A-Z0-9]+$/.test(
+      placas
+    )
+  ) {
+
+    mensaje(
+      "Las placas solo pueden contener letras y números.",
+      "error"
+    );
+
+
+    return;
+
+  }
+
+
+  if (
+    !fotoPlacasProveedorBase64
+  ) {
+
+    mensaje(
+      "Toma una foto de las placas.",
+      "error"
+    );
+
+
+    return;
+
+  }
+
+
+  if (
+    !fotoIdentificacionProveedorBase64
+  ) {
+
+    mensaje(
+      "Toma una foto de la identificación.",
+      "error"
+    );
+
+
+    return;
+
+  }
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "REGISTRANDO...";
+
+
+  apiGuardias(
+    "guardiasProveedor",
+    {
+      placas:
+        placas,
+
+      fotoPlacasBase64:
+        fotoPlacasProveedorBase64,
+
+      fotoPlacasMime:
+        fotoPlacasProveedorMime,
+
+      fotoIdentificacionBase64:
+        fotoIdentificacionProveedorBase64,
+
+      fotoIdentificacionMime:
+        fotoIdentificacionProveedorMime
+    },
+    function(resultado) {
+
+
+        boton.disabled =
+          false;
+
+
+        boton.textContent =
+          "REGISTRAR PROVEEDOR";
+
+
+        if (
+          !resultado ||
+          !resultado.ok
+        ) {
+
+          mensaje(
+            resultado &&
+            resultado.mensaje
+              ? resultado.mensaje
+              : "No fue posible registrar al proveedor.",
+            "error"
+          );
+
+
+          return;
+
+        }
+
+
+        document
+          .getElementById(
+            "panelProveedor"
+          )
+          .classList
+          .remove(
+            "activo"
+          );
+
+
+        document
+          .getElementById(
+            "estadoRegistroProveedor"
+          )
+          .style.display =
+            "flex";
+
+
+        window.scrollTo(
+          0,
+          0
+        );
+
+      
+    },
+    function() {
+
+
+        boton.disabled =
+          false;
+
+
+        boton.textContent =
+          "REGISTRAR PROVEEDOR";
+
+
+        mensaje(
+          "No fue posible registrar al proveedor.",
+          "error"
+        );
+
+      
+    }
+  );
+
+}
+
+
+
+function limpiarProveedor() {
+
+  document
+    .getElementById(
+      "placasProveedor"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "fotoPlacasProveedor"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "fotoIdentificacionProveedor"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "previewPlacasProveedor"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "previewIdentificacionProveedor"
+    )
+    .style.display =
+      "none";
+
+
+  fotoPlacasProveedorBase64 =
+    "";
+
+
+  fotoPlacasProveedorMime =
+    "";
+
+
+  fotoIdentificacionProveedorBase64 =
+    "";
+
+
+  fotoIdentificacionProveedorMime =
+    "";
+
+}
+
+
+
+function volverMenuPrincipalDespuesProveedor() {
+
+  document
+    .getElementById(
+      "estadoRegistroProveedor"
+    )
+    .style.display =
+      "none";
+
+
+  limpiarProveedor();
+
+
+  document
+    .getElementById(
+      "panelProveedor"
+    )
+    .classList
+    .remove(
+      "activo"
+    );
+
+
+  document
+    .getElementById(
+      "menu"
+    )
+    .style.display =
+      "grid";
+
+
+  window.scrollTo(
+    0,
+    0
+  );
+
+}
+
+
+
+function limpiarEntrada() {
+
+  document.getElementById("numero").innerHTML = '<option value="">Selecciona número</option>';
+  document.getElementById("nombreVisitante").value = "";
+  document.getElementById("tipoVisita").value = "";
+  document.getElementById("placas").value = "";
+  document.getElementById("observaciones").value = "";
+  document.getElementById("fotoPlacas").value = "";
+  document.getElementById("fotoIdentificacion").value = "";
+  document.getElementById("previewPlacas").style.display = "none";
+  document.getElementById("previewIdentificacion").style.display = "none";
+  fotoPlacasBase64 = "";
+  fotoPlacasMime = "";
+  fotoIdentificacionBase64 = "";
+  fotoIdentificacionMime = "";
+  telefonoEntradaManual = "";
+  requiereConfirmacionTelefonica = false;
+  llamadaConfirmacionIniciada = false;
+  cerrarModalConfirmacionTelefono();
+  requiereConfirmacionNip = false;
+  nipAutorizadoEntradaManual = "";
+  cerrarModalConfirmacionNip();
+  tipoAcceso = "";
+  document.getElementById("btnPeatonal").classList.remove("sel");
+  document.getElementById("btnVehicular").classList.remove("sel");
+  document.getElementById("bloqueVehicular").style.display = "none";
+}
+
+
+function buscarSalidas() {
+
+  clearTimeout(temporizadorBusqueda);
+
+  temporizadorBusqueda = setTimeout(
+    function() {
+
+      const texto = document.getElementById("buscarPlacas").value;
+      const resultados = document.getElementById("resultados");
+
+      if (!texto.trim()) {
+        resultados.innerHTML = "";
+        return;
+      }
+
+      resultados.innerHTML = '<div class="mini">Buscando...</div>';
+
+      apiGuardias(
+        "guardiasBuscarSalidas",
+        {
+          placas:
+            texto
+        },
+        function(resultado) {
+
+
+            if (!resultado || !resultado.ok) {
+              resultados.innerHTML = "";
+              mensaje(resultado && resultado.mensaje ? resultado.mensaje : "No fue posible buscar.", "error");
+              return;
+            }
+
+            pintarResultados(resultado.datos.accesos || []);
+          
+        },
+        function() {
+
+          resultados.innerHTML =
+            "";
+
+
+          mensaje(
+            "No fue posible buscar.",
+            "error"
+          );
+
+        }
+      );
+    },
+    300
+  );
+}
+
+
+function crearMensajeWhatsappSalidaCliente(
+  acceso
+) {
+
+  const hora =
+    new Intl.DateTimeFormat(
+      "es-MX",
+      {
+        hour:
+          "2-digit",
+        minute:
+          "2-digit"
+      }
+    )
+      .format(
+        new Date()
+      );
+
+
+  let mensajeWhatsapp =
+    "🚪 *AVISO DE SALIDA*\n";
+
+
+  mensajeWhatsapp +=
+    "*Arcos del Poniente*\n\n";
+
+
+  mensajeWhatsapp +=
+    "Se registró la salida de:\n";
+
+
+  mensajeWhatsapp +=
+    "👤 *" +
+    String(
+      acceso.nombreVisitante ||
+      "Visitante"
+    ) +
+    "*\n";
+
+
+  if (
+    acceso.placas
+  ) {
+
+    mensajeWhatsapp +=
+      "🚘 Placas: *" +
+      String(
+        acceso.placas
+      ) +
+      "*\n";
+
+  }
+
+
+  mensajeWhatsapp +=
+    "🕒 Hora: " +
+    hora;
+
+
+  return mensajeWhatsapp;
+
+}
+
+
+
+function abrirWhatsappSalidaDirecto(
+  acceso
+) {
+
+  const telefono =
+    limpiarTelefonoWhatsappGuardia(
+      acceso.telefonoWhatsapp ||
+      ""
+    );
+
+
+  if (
+    !telefono
+  ) {
+
+    console.warn(
+      "No hay teléfono disponible para el aviso de salida."
+    );
+
+    return false;
+
+  }
+
+
+  const mensajeWhatsapp =
+    crearMensajeWhatsappSalidaCliente(
+      acceso
+    );
+
+
+  const urlWhatsapp =
+    "whatsapp://send" +
+    "?phone=" +
+    encodeURIComponent(
+      telefono
+    ) +
+    "&text=" +
+    encodeURIComponent(
+      mensajeWhatsapp
+    );
+
+
+  try {
+
+    const enlace =
+      document.createElement(
+        "a"
+      );
+
+
+    enlace.href =
+      urlWhatsapp;
+
+
+    enlace.target =
+      "_blank";
+
+
+    enlace.rel =
+      "noopener";
+
+
+    enlace.style.display =
+      "none";
+
+
+    document.body.appendChild(
+      enlace
+    );
+
+
+    enlace.click();
+
+
+    enlace.remove();
+
+
+    return true;
+
+  }
+  catch (errorWhatsapp) {
+
+    console.warn(
+      "No fue posible abrir WhatsApp para salida:",
+      errorWhatsapp
+    );
+
+
+    return false;
+
+  }
+
+}
+
+
+
+function pintarResultados(accesos) {
+
+  const contenedor = document.getElementById("resultados");
+  contenedor.innerHTML = "";
+
+  if (!accesos.length) {
+    contenedor.innerHTML = '<div class="mini">No hay accesos vigentes que coincidan.</div>';
+    return;
+  }
+
+  accesos.forEach(
+    function(acceso) {
+
+      const tarjeta = document.createElement("div");
+      tarjeta.className = "tarjeta";
+
+      let fotos = "";
+
+      if (acceso.fotoPlacas) {
+        fotos += '<a target="_blank" href="' + acceso.fotoPlacas + '">VER PLACAS</a>';
+      }
+
+      if (acceso.fotoIdentificacion) {
+        fotos += '<a target="_blank" href="' + acceso.fotoIdentificacion + '">VER IDENTIFICACIÓN</a>';
+      }
+
+      if (acceso.fotoVehiculo) {
+        fotos += '<a target="_blank" href="' + acceso.fotoVehiculo + '">VER VEHÍCULO</a>';
+      }
+
+      tarjeta.innerHTML =
+        '<div class="fila"><strong>' +
+          escapar(acceso.placas) +
+        '</strong><span class="mini">' +
+          escapar(acceso.idAcceso) +
+        '</span></div>' +
+        '<div class="mini">' +
+          escapar(acceso.nombreVisitante) +
+          ' · ' +
+          escapar(acceso.calle) +
+          ' #' +
+          escapar(acceso.numero) +
+          '<br>' +
+          escapar(acceso.fechaEntrada) +
+        '</div>' +
+        (fotos ? '<div class="fotos">' + fotos + '</div>' : '') +
+        '<button class="salida" disabled>CARGANDO...</button>';
+
+      const boton = tarjeta.querySelector(".salida");
+
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "REGISTRAR SALIDA";
+
+
+      boton.addEventListener(
+        "click",
+        function() {
+
+          if (
+            boton.disabled
+          ) {
+
+            return;
+
+          }
+
+
+          boton.disabled =
+            true;
+
+
+          boton.textContent =
+            "REGISTRANDO...";
+
+
+          apiGuardias(
+            "guardiasSalida",
+            {
+              idAcceso:
+                acceso.idAcceso
+            },
+            function(resultado) {
+
+
+
+                if (
+                  !resultado ||
+                  !resultado.ok
+                ) {
+
+                  boton.disabled =
+                    false;
+
+
+                  boton.textContent =
+                    "REGISTRAR SALIDA";
+
+
+                  mensaje(
+                    resultado &&
+                    resultado.mensaje
+                      ? resultado.mensaje
+                      : "No fue posible registrar.",
+                    "error"
+                  );
+
+
+                  return;
+
+                }
+
+
+                tarjeta.remove();
+
+
+                mostrarSalidaRegistrada();
+
+              
+            },
+            function() {
+
+
+
+                boton.disabled =
+                  false;
+
+
+                boton.textContent =
+                  "REGISTRAR SALIDA";
+
+
+                mensaje(
+                  "No fue posible registrar la salida.",
+                  "error"
+                );
+
+              
+            }
+          );
+
+        }
+      );
+
+      contenedor.appendChild(tarjeta);
+    }
+  );
+}
+
+
+function escapar(valor) {
+  const div = document.createElement("div");
+  div.textContent = valor || "";
+  return div.innerHTML;
+}
+
+
+function mostrarBotonWhatsapp(url) {
+
+  const boton =
+    document.getElementById("btnWhatsapp");
+
+  boton.href = url;
+  boton.onclick = function(evento) {
+    evento.preventDefault();
+    window.top.location.href = url;
+  };
+  boton.style.display = "flex";
+
+  setTimeout(
+    function() {
+      boton.style.display = "none";
+    },
+    12000
+  );
+}
+
+
+function mensaje(texto, tipo) {
+
+  const el = document.getElementById("mensaje");
+
+  el.textContent = texto;
+  el.className = "mensaje " + tipo;
+
+  setTimeout(
+    function() {
+      el.className = "mensaje";
+    },
+    3500
+  );
+}
+
+</script>
+
+</body>
+</html>
