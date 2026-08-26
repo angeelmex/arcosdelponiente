@@ -46,6 +46,9 @@ const messaging =
 const URL_NOTIFICACIONES =
   "./notificaciones.html";
 
+const VERSION_SW =
+  "2026.08.26-chat-iphone-1";
+
 
 self.addEventListener(
   "install",
@@ -89,7 +92,7 @@ self.addEventListener(
  * - Si llega solo como "data", nosotros la mostramos.
  */
 messaging.onBackgroundMessage(
-  function(payload) {
+  async function(payload) {
 
     console.log(
       "Notificación recibida:",
@@ -97,6 +100,18 @@ messaging.onBackgroundMessage(
     );
 
 
+    const datos =
+      payload &&
+      payload.data
+        ? payload.data
+        : {};
+
+
+    /*
+     * Cuando el backend manda un payload "notification",
+     * FCM/navegador normalmente ya lo muestra por sí mismo.
+     * Evitamos duplicarlo.
+     */
     if (
       payload &&
       payload.notification
@@ -105,13 +120,6 @@ messaging.onBackgroundMessage(
       return;
 
     }
-
-
-    const datos =
-      payload &&
-      payload.data
-        ? payload.data
-        : {};
 
 
     const titulo =
@@ -130,12 +138,57 @@ messaging.onBackgroundMessage(
       badge:
         "./icon-192.png",
 
+      tag:
+        datos.tipo ===
+          "CHAT_CASETA"
+          ? "chat-caseta"
+          : undefined,
+
       data: {
         url:
           datos.url ||
-          URL_NOTIFICACIONES
+          URL_NOTIFICACIONES,
+
+        tipo:
+          datos.tipo ||
+          "",
+
+        idResidente:
+          datos.idResidente ||
+          ""
       }
     };
+
+
+    /*
+     * En una PWA instalada, intentamos marcar inmediatamente
+     * el icono aun cuando la app esté cerrada.
+     * Al volver a abrirla, menu.html reemplaza este indicador
+     * por el número real de mensajes pendientes.
+     */
+    try {
+
+      if (
+        self.navigator &&
+        "setAppBadge" in self.navigator
+      ) {
+
+        await self.navigator
+          .setAppBadge(
+            1
+          );
+
+      }
+
+    }
+    catch (errorBadge) {
+
+      console.log(
+        "No fue posible actualizar badge:",
+        errorBadge
+      );
+
+    }
 
 
     return self.registration
