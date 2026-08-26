@@ -1179,6 +1179,19 @@ document.addEventListener(
   }
 );
 
+window.addEventListener(
+  "pageshow",
+  function() {
+
+    setTimeout(
+      cargarPendientesChatMenu,
+      400
+    );
+
+  }
+);
+
+
 
 function iniciarMenu() {
 
@@ -2847,6 +2860,29 @@ function pintarPendientesChatMenu(
   total
 ) {
 
+  try {
+
+    if (
+      sessionStorage.getItem(
+        "chatPendientesForzarCero"
+      ) ===
+        "1"
+    ) {
+
+      sessionStorage.removeItem(
+        "chatPendientesForzarCero"
+      );
+
+
+      total =
+        0;
+
+    }
+
+  }
+  catch (e) {}
+
+
   const badge =
     document.getElementById(
       "chatPendientes"
@@ -2903,6 +2939,22 @@ function pintarPendientesChatMenu(
 
 
 function abrirChatCaseta() {
+
+  pintarPendientesChatMenu(
+    0
+  );
+
+
+  try {
+
+    sessionStorage.setItem(
+      "chatPendientesForzarCero",
+      "1"
+    );
+
+  }
+  catch (e) {}
+
 
   window.location.href =
     "https://angeelmex.github.io/arcosdelponiente/chat.html";
