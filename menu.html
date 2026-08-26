@@ -1153,6 +1153,14 @@ let OPERACION =
   null;
 
 
+let consultaPendientesChatEnCurso =
+  false;
+
+
+let temporizadorPendientesChat =
+  null;
+
+
 const MAX_CONSULTAS_OPERACION =
   30;
 
@@ -1187,6 +1195,63 @@ window.addEventListener(
       cargarPendientesChatMenu,
       400
     );
+
+  }
+);
+
+
+function iniciarRevisionPendientesChat() {
+
+  if (
+    temporizadorPendientesChat
+  ) {
+
+    clearInterval(
+      temporizadorPendientesChat
+    );
+
+  }
+
+
+  temporizadorPendientesChat =
+    setInterval(
+      function() {
+
+        if (
+          document.visibilityState ===
+            "visible"
+        ) {
+
+          cargarPendientesChatMenu();
+
+        }
+
+      },
+      5000
+    );
+
+}
+
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  iniciarRevisionPendientesChat
+);
+
+
+document.addEventListener(
+  "visibilitychange",
+  function() {
+
+    if (
+      document.visibilityState ===
+        "visible"
+    ) {
+
+      cargarPendientesChatMenu();
+
+    }
 
   }
 );
@@ -2640,6 +2705,15 @@ window.addEventListener(
 
 function cargarPendientesChatMenu() {
 
+  if (
+    consultaPendientesChatEnCurso
+  ) {
+
+    return;
+
+  }
+
+
   const token =
     sessionStorage.getItem(
       "tokenResidente"
@@ -2653,6 +2727,10 @@ function cargarPendientesChatMenu() {
     return;
 
   }
+
+
+  consultaPendientesChatEnCurso =
+    true;
 
 
   const requestId =
@@ -2710,6 +2788,10 @@ function cargarPendientesChatMenu() {
         20
     ) {
 
+      consultaPendientesChatEnCurso =
+        false;
+
+
       return;
 
     }
@@ -2740,6 +2822,10 @@ function cargarPendientesChatMenu() {
           !resultado ||
           !resultado.ok
         ) {
+
+          consultaPendientesChatEnCurso =
+            false;
+
 
           return;
 
@@ -2774,9 +2860,17 @@ function cargarPendientesChatMenu() {
           !estado.resultado.ok
         ) {
 
+          consultaPendientesChatEnCurso =
+            false;
+
+
           return;
 
         }
+
+
+        consultaPendientesChatEnCurso =
+          false;
 
 
         pintarPendientesChatMenu(
@@ -2917,6 +3011,20 @@ function pintarPendientesChatMenu(
     );
 
 
+    try {
+
+      if (
+        "clearAppBadge" in navigator
+      ) {
+
+        navigator.clearAppBadge();
+
+      }
+
+    }
+    catch (e) {}
+
+
     return;
 
   }
@@ -2933,6 +3041,22 @@ function pintarPendientesChatMenu(
   badge.classList.add(
     "activo"
   );
+
+
+  try {
+
+    if (
+      "setAppBadge" in navigator
+    ) {
+
+      navigator.setAppBadge(
+        total
+      );
+
+    }
+
+  }
+  catch (e) {}
 
 }
 
@@ -2980,6 +3104,185 @@ function abrirNotificaciones() {
 
 </script>
 
+
+
+<script type="module">
+
+import {
+  initializeApp,
+  getApps
+} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+
+
+import {
+  getMessaging,
+  onMessage,
+  isSupported
+} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-messaging.js";
+
+
+const FIREBASE_CHAT_CONFIG = {
+  apiKey:
+    "AIzaSyDse3UCwboAneei4QM0KG468IkB8UeyG50",
+
+  authDomain:
+    "arcos-residentes.firebaseapp.com",
+
+  projectId:
+    "arcos-residentes",
+
+  storageBucket:
+    "arcos-residentes.firebasestorage.app",
+
+  messagingSenderId:
+    "359067671558",
+
+  appId:
+    "1:359067671558:web:f0395d4220d5b5f40d7787"
+};
+
+
+async function iniciarMensajesForegroundResidente() {
+
+  try {
+
+    if (
+      !(await isSupported())
+    ) {
+
+      return;
+
+    }
+
+
+    const apps =
+      getApps();
+
+
+    const app =
+      apps.length
+        ? apps[0]
+        : initializeApp(
+            FIREBASE_CHAT_CONFIG
+          );
+
+
+    const messaging =
+      getMessaging(
+        app
+      );
+
+
+    onMessage(
+      messaging,
+      async function(payload) {
+
+        const datos =
+          payload &&
+          payload.data
+            ? payload.data
+            : {};
+
+
+        if (
+          String(
+            datos.tipo || ""
+          ) !==
+            "CHAT_CASETA"
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          typeof window
+            .cargarPendientesChatMenu ===
+            "function"
+        ) {
+
+          window
+            .cargarPendientesChatMenu();
+
+        }
+
+
+        const titulo =
+          payload &&
+          payload.notification &&
+          payload.notification.title
+            ? payload.notification.title
+            : "Nuevo mensaje de caseta";
+
+
+        const cuerpo =
+          payload &&
+          payload.notification &&
+          payload.notification.body
+            ? payload.notification.body
+            : "Caseta te envió un mensaje.";
+
+
+        if (
+          "serviceWorker" in navigator &&
+          Notification.permission ===
+            "granted"
+        ) {
+
+          const registro =
+            await navigator
+              .serviceWorker
+              .ready;
+
+
+          await registro
+            .showNotification(
+              titulo,
+              {
+                body:
+                  cuerpo,
+
+                icon:
+                  "./icon-192.png",
+
+                badge:
+                  "./icon-192.png",
+
+                data: {
+                  url:
+                    "./chat.html"
+                },
+
+                tag:
+                  "chat-caseta"
+              }
+            );
+
+        }
+
+      }
+    );
+
+  }
+  catch (error) {
+
+    console.warn(
+      "No fue posible iniciar mensajes foreground:",
+      error
+    );
+
+  }
+
+}
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  iniciarMensajesForegroundResidente
+);
+
+</script>
 
 </body>
 
