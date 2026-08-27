@@ -1438,7 +1438,7 @@ const URL_BACKEND =
 
 
 const VERSION_GUARDIAS =
-  "2026.08.27-chat-cache-pull";
+  "2026.08.27-chat-cache-envio-recuperable";
 
 
 function asegurarVersionGuardias() {
@@ -2109,6 +2109,9 @@ let jalandoChatsGuardias =
 
 let actualizandoChatsGuardias =
   false;
+
+const CLAVE_ENVIO_CHAT_GUARDIA_PENDIENTE_V3 =
+  "arcos_guardias_envio_chat_pendiente_v3";
 let fotoPlacasProveedorBase64 = "";
 let fotoPlacasProveedorMime = "";
 let fotoIdentificacionProveedorBase64 = "";
@@ -4994,6 +4997,286 @@ function pintarBadgeMensajesGuardias(
 
 
 
+function guardarEnvioChatGuardiaPendienteV3_(
+  idResidente,
+  mensajeTexto
+) {
+
+  try {
+
+    localStorage.setItem(
+      CLAVE_ENVIO_CHAT_GUARDIA_PENDIENTE_V3,
+      JSON.stringify(
+        {
+          idResidente:
+            String(
+              idResidente || ""
+            ),
+
+          mensaje:
+            String(
+              mensajeTexto || ""
+            ),
+
+          fecha:
+            Date.now()
+        }
+      )
+    );
+
+  }
+  catch (error) {}
+
+}
+
+
+
+function leerEnvioChatGuardiaPendienteV3_() {
+
+  try {
+
+    const textoEstado =
+      localStorage.getItem(
+        CLAVE_ENVIO_CHAT_GUARDIA_PENDIENTE_V3
+      );
+
+
+    if (
+      !textoEstado
+    ) {
+
+      return null;
+
+    }
+
+
+    const estado =
+      JSON.parse(
+        textoEstado
+      );
+
+
+    if (
+      !estado ||
+      !estado.idResidente ||
+      !estado.mensaje ||
+      !estado.fecha
+    ) {
+
+      return null;
+
+    }
+
+
+    /*
+     * Un envío viejo no debe dejar la interfaz bloqueada.
+     */
+    if (
+      Date.now() -
+        Number(
+          estado.fecha
+        ) >
+        5 * 60 * 1000
+    ) {
+
+      localStorage.removeItem(
+        CLAVE_ENVIO_CHAT_GUARDIA_PENDIENTE_V3
+      );
+
+
+      return null;
+
+    }
+
+
+    return estado;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+
+function limpiarEnvioChatGuardiaPendienteV3_() {
+
+  try {
+
+    localStorage.removeItem(
+      CLAVE_ENVIO_CHAT_GUARDIA_PENDIENTE_V3
+    );
+
+  }
+  catch (error) {}
+
+}
+
+
+
+function restaurarBotonEnviarChatGuardiaV3_() {
+
+  const input =
+    document.getElementById(
+      "inputChatGuardia"
+    );
+
+
+  const boton =
+    document.getElementById(
+      "btnEnviarChatGuardia"
+    );
+
+
+  if (
+    !input ||
+    !boton
+  ) {
+
+    return;
+
+  }
+
+
+  input.disabled =
+    false;
+
+
+  boton.disabled =
+    false;
+
+
+  boton.textContent =
+    "ENVIAR";
+
+}
+
+
+
+function resolverEnvioPendienteConChatV3_(
+  datos
+) {
+
+  const pendiente =
+    leerEnvioChatGuardiaPendienteV3_();
+
+
+  if (
+    !pendiente ||
+    String(
+      pendiente.idResidente || ""
+    ) !==
+      String(
+        chatGuardiaActivoId || ""
+      )
+  ) {
+
+    restaurarBotonEnviarChatGuardiaV3_();
+
+    return;
+
+  }
+
+
+  const mensajes =
+    datos &&
+    Array.isArray(
+      datos.mensajes
+    )
+      ? datos.mensajes
+      : [];
+
+
+  const encontrado =
+    mensajes.some(
+      function(item) {
+
+        return (
+          String(
+            item &&
+            item.origen || ""
+          ).toUpperCase() ===
+            "GUARDIA" &&
+          String(
+            item &&
+            item.mensaje || ""
+          ).trim() ===
+            String(
+              pendiente.mensaje || ""
+            ).trim()
+        );
+
+      }
+    );
+
+
+  const input =
+    document.getElementById(
+      "inputChatGuardia"
+    );
+
+
+  if (
+    encontrado
+  ) {
+
+    /*
+     * El servidor sí recibió el mensaje aunque la app haya
+     * sido minimizada antes de alcanzar a recibir la respuesta.
+     * No lo volvemos a preparar para evitar un duplicado.
+     */
+    limpiarEnvioChatGuardiaPendienteV3_();
+
+
+    if (
+      input
+    ) {
+
+      input.value =
+        "";
+
+    }
+
+
+    restaurarBotonEnviarChatGuardiaV3_();
+
+    return;
+
+  }
+
+
+  /*
+   * El servidor respondió y el mensaje no aparece.
+   * Dejamos el texto listo para que el guardia decida reenviarlo,
+   * pero nunca lo reenviamos automáticamente.
+   */
+  if (
+    input &&
+    !String(
+      input.value || ""
+    ).trim()
+  ) {
+
+    input.value =
+      String(
+        pendiente.mensaje || ""
+      );
+
+  }
+
+
+  limpiarEnvioChatGuardiaPendienteV3_();
+
+
+  restaurarBotonEnviarChatGuardiaV3_();
+
+}
+
+
+
 function revisarPendientesGuardias() {
 
   if (
@@ -5015,12 +5298,24 @@ function revisarPendientesGuardias() {
         resultado.ok
       ) {
 
+        /*
+         * Esta misma consulta ya se hacía al iniciar la app.
+         * Ahora también guardamos la lista completa para que,
+         * al tocar MENSAJES, los chats conocidos aparezcan
+         * inmediatamente sin una segunda espera.
+         */
+        const datosChats =
+          resultado.datos || {};
+
+
+        guardarCacheListaChatsGuardiasV3_(
+          datosChats
+        );
+
+
         pintarBadgeMensajesGuardias(
           Number(
-            resultado.datos &&
-            resultado.datos.totalNoLeidos
-              ? resultado.datos.totalNoLeidos
-              : 0
+            datosChats.totalNoLeidos || 0
           )
         );
 
@@ -5772,6 +6067,63 @@ function abrirChatGuardia(
     );
 
 
+  const envioPendiente =
+    leerEnvioChatGuardiaPendienteV3_();
+
+
+  const inputChat =
+    document.getElementById(
+      "inputChatGuardia"
+    );
+
+
+  const botonChat =
+    document.getElementById(
+      "btnEnviarChatGuardia"
+    );
+
+
+  if (
+    envioPendiente &&
+    String(
+      envioPendiente.idResidente || ""
+    ) ===
+      String(
+        idResidente || ""
+      )
+  ) {
+
+    if (
+      inputChat
+    ) {
+
+      inputChat.disabled =
+        true;
+
+    }
+
+
+    if (
+      botonChat
+    ) {
+
+      botonChat.disabled =
+        true;
+
+
+      botonChat.textContent =
+        "VERIFICANDO...";
+
+    }
+
+  }
+  else {
+
+    restaurarBotonEnviarChatGuardiaV3_();
+
+  }
+
+
   if (
     cache
   ) {
@@ -5916,6 +6268,11 @@ function cargarChatGuardiaActivo(
 
 
       pintarChatGuardia(
+        resultado.datos || {}
+      );
+
+
+      resolverEnvioPendienteConChatV3_(
         resultado.datos || {}
       );
 
@@ -6193,6 +6550,17 @@ function enviarMensajeGuardia() {
 
 
   /*
+   * Si Android pausa la página mientras Apps Script trabaja,
+   * recordamos qué mensaje estaba en curso. Al volver, primero
+   * comprobamos el chat antes de permitir un reenvío.
+   */
+  guardarEnvioChatGuardiaPendienteV3_(
+    chatGuardiaActivoId,
+    mensajeTexto
+  );
+
+
+  /*
    * Permitimos que el navegador pinte ENVIANDO...
    * antes de comenzar la operación de red.
    */
@@ -6242,6 +6610,9 @@ function enviarMensajeGuardia() {
         return;
 
       }
+
+
+      limpiarEnvioChatGuardiaPendienteV3_();
 
 
       input.value =
@@ -6327,6 +6698,9 @@ function enviarMensajeGuardia() {
         "ENVIAR";
 
 
+      limpiarEnvioChatGuardiaPendienteV3_();
+
+
       mensaje(
         "No fue posible enviar el mensaje.",
         "error"
@@ -6349,6 +6723,14 @@ function enviarMensajeGuardia() {
 function volverAListaChatsGuardias() {
 
   detenerActualizacionChatGuardia();
+
+
+  /*
+   * La vista no debe quedarse visualmente atorada en ENVIANDO
+   * al navegar. El estado pendiente se conserva por separado
+   * para verificarlo contra el servidor al volver a abrir.
+   */
+  restaurarBotonEnviarChatGuardiaV3_();
 
 
   chatGuardiaActivoId =
@@ -8283,6 +8665,72 @@ document.addEventListener(
         "visible" &&
       chatGuardiaActivoId
     ) {
+
+      const pendiente =
+        leerEnvioChatGuardiaPendienteV3_();
+
+
+      if (
+        pendiente &&
+        String(
+          pendiente.idResidente || ""
+        ) ===
+          String(
+            chatGuardiaActivoId || ""
+          )
+      ) {
+
+        const boton =
+          document.getElementById(
+            "btnEnviarChatGuardia"
+          );
+
+
+        const input =
+          document.getElementById(
+            "inputChatGuardia"
+          );
+
+
+        if (
+          boton
+        ) {
+
+          boton.disabled =
+            true;
+
+
+          boton.textContent =
+            "VERIFICANDO...";
+
+        }
+
+
+        if (
+          input
+        ) {
+
+          input.disabled =
+            true;
+
+        }
+
+      }
+      else {
+
+        restaurarBotonEnviarChatGuardiaV3_();
+
+      }
+
+
+      /*
+       * Verificamos el historial real. Si el mensaje sí llegó
+       * mientras la app estaba minimizada, se detecta y no se
+       * ofrece reenviarlo.
+       */
+      chatGuardiaCargando =
+        false;
+
 
       cargarChatGuardiaActivo(
         false
