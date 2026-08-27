@@ -436,6 +436,13 @@ document.addEventListener(
 
 
 
+const CACHE_LOCAL_SEGURIDAD_V3 =
+  "arcos_seguridad_cache_v3";
+
+const MILISEGUNDOS_CACHE_LOCAL_SEGURIDAD_V3 =
+  45 * 1000;
+
+
 function cargarSeguridad() {
 
   TOKEN =
@@ -456,30 +463,68 @@ function cargarSeguridad() {
   }
 
 
+  /*
+   * Si ya tenemos una copia reciente en este teléfono,
+   * la mostramos inmediatamente.
+   */
+  const cacheLocal =
+    obtenerCacheLocalSeguridadV3_();
+
+
+  if (
+    cacheLocal &&
+    cacheLocal.datos
+  ) {
+
+    pintarSeguridadV3_(
+      cacheLocal.datos
+    );
+
+
+    if (
+      Date.now() -
+      cacheLocal.fecha <
+      MILISEGUNDOS_CACHE_LOCAL_SEGURIDAD_V3
+    ) {
+
+      return;
+
+    }
+
+  }
+
+
   ejecutarOperacionSeguridadV3(
     "seguridadHoy",
 
     function(resultado) {
-
-      document
-        .getElementById(
-          "cargando"
-        )
-        .style.display =
-          "none";
-
 
       if (
         !resultado ||
         !resultado.ok
       ) {
 
-        mostrarError(
-          resultado &&
-          resultado.mensaje
-            ? resultado.mensaje
-            : "No fue posible cargar seguridad."
-        );
+        if (
+          !cacheLocal
+        ) {
+
+          document
+            .getElementById(
+              "cargando"
+            )
+            .style.display =
+              "none";
+
+
+          mostrarError(
+            resultado &&
+            resultado.mensaje
+              ? resultado.mensaje
+              : "No fue posible cargar seguridad."
+          );
+
+        }
+
 
         return;
 
@@ -494,40 +539,27 @@ function cargarSeguridad() {
         };
 
 
-      const registros =
-        datos.registros ||
-        [];
-
-
-      document
-        .getElementById(
-          "resumenTexto"
-        )
-        .textContent =
-          datos.fecha
-            ? (
-                "Registros correspondientes al " +
-                datos.fecha +
-                "."
-              )
-            : "Registros del día.";
-
-
-      renderizarRegistros(
-        registros
+      guardarCacheLocalSeguridadV3_(
+        datos
       );
 
 
-      document
-        .getElementById(
-          "contenido"
-        )
-        .style.display =
-          "block";
+      pintarSeguridadV3_(
+        datos
+      );
 
     },
 
     function() {
+
+      if (
+        cacheLocal
+      ) {
+
+        return;
+
+      }
+
 
       document
         .getElementById(
@@ -543,6 +575,142 @@ function cargarSeguridad() {
 
     }
   );
+
+}
+
+
+function pintarSeguridadV3_(
+  datos
+) {
+
+  datos =
+    datos ||
+    {
+      fecha: "",
+      registros: []
+    };
+
+
+  const registros =
+    datos.registros ||
+    [];
+
+
+  document
+    .getElementById(
+      "resumenTexto"
+    )
+    .textContent =
+      datos.fecha
+        ? (
+            "Registros correspondientes al " +
+            datos.fecha +
+            "."
+          )
+        : "Registros del día.";
+
+
+  renderizarRegistros(
+    registros
+  );
+
+
+  document
+    .getElementById(
+      "cargando"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "contenido"
+    )
+    .style.display =
+      "block";
+
+}
+
+
+function obtenerCacheLocalSeguridadV3_() {
+
+  try {
+
+    const textoCache =
+      sessionStorage.getItem(
+        CACHE_LOCAL_SEGURIDAD_V3
+      );
+
+
+    if (
+      !textoCache
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        textoCache
+      );
+
+
+    if (
+      !cache ||
+      !cache.fecha ||
+      !cache.datos ||
+      !Array.isArray(
+        cache.datos.registros
+      )
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+function guardarCacheLocalSeguridadV3_(
+  datos
+) {
+
+  try {
+
+    sessionStorage.setItem(
+      CACHE_LOCAL_SEGURIDAD_V3,
+      JSON.stringify(
+        {
+          fecha:
+            Date.now(),
+
+          datos:
+            datos
+        }
+      )
+    );
+
+  }
+  catch (error) {
+
+    /*
+     * El caché local es solo una optimización.
+     */
+
+  }
 
 }
 
@@ -729,6 +897,18 @@ function crearTarjeta(
 
   foto.className =
     "foto";
+
+
+  /*
+   * Las fotos fuera de pantalla no se descargan
+   * hasta que el usuario se acerca a ellas.
+   */
+  foto.loading =
+    "lazy";
+
+
+  foto.decoding =
+    "async";
 
 
   foto.src =
