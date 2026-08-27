@@ -43,7 +43,91 @@ const URL_NOTIFICACIONES =
   "./notificaciones.html";
 
 const VERSION_SW =
-  "2026.08.26-residente-push-sin-duplicados-1";
+  "2026.08.27-notificaciones-inteligentes-1";
+
+
+const CACHE_FLAGS_NOTIFICACIONES_V3 =
+  "arcos-flags-v3";
+
+const FLAG_NUEVA_NOTIFICACION_V3 =
+  "./flag-nueva-notificacion";
+
+
+
+async function marcarNuevaNotificacionV3_() {
+
+  try {
+
+    const cache =
+      await caches.open(
+        CACHE_FLAGS_NOTIFICACIONES_V3
+      );
+
+
+    await cache.put(
+      FLAG_NUEVA_NOTIFICACION_V3,
+      new Response(
+        String(
+          Date.now()
+        ),
+        {
+          headers: {
+            "Content-Type":
+              "text/plain"
+          }
+        }
+      )
+    );
+
+  }
+  catch (error) {
+
+    console.log(
+      "No fue posible marcar nueva notificación:",
+      error
+    );
+
+  }
+
+
+  try {
+
+    const clientes =
+      await self.clients.matchAll(
+        {
+          type:
+            "window",
+
+          includeUncontrolled:
+            true
+        }
+      );
+
+
+    clientes.forEach(
+      function(cliente) {
+
+        cliente.postMessage(
+          {
+            tipo:
+              "NUEVA_NOTIFICACION"
+          }
+        );
+
+      }
+    );
+
+  }
+  catch (errorClientes) {
+
+    console.log(
+      "No fue posible avisar a las ventanas abiertas:",
+      errorClientes
+    );
+
+  }
+
+}
 
 self.addEventListener(
   "install",
@@ -75,6 +159,15 @@ messaging.onBackgroundMessage(
       "Notificación recibida:",
       payload
     );
+
+
+    /*
+     * Marcamos que hay información nueva ANTES de decidir
+     * cómo se mostrará el push. Así la bandeja sabrá que
+     * debe actualizarse la próxima vez que se abra.
+     */
+    await marcarNuevaNotificacionV3_();
+
 
     /*
      * Si FCM/iOS ya recibió un payload.notification,
