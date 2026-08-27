@@ -2038,6 +2038,19 @@ const CLAVE_ESTADO_ENTRADA_MANUAL =
   "estadoEntradaManualGuardia";
 
 
+const CACHE_GUARDIAS_DATOS_V3 =
+  "arcos_guardias_datos_v3";
+
+const CACHE_GUARDIAS_NUMEROS_PREFIJO_V3 =
+  "arcos_guardias_numeros_v3_";
+
+const MILISEGUNDOS_CACHE_GUARDIAS_V3 =
+  24 * 60 * 60 * 1000;
+
+let solicitudNumerosGuardiasV3 =
+  0;
+
+
 document.addEventListener(
   "DOMContentLoaded",
   function() {
@@ -2174,7 +2187,236 @@ function abrirChatPendienteDesdeUrlGuardias() {
 
 
 
+function pintarDatosInicialesGuardiasV3_(
+  datos
+) {
+
+  datos =
+    datos || {};
+
+
+  const calle =
+    document.getElementById(
+      "calle"
+    );
+
+
+  calle.innerHTML =
+    '<option value="">Selecciona calle</option>';
+
+
+  (
+    datos.calles ||
+    []
+  )
+    .forEach(
+      function(valor) {
+
+        const op =
+          document.createElement(
+            "option"
+          );
+
+
+        op.value =
+          valor;
+
+
+        op.textContent =
+          valor;
+
+
+        calle.appendChild(
+          op
+        );
+
+      }
+    );
+
+
+  const tipo =
+    document.getElementById(
+      "tipoVisita"
+    );
+
+
+  tipo.innerHTML =
+    '<option value="">Selecciona tipo</option>';
+
+
+  (
+    datos.tiposVisita ||
+    []
+  )
+    .forEach(
+      function(valor) {
+
+        const op =
+          document.createElement(
+            "option"
+          );
+
+
+        op.value =
+          valor;
+
+
+        op.textContent =
+          valor;
+
+
+        tipo.appendChild(
+          op
+        );
+
+      }
+    );
+
+}
+
+
+
+function leerCacheDatosGuardiasV3_() {
+
+  try {
+
+    const textoCache =
+      localStorage.getItem(
+        CACHE_GUARDIAS_DATOS_V3
+      );
+
+
+    if (
+      !textoCache
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        textoCache
+      );
+
+
+    if (
+      !cache ||
+      !cache.fecha ||
+      !cache.datos ||
+      !Array.isArray(
+        cache.datos.calles
+      ) ||
+      !Array.isArray(
+        cache.datos.tiposVisita
+      )
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+
+function guardarCacheDatosGuardiasV3_(
+  datos
+) {
+
+  try {
+
+    localStorage.setItem(
+      CACHE_GUARDIAS_DATOS_V3,
+      JSON.stringify(
+        {
+          fecha:
+            Date.now(),
+
+          datos:
+            datos || {}
+        }
+      )
+    );
+
+  }
+  catch (error) {
+
+    /*
+     * El caché local es solamente una optimización.
+     */
+
+  }
+
+}
+
+
+
+function continuarInicioGuardiasV3_() {
+
+  setTimeout(
+    revisarPendientesGuardias,
+    500
+  );
+
+
+  abrirChatPendienteDesdeUrlGuardias();
+
+}
+
+
+
 function cargarDatosInicialesGuardias() {
+
+  const cache =
+    leerCacheDatosGuardiasV3_();
+
+
+  if (
+    cache &&
+    cache.datos
+  ) {
+
+    /*
+     * Las calles aparecen inmediatamente desde el teléfono.
+     */
+    pintarDatosInicialesGuardiasV3_(
+      cache.datos
+    );
+
+
+    continuarInicioGuardiasV3_();
+
+
+    /*
+     * Mientras el caché tenga menos de 24 horas,
+     * no hace falta consultar nuevamente.
+     */
+    if (
+      Date.now() -
+        Number(
+          cache.fecha
+        ) <
+        MILISEGUNDOS_CACHE_GUARDIAS_V3
+    ) {
+
+      return;
+
+    }
+
+  }
+
 
   apiGuardias(
     "guardiasDatos",
@@ -2186,13 +2428,23 @@ function cargarDatosInicialesGuardias() {
         !resultado.ok
       ) {
 
-        mensaje(
-          resultado &&
-          resultado.mensaje
-            ? resultado.mensaje
-            : "No fue posible cargar.",
-          "error"
-        );
+        /*
+         * Si ya pintamos una copia local, una falla
+         * temporal de red no debe borrar las calles.
+         */
+        if (
+          !cache
+        ) {
+
+          mensaje(
+            resultado &&
+            resultado.mensaje
+              ? resultado.mensaje
+              : "No fue posible cargar.",
+            "error"
+          );
+
+        }
 
 
         return;
@@ -2200,94 +2452,46 @@ function cargarDatosInicialesGuardias() {
       }
 
 
-      const calle =
-        document.getElementById(
-          "calle"
-        );
+      const datos =
+        resultado.datos ||
+        {
+          calles: [],
+          tiposVisita: []
+        };
 
 
-      calle.innerHTML =
-        '<option value="">Selecciona calle</option>';
-
-
-      (resultado.datos.calles || [])
-        .forEach(
-          function(valor) {
-
-            const op =
-              document.createElement(
-                "option"
-              );
-
-
-            op.value =
-              valor;
-
-
-            op.textContent =
-              valor;
-
-
-            calle.appendChild(
-              op
-            );
-
-          }
-        );
-
-
-      const tipo =
-        document.getElementById(
-          "tipoVisita"
-        );
-
-
-      tipo.innerHTML =
-        '<option value="">Selecciona tipo</option>';
-
-
-      (resultado.datos.tiposVisita || [])
-        .forEach(
-          function(valor) {
-
-            const op =
-              document.createElement(
-                "option"
-              );
-
-
-            op.value =
-              valor;
-
-
-            op.textContent =
-              valor;
-
-
-            tipo.appendChild(
-              op
-            );
-
-          }
-        );
-
-
-      setTimeout(
-        revisarPendientesGuardias,
-        500
+      guardarCacheDatosGuardiasV3_(
+        datos
       );
 
 
-      abrirChatPendienteDesdeUrlGuardias();
+      pintarDatosInicialesGuardiasV3_(
+        datos
+      );
+
+
+      if (
+        !cache
+      ) {
+
+        continuarInicioGuardiasV3_();
+
+      }
 
     },
     function(textoError) {
 
-      mensaje(
-        textoError ||
-        "No fue posible cargar.",
-        "error"
-      );
+      if (
+        !cache
+      ) {
+
+        mensaje(
+          textoError ||
+          "No fue posible cargar.",
+          "error"
+        );
+
+      }
 
     }
   );
@@ -2795,29 +2999,297 @@ function volverMenu() {
 }
 
 
+function claveCacheNumerosGuardiasV3_(
+  calle
+) {
+
+  return (
+    CACHE_GUARDIAS_NUMEROS_PREFIJO_V3 +
+    encodeURIComponent(
+      String(
+        calle || ""
+      )
+      .trim()
+      .toUpperCase()
+    )
+  );
+
+}
+
+
+
+function leerCacheNumerosGuardiasV3_(
+  calle
+) {
+
+  try {
+
+    const textoCache =
+      localStorage.getItem(
+        claveCacheNumerosGuardiasV3_(
+          calle
+        )
+      );
+
+
+    if (
+      !textoCache
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        textoCache
+      );
+
+
+    if (
+      !cache ||
+      !cache.fecha ||
+      !Array.isArray(
+        cache.numeros
+      )
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+
+function guardarCacheNumerosGuardiasV3_(
+  calle,
+  numeros
+) {
+
+  try {
+
+    localStorage.setItem(
+      claveCacheNumerosGuardiasV3_(
+        calle
+      ),
+      JSON.stringify(
+        {
+          fecha:
+            Date.now(),
+
+          numeros:
+            Array.isArray(
+              numeros
+            )
+              ? numeros
+              : []
+        }
+      )
+    );
+
+  }
+  catch (error) {
+
+    /*
+     * Si falla localStorage, la consulta normal sigue funcionando.
+     */
+
+  }
+
+}
+
+
+
+function pintarNumerosGuardiasV3_(
+  calleEsperada,
+  numeros
+) {
+
+  const calleActual =
+    document
+      .getElementById(
+        "calle"
+      )
+      .value;
+
+
+  /*
+   * Protección contra respuestas atrasadas:
+   * si el guardia ya cambió de calle, ignoramos esta respuesta.
+   */
+  if (
+    String(
+      calleActual
+    ) !==
+    String(
+      calleEsperada
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  const numero =
+    document.getElementById(
+      "numero"
+    );
+
+
+  numero.innerHTML =
+    '<option value="">Selecciona número</option>';
+
+
+  (
+    numeros ||
+    []
+  )
+    .forEach(
+      function(valor) {
+
+        const op =
+          document.createElement(
+            "option"
+          );
+
+
+        op.value =
+          valor;
+
+
+        op.textContent =
+          valor;
+
+
+        numero.appendChild(
+          op
+        );
+
+      }
+    );
+
+}
+
+
+
 function cargarNumeros() {
 
-  telefonoEntradaManual = "";
-  requiereConfirmacionTelefonica = false;
-  llamadaConfirmacionIniciada = false;
+  telefonoEntradaManual =
+    "";
+
+  requiereConfirmacionTelefonica =
+    false;
+
+  llamadaConfirmacionIniciada =
+    false;
+
   cerrarModalConfirmacionTelefono();
-  requiereConfirmacionNip = false;
-  nipAutorizadoEntradaManual = "";
+
+  requiereConfirmacionNip =
+    false;
+
+  nipAutorizadoEntradaManual =
+    "";
+
   cerrarModalConfirmacionNip();
-  autorizacionCasetaId = "";
-  autorizacionCasetaDisponible = false;
-  autorizacionCasetaExpiracion = 0;
+
+  autorizacionCasetaId =
+    "";
+
+  autorizacionCasetaDisponible =
+    false;
+
+  autorizacionCasetaExpiracion =
+    0;
+
   cerrarModalAutorizacionCaseta();
 
-  const calle = document.getElementById("calle").value;
-  const numero = document.getElementById("numero");
 
-  numero.innerHTML = '<option value="">Cargando...</option>';
+  const calle =
+    document
+      .getElementById(
+        "calle"
+      )
+      .value;
 
-  if (!calle) {
-    numero.innerHTML = '<option value="">Selecciona número</option>';
+
+  const numero =
+    document.getElementById(
+      "numero"
+    );
+
+
+  /*
+   * Cada cambio de calle invalida cualquier respuesta anterior.
+   */
+  solicitudNumerosGuardiasV3++;
+
+
+  const solicitudActual =
+    solicitudNumerosGuardiasV3;
+
+
+  if (
+    !calle
+  ) {
+
+    numero.innerHTML =
+      '<option value="">Selecciona número</option>';
+
     return;
+
   }
+
+
+  const cache =
+    leerCacheNumerosGuardiasV3_(
+      calle
+    );
+
+
+  if (
+    cache &&
+    Date.now() -
+      Number(
+        cache.fecha
+      ) <
+      MILISEGUNDOS_CACHE_GUARDIAS_V3
+  ) {
+
+    /*
+     * Si esta calle ya fue consultada en las últimas 24 h,
+     * sus números aparecen sin esperar al servidor.
+     */
+    pintarNumerosGuardiasV3_(
+      calle,
+      cache.numeros
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Solo mostramos "Cargando..." la primera vez que esta calle
+   * no existe todavía en este teléfono.
+   */
+  numero.innerHTML =
+    '<option value="">Cargando...</option>';
+
 
   apiGuardias(
     "guardiasNumeros",
@@ -2826,6 +3298,41 @@ function cargarNumeros() {
         calle
     },
     function(resultado) {
+
+      /*
+       * Si ya hubo otro cambio de calle, ignoramos esta respuesta.
+       */
+      if (
+        solicitudActual !==
+          solicitudNumerosGuardiasV3
+      ) {
+
+        return;
+
+      }
+
+
+      const calleActual =
+        document
+          .getElementById(
+            "calle"
+          )
+          .value;
+
+
+      if (
+        String(
+          calleActual
+        ) !==
+        String(
+          calle
+        )
+      ) {
+
+        return;
+
+      }
+
 
       const numeros =
         resultado &&
@@ -2838,20 +3345,51 @@ function cargarNumeros() {
           : [];
 
 
+      guardarCacheNumerosGuardiasV3_(
+        calle,
+        numeros
+      );
 
-        numero.innerHTML = '<option value="">Selecciona número</option>';
 
-        (numeros || []).forEach(
-          function(valor) {
-            const op = document.createElement("option");
-            op.value = valor;
-            op.textContent = valor;
-            numero.appendChild(op);
-          }
-        );
-      
+      pintarNumerosGuardiasV3_(
+        calle,
+        numeros
+      );
+
     },
     function() {
+
+      if (
+        solicitudActual !==
+          solicitudNumerosGuardiasV3
+      ) {
+
+        return;
+
+      }
+
+
+      const calleActual =
+        document
+          .getElementById(
+            "calle"
+          )
+          .value;
+
+
+      if (
+        String(
+          calleActual
+        ) !==
+        String(
+          calle
+        )
+      ) {
+
+        return;
+
+      }
+
 
       numero.innerHTML =
         '<option value="">Selecciona número</option>';
@@ -2864,6 +3402,7 @@ function cargarNumeros() {
 
     }
   );
+
 }
 
 
@@ -5641,6 +6180,14 @@ function volverMenuPrincipalDespuesProveedor() {
 
 
 function limpiarEntrada() {
+
+  /*
+   * Un registro nuevo siempre inicia sin conservar
+   * la calle del acceso anterior.
+   */
+  document.getElementById("calle").value = "";
+
+  solicitudNumerosGuardiasV3++;
 
   document.getElementById("numero").innerHTML = '<option value="">Selecciona número</option>';
   document.getElementById("nombreVisitante").value = "";
