@@ -504,6 +504,23 @@
       padding: 24px 20px;
       box-shadow: 0 14px 40px rgba(0,0,0,.24);
       text-align: center;
+      position: relative;
+    }
+
+    .cerrar-confirmacion-domicilio {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: #eef2f5;
+      color: #5c6b78;
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 800;
+      cursor: pointer;
     }
 
     .confirmacion-telefono-icono {
@@ -594,6 +611,7 @@
   padding: 24px 20px;
   box-shadow: 0 14px 40px rgba(0,0,0,.24);
   text-align: center;
+  position: relative;
 }
 
 .confirmacion-nip-icono {
@@ -749,6 +767,7 @@
       padding: 24px 20px;
       box-shadow: 0 14px 40px rgba(0,0,0,.24);
       text-align: center;
+      position: relative;
     }
 
     .autorizacion-caseta-icono {
@@ -1216,6 +1235,15 @@
 >
   <div class="confirmacion-telefono-card">
 
+    <button
+      type="button"
+      class="cerrar-confirmacion-domicilio"
+      aria-label="Cancelar"
+      onclick="cancelarSeleccionDomicilioManual()"
+    >
+      ×
+    </button>
+
     <div class="confirmacion-telefono-icono">
       📞
     </div>
@@ -1263,6 +1291,15 @@
 >
   <div class="autorizacion-caseta-card">
 
+    <button
+      type="button"
+      class="cerrar-confirmacion-domicilio"
+      aria-label="Cancelar"
+      onclick="cancelarSeleccionDomicilioManual()"
+    >
+      ×
+    </button>
+
     <div class="autorizacion-caseta-icono">
       ✓
     </div>
@@ -1307,6 +1344,15 @@
 >
 
   <div class="confirmacion-nip-card">
+
+    <button
+      type="button"
+      class="cerrar-confirmacion-domicilio"
+      aria-label="Cancelar"
+      onclick="cancelarSeleccionDomicilioManual()"
+    >
+      ×
+    </button>
 
     <div class="confirmacion-nip-icono">
       🔐
@@ -1378,7 +1424,7 @@ const URL_BACKEND =
 
 
 const VERSION_GUARDIAS =
-  "2026.08.26-1328";
+  "2026.08.27-1203-cache-confirmaciones";
 
 
 function asegurarVersionGuardias() {
@@ -2047,7 +2093,16 @@ const CACHE_GUARDIAS_NUMEROS_PREFIJO_V3 =
 const MILISEGUNDOS_CACHE_GUARDIAS_V3 =
   24 * 60 * 60 * 1000;
 
+const CACHE_GUARDIAS_CONTACTO_PREFIJO_V3 =
+  "arcos_guardias_contacto_v3_";
+
+const MILISEGUNDOS_CACHE_CONTACTO_GUARDIAS_V3 =
+  15 * 60 * 1000;
+
 let solicitudNumerosGuardiasV3 =
+  0;
+
+let solicitudContactoGuardiasV3 =
   0;
 
 
@@ -3406,6 +3461,407 @@ function cargarNumeros() {
 }
 
 
+function claveCacheContactoGuardiasV3_(
+  calle,
+  numero
+) {
+
+  return (
+    CACHE_GUARDIAS_CONTACTO_PREFIJO_V3 +
+    encodeURIComponent(
+      String(
+        calle || ""
+      )
+      .trim()
+      .toUpperCase()
+    ) +
+    "_" +
+    encodeURIComponent(
+      String(
+        numero || ""
+      )
+      .trim()
+      .toUpperCase()
+    )
+  );
+
+}
+
+
+
+function leerCacheContactoGuardiasV3_(
+  calle,
+  numero
+) {
+
+  try {
+
+    const textoCache =
+      localStorage.getItem(
+        claveCacheContactoGuardiasV3_(
+          calle,
+          numero
+        )
+      );
+
+
+    if (
+      !textoCache
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        textoCache
+      );
+
+
+    if (
+      !cache ||
+      !cache.fecha ||
+      !cache.datos
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+
+function guardarCacheContactoGuardiasV3_(
+  calle,
+  numero,
+  datos
+) {
+
+  try {
+
+    /*
+     * Guardamos SOLO datos relativamente estables.
+     * La autorización compartida con caseta NO se cachea.
+     */
+    localStorage.setItem(
+      claveCacheContactoGuardiasV3_(
+        calle,
+        numero
+      ),
+      JSON.stringify(
+        {
+          fecha:
+            Date.now(),
+
+          datos: {
+            telefono:
+              datos.telefono || "",
+
+            requiereConfirmacionTelefonica:
+              datos.requiereConfirmacionTelefonica ===
+              true,
+
+            requiereConfirmacionNip:
+              datos.requiereConfirmacionNip ===
+              true
+          }
+        }
+      )
+    );
+
+  }
+  catch (error) {
+
+    /*
+     * El caché es únicamente una optimización.
+     */
+
+  }
+
+}
+
+
+
+function aplicarConfiguracionContactoGuardiasV3_(
+  datos
+) {
+
+  datos =
+    datos || {};
+
+
+  telefonoEntradaManual =
+    limpiarTelefonoWhatsappGuardia(
+      datos.telefono
+    );
+
+
+  requiereConfirmacionTelefonica =
+    datos.requiereConfirmacionTelefonica ===
+    true;
+
+
+  requiereConfirmacionNip =
+    datos.requiereConfirmacionNip ===
+    true;
+
+}
+
+
+
+function consultarAutorizacionCasetaTiempoRealV3_(
+  calle,
+  numero,
+  solicitudActual
+) {
+
+  /*
+   * Este dato NO usa caché.
+   * Si el residente acaba de compartir el NIP con caseta,
+   * queremos verlo en ese mismo momento.
+   */
+  apiGuardias(
+    "guardiasAutorizacionCaseta",
+    {
+      calle:
+        calle,
+
+      numero:
+        numero
+    },
+    function(resultado) {
+
+      if (
+        solicitudActual !==
+          solicitudContactoGuardiasV3
+      ) {
+
+        return;
+
+      }
+
+
+      const calleActual =
+        document
+          .getElementById(
+            "calle"
+          )
+          .value;
+
+
+      const numeroActual =
+        document
+          .getElementById(
+            "numero"
+          )
+          .value;
+
+
+      if (
+        String(
+          calleActual
+        ) !==
+          String(
+            calle
+          ) ||
+        String(
+          numeroActual
+        ) !==
+          String(
+            numero
+          )
+      ) {
+
+        return;
+
+      }
+
+
+      if (
+        !resultado ||
+        !resultado.ok ||
+        !resultado.datos
+      ) {
+
+        return;
+
+      }
+
+
+      autorizacionCasetaDisponible =
+        resultado.datos
+          .autorizacionCasetaDisponible ===
+          true;
+
+
+      autorizacionCasetaId =
+        resultado.datos
+          .autorizacionCasetaId ||
+        "";
+
+
+      autorizacionCasetaExpiracion =
+        Number(
+          resultado.datos
+            .autorizacionCasetaExpiracion ||
+          0
+        );
+
+
+      if (
+        requiereConfirmacionNip &&
+        autorizacionCasetaDisponible &&
+        autorizacionCasetaId
+      ) {
+
+        cerrarModalConfirmacionNip();
+
+        mostrarModalAutorizacionCaseta();
+
+      }
+
+    },
+    function() {
+
+      /*
+       * Si esta consulta falla, NO desbloqueamos el domicilio.
+       * El guardia conserva el flujo normal de NIP manual.
+       */
+
+    }
+  );
+
+}
+
+
+
+function mostrarConfirmacionSegunConfiguracionV3_(
+  calle,
+  numero,
+  solicitudActual
+) {
+
+  if (
+    requiereConfirmacionNip
+  ) {
+
+    /*
+     * Primero mostramos el requisito inmediatamente.
+     */
+    mostrarModalConfirmacionNip();
+
+
+    /*
+     * Y en paralelo comprobamos si el residente compartió
+     * una autorización con caseta hace unos segundos.
+     */
+    consultarAutorizacionCasetaTiempoRealV3_(
+      calle,
+      numero,
+      solicitudActual
+    );
+
+  }
+  else if (
+    requiereConfirmacionTelefonica
+  ) {
+
+    mostrarModalConfirmacionTelefono();
+
+  }
+
+}
+
+
+
+function cancelarSeleccionDomicilioManual() {
+
+  /*
+   * Invalida cualquier respuesta de servidor que siga viajando.
+   * Así una consulta atrasada no puede volver a abrir el modal.
+   */
+  solicitudContactoGuardiasV3++;
+
+
+  cerrarModalConfirmacionTelefono();
+
+  cerrarModalConfirmacionNip();
+
+  cerrarModalAutorizacionCaseta();
+
+
+  telefonoEntradaManual =
+    "";
+
+  requiereConfirmacionTelefonica =
+    false;
+
+  llamadaConfirmacionIniciada =
+    false;
+
+  requiereConfirmacionNip =
+    false;
+
+  nipAutorizadoEntradaManual =
+    "";
+
+  autorizacionCasetaId =
+    "";
+
+  autorizacionCasetaDisponible =
+    false;
+
+  autorizacionCasetaExpiracion =
+    0;
+
+
+  const calle =
+    document.getElementById(
+      "calle"
+    );
+
+
+  const numero =
+    document.getElementById(
+      "numero"
+    );
+
+
+  /*
+   * MUY IMPORTANTE:
+   * cancelar no permite continuar usando ese domicilio.
+   * Borra calle y número por completo.
+   */
+  calle.value =
+    "";
+
+
+  numero.innerHTML =
+    '<option value="">Selecciona número</option>';
+
+
+  window.scrollTo(
+    0,
+    0
+  );
+
+}
+
+
+
 function cargarContactoEntradaManual() {
 
   telefonoEntradaManual =
@@ -3422,6 +3878,7 @@ function cargarContactoEntradaManual() {
 
   cerrarModalConfirmacionTelefono();
 
+
   requiereConfirmacionNip =
     false;
 
@@ -3431,6 +3888,21 @@ function cargarContactoEntradaManual() {
 
 
   cerrarModalConfirmacionNip();
+
+
+  autorizacionCasetaId =
+    "";
+
+
+  autorizacionCasetaDisponible =
+    false;
+
+
+  autorizacionCasetaExpiracion =
+    0;
+
+
+  cerrarModalAutorizacionCaseta();
 
 
   const calle =
@@ -3449,11 +3921,59 @@ function cargarContactoEntradaManual() {
       .value;
 
 
+  solicitudContactoGuardiasV3++;
+
+
+  const solicitudActual =
+    solicitudContactoGuardiasV3;
+
+
   if (
     !calle ||
     !numero
   ) {
 
+    return;
+
+  }
+
+
+  const cache =
+    leerCacheContactoGuardiasV3_(
+      calle,
+      numero
+    );
+
+
+  if (
+    cache &&
+    Date.now() -
+      Number(
+        cache.fecha
+      ) <
+      MILISEGUNDOS_CACHE_CONTACTO_GUARDIAS_V3
+  ) {
+
+    /*
+     * Teléfono + reglas del domicilio salen inmediatamente.
+     */
+    aplicarConfiguracionContactoGuardiasV3_(
+      cache.datos
+    );
+
+
+    mostrarConfirmacionSegunConfiguracionV3_(
+      calle,
+      numero,
+      solicitudActual
+    );
+
+
+    /*
+     * No volvemos a consultar RESIDENTES durante 15 minutos.
+     * Si usa NIP, la autorización compartida SÍ se consulta
+     * en tiempo real mediante la ruta ligera.
+     */
     return;
 
   }
@@ -3470,104 +3990,148 @@ function cargarContactoEntradaManual() {
     },
     function(resultado) {
 
+      if (
+        solicitudActual !==
+          solicitudContactoGuardiasV3
+      ) {
+
+        return;
+
+      }
+
+
+      const calleActual =
+        document
+          .getElementById(
+            "calle"
+          )
+          .value;
+
+
+      const numeroActual =
+        document
+          .getElementById(
+            "numero"
+          )
+          .value;
+
+
+      if (
+        String(
+          calleActual
+        ) !==
+          String(
+            calle
+          ) ||
+        String(
+          numeroActual
+        ) !==
+          String(
+            numero
+          )
+      ) {
+
+        return;
+
+      }
+
+
+      if (
+        resultado &&
+        resultado.ok &&
+        resultado.datos
+      ) {
+
+        guardarCacheContactoGuardiasV3_(
+          calle,
+          numero,
+          resultado.datos
+        );
+
+
+        aplicarConfiguracionContactoGuardiasV3_(
+          resultado.datos
+        );
+
+
+        autorizacionCasetaDisponible =
+          resultado.datos
+            .autorizacionCasetaDisponible ===
+            true;
+
+
+        autorizacionCasetaId =
+          resultado.datos
+            .autorizacionCasetaId ||
+          "";
+
+
+        autorizacionCasetaExpiracion =
+          Number(
+            resultado.datos
+              .autorizacionCasetaExpiracion ||
+            0
+          );
+
 
         if (
-          resultado &&
-          resultado.ok &&
-          resultado.datos
+          requiereConfirmacionNip &&
+          autorizacionCasetaDisponible &&
+          autorizacionCasetaId
         ) {
 
-          telefonoEntradaManual =
-            limpiarTelefonoWhatsappGuardia(
-              resultado.datos.telefono
-            );
+          mostrarModalAutorizacionCaseta();
 
+        }
+        else if (
+          requiereConfirmacionNip
+        ) {
 
-          requiereConfirmacionTelefonica =
-            resultado.datos
-              .requiereConfirmacionTelefonica ===
-              true;
-          requiereConfirmacionNip =
-            resultado.datos
-              .requiereConfirmacionNip ===
-              true;
+          mostrarModalConfirmacionNip();
 
+        }
+        else if (
+          requiereConfirmacionTelefonica
+        ) {
 
-          autorizacionCasetaDisponible =
-            resultado.datos
-              .autorizacionCasetaDisponible ===
-              true;
-
-
-          autorizacionCasetaId =
-            resultado.datos
-              .autorizacionCasetaId ||
-            "";
-
-
-          autorizacionCasetaExpiracion =
-            Number(
-              resultado.datos
-                .autorizacionCasetaExpiracion ||
-              0
-            );
-
-
-          /*
-           * Si este domicilio requiere llamada,
-           * bloqueamos visualmente el flujo hasta que
-           * el guardia toque LLAMAR y luego CONTINUAR.
-           */
-          if (
-            requiereConfirmacionNip &&
-            autorizacionCasetaDisponible &&
-            autorizacionCasetaId
-          ) {
-
-            mostrarModalAutorizacionCaseta();
-
-          }
-          else if (
-            requiereConfirmacionNip
-          ) {
-
-            mostrarModalConfirmacionNip();
-
-          }
-          else if (
-            requiereConfirmacionTelefonica
-          ) {
-
-            mostrarModalConfirmacionTelefono();
-
-          }
+          mostrarModalConfirmacionTelefono();
 
         }
 
-      
+      }
+
     },
     function() {
 
+      if (
+        solicitudActual !==
+          solicitudContactoGuardiasV3
+      ) {
 
-        telefonoEntradaManual =
-          "";
+        return;
 
-
-        requiereConfirmacionTelefonica =
-          false;
-
-
-        llamadaConfirmacionIniciada =
-          false;
-
-        requiereConfirmacionNip =
-          false;
+      }
 
 
-        nipAutorizadoEntradaManual =
-          "";
+      telefonoEntradaManual =
+        "";
 
-      
+
+      requiereConfirmacionTelefonica =
+        false;
+
+
+      llamadaConfirmacionIniciada =
+        false;
+
+
+      requiereConfirmacionNip =
+        false;
+
+
+      nipAutorizadoEntradaManual =
+        "";
+
     }
   );
 
