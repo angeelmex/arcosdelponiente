@@ -269,6 +269,8 @@
           id="imagenAviso"
           class="imagen-aviso"
           alt="Aviso de la colonia"
+          decoding="async"
+          fetchpriority="high"
         >
 
 
@@ -332,6 +334,216 @@
 const URL_BACKEND =
   "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
 
+/*
+ * Cache visual de Inicio/Login.
+ *
+ * La portada cambia poco, así que mostramos inmediatamente
+ * la última versión conocida y luego consultamos Apps Script
+ * en segundo plano para comprobar si existe una nueva.
+ */
+const CACHE_DATOS_PUBLICOS_V3 =
+  "arcos_datos_publicos_v3";
+
+const MAX_EDAD_CACHE_INICIO_MS =
+  21 * 24 * 60 * 60 * 1000;
+
+
+function guardarCacheDatosPublicosV3_(
+  datos
+) {
+
+  try {
+
+    localStorage.setItem(
+      CACHE_DATOS_PUBLICOS_V3,
+      JSON.stringify(
+        {
+          fecha:
+            Date.now(),
+
+          datos:
+            datos || {}
+        }
+      )
+    );
+
+  }
+  catch (error) {}
+
+}
+
+
+
+function leerCacheDatosPublicosV3_(
+  maxEdad
+) {
+
+  try {
+
+    const textoCache =
+      localStorage.getItem(
+        CACHE_DATOS_PUBLICOS_V3
+      );
+
+
+    if (
+      !textoCache
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        textoCache
+      );
+
+
+    if (
+      !cache ||
+      !cache.fecha ||
+      !cache.datos
+    ) {
+
+      return null;
+
+    }
+
+
+    if (
+      Number(maxEdad || 0) > 0 &&
+      Date.now() -
+        Number(cache.fecha) >
+        Number(maxEdad)
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache.datos;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+
+function pintarDatosInicioV3_(
+  datos
+) {
+
+  datos =
+    datos || {};
+
+
+  document
+    .getElementById(
+      "cargando"
+    )
+    .style.display =
+      "none";
+
+
+  const imagen =
+    document.getElementById(
+      "imagenAviso"
+    );
+
+
+  if (
+    datos.urlAviso
+  ) {
+
+    imagen.onload =
+      function() {
+
+        imagen.style.display =
+          "block";
+
+
+        document
+          .getElementById(
+            "sinAviso"
+          )
+          .style.display =
+            "none";
+
+      };
+
+
+    imagen.onerror =
+      function() {
+
+        mostrarSinAviso();
+
+      };
+
+
+    if (
+      imagen.src !==
+      datos.urlAviso
+    ) {
+
+      imagen.src =
+        datos.urlAviso;
+
+    }
+
+  }
+  else {
+
+    mostrarSinAviso();
+
+  }
+
+
+  const boton =
+    document.getElementById(
+      "btnAcceder"
+    );
+
+
+  const estado =
+    document.getElementById(
+      "estadoSistema"
+    );
+
+
+  if (
+    datos.sistemaActivo === false
+  ) {
+
+    boton.style.display =
+      "none";
+
+
+    estado.style.display =
+      "block";
+
+  }
+  else {
+
+    boton.style.display =
+      "";
+
+
+    estado.style.display =
+      "none";
+
+  }
+
+}
+
+
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -379,6 +591,27 @@ function registrarServiceWorker() {
 
 function cargarDatos() {
 
+  /*
+   * Primero usamos lo ya guardado para que la portada aparezca
+   * inmediatamente. Después consultamos el servidor en segundo plano.
+   */
+  const cache =
+    leerCacheDatosPublicosV3_(
+      MAX_EDAD_CACHE_INICIO_MS
+    );
+
+
+  if (
+    cache
+  ) {
+
+    pintarDatosInicioV3_(
+      cache
+    );
+
+  }
+
+
   const script =
     document.createElement(
       "script"
@@ -396,7 +629,13 @@ function cargarDatos() {
   script.onerror =
     function() {
 
-      mostrarSinAviso();
+      if (
+        !cache
+      ) {
+
+        mostrarSinAviso();
+
+      }
 
     };
 
@@ -412,20 +651,25 @@ function recibirDatosInicio(
   resultado
 ) {
 
-  document
-    .getElementById(
-      "cargando"
-    )
-    .style.display =
-      "none";
-
-
   if (
     !resultado ||
     !resultado.ok
   ) {
 
-    mostrarSinAviso();
+    const cache =
+      leerCacheDatosPublicosV3_(
+        MAX_EDAD_CACHE_INICIO_MS
+      );
+
+
+    if (
+      !cache
+    ) {
+
+      mostrarSinAviso();
+
+    }
+
 
     return;
 
@@ -436,72 +680,14 @@ function recibirDatosInicio(
     resultado.datos || {};
 
 
-  if (
-    datos.urlAviso
-  ) {
-
-    const imagen =
-      document.getElementById(
-        "imagenAviso"
-      );
+  guardarCacheDatosPublicosV3_(
+    datos
+  );
 
 
-    imagen.onload =
-      function() {
-
-        imagen.style.display =
-          "block";
-
-
-        document
-          .getElementById(
-            "sinAviso"
-          )
-          .style.display =
-            "none";
-
-      };
-
-
-    imagen.onerror =
-      function() {
-
-        mostrarSinAviso();
-
-      };
-
-
-    imagen.src =
-      datos.urlAviso;
-
-  }
-  else {
-
-    mostrarSinAviso();
-
-  }
-
-
-  if (
-    datos.sistemaActivo === false
-  ) {
-
-    document
-      .getElementById(
-        "btnAcceder"
-      )
-      .style.display =
-        "none";
-
-
-    document
-      .getElementById(
-        "estadoSistema"
-      )
-      .style.display =
-        "block";
-
-  }
+  pintarDatosInicioV3_(
+    datos
+  );
 
 }
 
