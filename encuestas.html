@@ -492,7 +492,17 @@ document.addEventListener(
 
 
 
-function cargarEncuestas() {
+const CACHE_LOCAL_ENCUESTAS_V3 =
+  "arcos_encuestas_cache_v3";
+
+const MILISEGUNDOS_CACHE_LOCAL_ENCUESTAS_V3 =
+  30 * 1000;
+
+
+
+function cargarEncuestas(
+  forzarActualizacion
+) {
 
   TOKEN =
     sessionStorage.getItem(
@@ -506,6 +516,34 @@ function cargarEncuestas() {
 
     window.location.href =
       "login.html";
+
+    return;
+
+  }
+
+
+  /*
+   * Solo usamos caché local durante 30 segundos.
+   * Es suficiente para que volver a entrar sea inmediato
+   * sin dejar resultados viejos demasiado tiempo.
+   */
+  const cacheLocal =
+    forzarActualizacion
+      ? null
+      : obtenerCacheLocalEncuestasV3_();
+
+
+  if (
+    cacheLocal &&
+    cacheLocal.datos &&
+    Date.now() -
+      cacheLocal.fecha <
+      MILISEGUNDOS_CACHE_LOCAL_ENCUESTAS_V3
+  ) {
+
+    pintarEncuestasV3_(
+      cacheLocal.datos
+    );
 
     return;
 
@@ -544,20 +582,21 @@ function cargarEncuestas() {
       }
 
 
-      encuestas =
-        resultado.datos.encuestas ||
-        [];
+      const datos =
+        resultado.datos ||
+        {
+          encuestas: []
+        };
 
 
-      renderizarTodo();
+      guardarCacheLocalEncuestasV3_(
+        datos
+      );
 
 
-      document
-        .getElementById(
-          "contenido"
-        )
-        .style.display =
-          "block";
+      pintarEncuestasV3_(
+        datos
+      );
 
     },
 
@@ -578,6 +617,144 @@ function cargarEncuestas() {
 
     }
   );
+
+}
+
+
+
+function pintarEncuestasV3_(
+  datos
+) {
+
+  encuestas =
+    (
+      datos &&
+      datos.encuestas
+    ) ||
+    [];
+
+
+  renderizarTodo();
+
+
+  document
+    .getElementById(
+      "cargando"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "contenido"
+    )
+    .style.display =
+      "block";
+
+}
+
+
+
+function obtenerCacheLocalEncuestasV3_() {
+
+  try {
+
+    const textoCache =
+      sessionStorage.getItem(
+        CACHE_LOCAL_ENCUESTAS_V3
+      );
+
+
+    if (
+      !textoCache
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        textoCache
+      );
+
+
+    if (
+      !cache ||
+      !cache.fecha ||
+      !cache.datos ||
+      !Array.isArray(
+        cache.datos.encuestas
+      )
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+
+function guardarCacheLocalEncuestasV3_(
+  datos
+) {
+
+  try {
+
+    sessionStorage.setItem(
+      CACHE_LOCAL_ENCUESTAS_V3,
+      JSON.stringify(
+        {
+          fecha:
+            Date.now(),
+
+          datos:
+            datos
+        }
+      )
+    );
+
+  }
+  catch (error) {
+
+    /*
+     * Si sessionStorage falla, la página sigue
+     * funcionando normalmente sin caché local.
+     */
+
+  }
+
+}
+
+
+
+function limpiarCacheLocalEncuestasV3_() {
+
+  try {
+
+    sessionStorage.removeItem(
+      CACHE_LOCAL_ENCUESTAS_V3
+    );
+
+  }
+  catch (error) {
+
+    // Sin acción.
+
+  }
 
 }
 
@@ -1096,6 +1273,9 @@ function votar(
       );
 
 
+      limpiarCacheLocalEncuestasV3_();
+
+
       recargarEncuestas();
 
     },
@@ -1252,7 +1432,9 @@ function recargarEncuestas() {
       "block";
 
 
-  cargarEncuestas();
+  cargarEncuestas(
+    true
+  );
 
 }
 
