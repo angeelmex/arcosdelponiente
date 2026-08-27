@@ -342,6 +342,8 @@
         id="logo"
         class="logo"
         alt="Arcos del Poniente"
+        decoding="async"
+        fetchpriority="high"
       >
 
 
@@ -475,6 +477,144 @@
 const URL_BACKEND =
   "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
 
+/*
+ * Reutiliza el mismo cache visual de index.html.
+ * Así el logo puede aparecer de inmediato al entrar al login.
+ */
+const CACHE_DATOS_PUBLICOS_V3 =
+  "arcos_datos_publicos_v3";
+
+const MAX_EDAD_CACHE_LOGO_MS =
+  90 * 24 * 60 * 60 * 1000;
+
+
+function guardarCacheDatosPublicosLoginV3_(
+  datos
+) {
+
+  try {
+
+    localStorage.setItem(
+      CACHE_DATOS_PUBLICOS_V3,
+      JSON.stringify(
+        {
+          fecha:
+            Date.now(),
+
+          datos:
+            datos || {}
+        }
+      )
+    );
+
+  }
+  catch (error) {}
+
+}
+
+
+
+function leerCacheDatosPublicosLoginV3_() {
+
+  try {
+
+    const textoCache =
+      localStorage.getItem(
+        CACHE_DATOS_PUBLICOS_V3
+      );
+
+
+    if (
+      !textoCache
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        textoCache
+      );
+
+
+    if (
+      !cache ||
+      !cache.fecha ||
+      !cache.datos ||
+      Date.now() -
+        Number(cache.fecha) >
+        MAX_EDAD_CACHE_LOGO_MS
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache.datos;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+
+function pintarLogoLoginV3_(
+  datos
+) {
+
+  datos =
+    datos || {};
+
+
+  const urlLogo =
+    datos.urlLogo;
+
+
+  if (
+    !urlLogo
+  ) {
+
+    return;
+
+  }
+
+
+  const logo =
+    document.getElementById(
+      "logo"
+    );
+
+
+  logo.onload =
+    function() {
+
+      logo.style.display =
+        "block";
+
+    };
+
+
+  if (
+    logo.src !==
+      urlLogo
+  ) {
+
+    logo.src =
+      urlLogo;
+
+  }
+
+}
+
+
 
 let requestLoginActual =
   "";
@@ -520,6 +660,25 @@ document.addEventListener(
 
 function cargarDatosPublicos() {
 
+  /*
+   * Si el usuario viene de Inicio, el logo ya está guardado
+   * y aparece inmediatamente.
+   */
+  const cache =
+    leerCacheDatosPublicosLoginV3_();
+
+
+  if (
+    cache
+  ) {
+
+    pintarLogoLoginV3_(
+      cache
+    );
+
+  }
+
+
   window.recibirDatosLogin =
     function(resultado) {
 
@@ -534,40 +693,23 @@ function cargarDatosPublicos() {
       }
 
 
-      const urlLogo =
-        resultado.datos.urlLogo;
+      guardarCacheDatosPublicosLoginV3_(
+        resultado.datos
+      );
 
 
-      if (
-        !urlLogo
-      ) {
-
-        return;
-
-      }
-
-
-      const logo =
-        document.getElementById(
-          "logo"
-        );
-
-
-      logo.onload =
-        function() {
-
-          logo.style.display =
-            "block";
-
-        };
-
-
-      logo.src =
-        urlLogo;
+      pintarLogoLoginV3_(
+        resultado.datos
+      );
 
     };
 
 
+  /*
+   * La comprobación contra Apps Script sigue ocurriendo en
+   * segundo plano cada vez. Si cambias el logo, se actualizará
+   * sin esperar a que venza el cache.
+   */
   const script =
     document.createElement(
       "script"
