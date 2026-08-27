@@ -651,6 +651,14 @@ document.addEventListener(
 
 
 
+const CACHE_LOCAL_JUNTAS_V3 =
+  "arcos_juntas_cache_v3";
+
+const MILISEGUNDOS_CACHE_LOCAL_JUNTAS_V3 =
+  5 * 60 * 1000;
+
+
+
 function cargarJuntas() {
 
   TOKEN =
@@ -671,30 +679,68 @@ function cargarJuntas() {
   }
 
 
+  /*
+   * Si este teléfono ya cargó la junta recientemente,
+   * la mostramos inmediatamente sin esperar Apps Script.
+   */
+  const cacheLocal =
+    obtenerCacheLocalJuntasV3_();
+
+
+  if (
+    cacheLocal &&
+    cacheLocal.datos
+  ) {
+
+    pintarJuntasV3_(
+      cacheLocal.datos
+    );
+
+
+    if (
+      Date.now() -
+      cacheLocal.fecha <
+      MILISEGUNDOS_CACHE_LOCAL_JUNTAS_V3
+    ) {
+
+      return;
+
+    }
+
+  }
+
+
   ejecutarOperacionJuntasV3(
     "juntasListar",
 
     function(resultado) {
-
-      document
-        .getElementById(
-          "cargando"
-        )
-        .style.display =
-          "none";
-
 
       if (
         !resultado ||
         !resultado.ok
       ) {
 
-        mostrarError(
-          resultado &&
-          resultado.mensaje
-            ? resultado.mensaje
-            : "No fue posible cargar la junta."
-        );
+        if (
+          !cacheLocal
+        ) {
+
+          document
+            .getElementById(
+              "cargando"
+            )
+            .style.display =
+              "none";
+
+
+          mostrarError(
+            resultado &&
+            resultado.mensaje
+              ? resultado.mensaje
+              : "No fue posible cargar la junta."
+          );
+
+        }
+
 
         return;
 
@@ -709,51 +755,27 @@ function cargarJuntas() {
         };
 
 
-      juntasAnteriores =
-        datos.anteriores ||
-        [];
-
-
-      document
-        .getElementById(
-          "contenido"
-        )
-        .style.display =
-          "block";
-
-
-      if (
-        !datos.actual
-      ) {
-
-        document
-          .getElementById(
-            "sinJunta"
-          )
-          .style.display =
-            "block";
-
-        renderizarHistorial(
-          juntasAnteriores
-        );
-
-        return;
-
-      }
-
-
-      renderizarPrincipal(
-        datos.actual
+      guardarCacheLocalJuntasV3_(
+        datos
       );
 
 
-      renderizarHistorial(
-        juntasAnteriores
+      pintarJuntasV3_(
+        datos
       );
 
     },
 
     function() {
+
+      if (
+        cacheLocal
+      ) {
+
+        return;
+
+      }
+
 
       document
         .getElementById(
@@ -769,6 +791,186 @@ function cargarJuntas() {
 
     }
   );
+
+}
+
+
+
+function pintarJuntasV3_(
+  datos
+) {
+
+  datos =
+    datos ||
+    {
+      actual: null,
+      anteriores: []
+    };
+
+
+  juntasAnteriores =
+    datos.anteriores ||
+    [];
+
+
+  document
+    .getElementById(
+      "cargando"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "contenido"
+    )
+    .style.display =
+      "block";
+
+
+  /*
+   * Reiniciamos estados visibles por si el usuario
+   * vuelve a entrar con datos diferentes.
+   */
+  document
+    .getElementById(
+      "sinJunta"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "principal"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "bloqueHistorial"
+    )
+    .style.display =
+      "none";
+
+
+  if (
+    !datos.actual
+  ) {
+
+    document
+      .getElementById(
+        "sinJunta"
+      )
+      .style.display =
+        "block";
+
+
+    renderizarHistorial(
+      juntasAnteriores
+    );
+
+
+    return;
+
+  }
+
+
+  renderizarPrincipal(
+    datos.actual
+  );
+
+
+  renderizarHistorial(
+    juntasAnteriores
+  );
+
+}
+
+
+
+function obtenerCacheLocalJuntasV3_() {
+
+  try {
+
+    const textoCache =
+      localStorage.getItem(
+        CACHE_LOCAL_JUNTAS_V3
+      );
+
+
+    if (
+      !textoCache
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        textoCache
+      );
+
+
+    if (
+      !cache ||
+      !cache.fecha ||
+      !cache.datos ||
+      !Array.isArray(
+        cache.datos.anteriores
+      )
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+
+function guardarCacheLocalJuntasV3_(
+  datos
+) {
+
+  try {
+
+    localStorage.setItem(
+      CACHE_LOCAL_JUNTAS_V3,
+      JSON.stringify(
+        {
+          fecha:
+            Date.now(),
+
+          datos:
+            datos
+        }
+      )
+    );
+
+  }
+  catch (error) {
+
+    /*
+     * El caché local es únicamente una optimización.
+     */
+
+  }
 
 }
 
