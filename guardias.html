@@ -1424,7 +1424,7 @@ const URL_BACKEND =
 
 
 const VERSION_GUARDIAS =
-  "2026.08.27-1203-cache-confirmaciones";
+  "2026.08.27-fotos-1280-q75";
 
 
 function asegurarVersionGuardias() {
@@ -5826,7 +5826,14 @@ function procesarFoto(input, destino) {
     imagen.onload = function() {
 
       const canvas = document.createElement("canvas");
-      const max = 1600;
+
+      /*
+       * Optimización de fotos para caseta:
+       * 1280 px en el lado más largo conserva suficiente detalle
+       * para placas e identificación, pero reduce bastante el peso
+       * enviado a Apps Script/Drive.
+       */
+      const max = 1280;
       let ancho = imagen.width;
       let alto = imagen.height;
 
@@ -5841,7 +5848,11 @@ function procesarFoto(input, destino) {
 
       canvas.getContext("2d").drawImage(imagen, 0, 0, ancho, alto);
 
-      const dataUrl = canvas.toDataURL("image/jpeg", .82);
+      /*
+       * 0.75 ofrece una reducción importante de tamaño sin que
+       * el texto o las placas pierdan legibilidad en uso normal.
+       */
+      const dataUrl = canvas.toDataURL("image/jpeg", .75);
       const base64 = dataUrl.split(",")[1];
 
       if (destino === "placas") {
