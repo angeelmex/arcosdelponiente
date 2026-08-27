@@ -342,6 +342,346 @@ const MAX_CONSULTAS =
 
 
 
+const CACHE_LOCAL_NOTIFICACIONES_V3 =
+  "arcos_notificaciones_cache_v3";
+
+const MAX_EDAD_CACHE_NOTIFICACIONES_V3 =
+  6 * 60 * 60 * 1000;
+
+const CACHE_FLAGS_NOTIFICACIONES_V3 =
+  "arcos-flags-v3";
+
+const FLAG_NUEVA_NOTIFICACION_V3 =
+  "./flag-nueva-notificacion";
+
+let FORZAR_ACTUALIZACION_NOTIFICACIONES =
+  false;
+
+let REFRESCAR_DESPUES_NOTIFICACIONES =
+  false;
+
+
+
+function obtenerClaveCacheNotificacionesV3_() {
+
+  try {
+
+    const residenteTexto =
+      sessionStorage.getItem(
+        "residente"
+      );
+
+
+    if (
+      !residenteTexto
+    ) {
+
+      return CACHE_LOCAL_NOTIFICACIONES_V3;
+
+    }
+
+
+    const residente =
+      JSON.parse(
+        residenteTexto
+      );
+
+
+    const idResidente =
+      residente &&
+      residente.idResidente
+        ? String(
+            residente.idResidente
+          )
+        : "";
+
+
+    return idResidente
+      ? (
+          CACHE_LOCAL_NOTIFICACIONES_V3 +
+          "_" +
+          idResidente
+        )
+      : CACHE_LOCAL_NOTIFICACIONES_V3;
+
+  }
+  catch (error) {
+
+    return CACHE_LOCAL_NOTIFICACIONES_V3;
+
+  }
+
+}
+
+
+
+function obtenerCacheLocalNotificacionesV3_() {
+
+  try {
+
+    const cacheTexto =
+      localStorage.getItem(
+        obtenerClaveCacheNotificacionesV3_()
+      );
+
+
+    if (
+      !cacheTexto
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        cacheTexto
+      );
+
+
+    if (
+      !cache ||
+      !cache.fecha ||
+      !Array.isArray(
+        cache.notificaciones
+      )
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+
+function guardarCacheLocalNotificacionesV3_(
+  notificaciones
+) {
+
+  try {
+
+    localStorage.setItem(
+      obtenerClaveCacheNotificacionesV3_(),
+      JSON.stringify(
+        {
+          fecha:
+            Date.now(),
+
+          notificaciones:
+            Array.isArray(
+              notificaciones
+            )
+              ? notificaciones
+              : []
+        }
+      )
+    );
+
+  }
+  catch (error) {
+
+    /*
+     * El caché local es únicamente una optimización.
+     */
+
+  }
+
+}
+
+
+
+async function hayNuevaNotificacionV3_() {
+
+  try {
+
+    if (
+      !("caches" in window)
+    ) {
+
+      return false;
+
+    }
+
+
+    const cache =
+      await caches.open(
+        CACHE_FLAGS_NOTIFICACIONES_V3
+      );
+
+
+    const respuesta =
+      await cache.match(
+        FLAG_NUEVA_NOTIFICACION_V3
+      );
+
+
+    return !!respuesta;
+
+  }
+  catch (error) {
+
+    return false;
+
+  }
+
+}
+
+
+
+async function limpiarMarcaNuevaNotificacionV3_() {
+
+  try {
+
+    if (
+      !("caches" in window)
+    ) {
+
+      return;
+
+    }
+
+
+    const cache =
+      await caches.open(
+        CACHE_FLAGS_NOTIFICACIONES_V3
+      );
+
+
+    await cache.delete(
+      FLAG_NUEVA_NOTIFICACION_V3
+    );
+
+  }
+  catch (error) {
+
+    /*
+     * Si no se puede limpiar la marca, la próxima
+     * entrada simplemente volverá a consultar.
+     */
+
+  }
+
+}
+
+
+
+async function iniciarNotificacionesV3_() {
+
+  const hayNueva =
+    await hayNuevaNotificacionV3_();
+
+
+  const cacheLocal =
+    obtenerCacheLocalNotificacionesV3_();
+
+
+  /*
+   * Si llegó una notificación push, SIEMPRE consultamos
+   * nuevamente para traer la bandeja actualizada.
+   */
+  if (
+    hayNueva
+  ) {
+
+    cargarNotificaciones(
+      true
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Si no hay nada nuevo, mostramos la última bandeja
+   * inmediatamente. Solo hacemos una actualización de
+   * respaldo si han pasado más de 6 horas.
+   */
+  if (
+    cacheLocal &&
+    Date.now() -
+      cacheLocal.fecha <
+      MAX_EDAD_CACHE_NOTIFICACIONES_V3
+  ) {
+
+    pintarNotificaciones(
+      cacheLocal.notificaciones
+    );
+
+    return;
+
+  }
+
+
+  cargarNotificaciones(
+    true
+  );
+
+}
+
+
+
+if (
+  navigator.serviceWorker
+) {
+
+  navigator.serviceWorker.addEventListener(
+    "message",
+    function(evento) {
+
+      const datos =
+        evento &&
+        evento.data
+          ? evento.data
+          : {};
+
+
+      if (
+        datos.tipo ===
+        "NUEVA_NOTIFICACION"
+      ) {
+
+        /*
+         * Si la bandeja está abierta cuando llega el push,
+         * se refresca sola.
+         */
+        if (
+          operacionActual
+        ) {
+
+          REFRESCAR_DESPUES_NOTIFICACIONES =
+            true;
+
+          return;
+
+        }
+
+
+        cargarNotificaciones(
+          true
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+
 document.addEventListener(
   "DOMContentLoaded",
   function() {
@@ -358,7 +698,7 @@ document.addEventListener(
     }
 
 
-    cargarNotificaciones();
+    iniciarNotificacionesV3_();
 
   }
 );
@@ -374,7 +714,40 @@ function volverMenu() {
 
 
 
-function cargarNotificaciones() {
+function cargarNotificaciones(
+  forzarActualizacion
+) {
+
+  FORZAR_ACTUALIZACION_NOTIFICACIONES =
+    !!forzarActualizacion;
+
+
+  /*
+   * Si no se pidió actualización y tenemos datos locales,
+   * los mostramos sin tocar Apps Script.
+   */
+  if (
+    !FORZAR_ACTUALIZACION_NOTIFICACIONES
+  ) {
+
+    const cacheLocal =
+      obtenerCacheLocalNotificacionesV3_();
+
+
+    if (
+      cacheLocal
+    ) {
+
+      pintarNotificaciones(
+        cacheLocal.notificaciones
+      );
+
+      return;
+
+    }
+
+  }
+
 
   ejecutarOperacion(
     "notificacionesListar"
@@ -662,12 +1035,50 @@ function procesarResultado(
   }
 
 
-  pintarNotificaciones(
+  const notificaciones =
     resultado.datos &&
     resultado.datos.notificaciones
       ? resultado.datos.notificaciones
-      : []
+      : [];
+
+
+  guardarCacheLocalNotificacionesV3_(
+    notificaciones
   );
+
+
+  pintarNotificaciones(
+    notificaciones
+  );
+
+
+  limpiarMarcaNuevaNotificacionV3_();
+
+
+  FORZAR_ACTUALIZACION_NOTIFICACIONES =
+    false;
+
+
+  if (
+    REFRESCAR_DESPUES_NOTIFICACIONES
+  ) {
+
+    REFRESCAR_DESPUES_NOTIFICACIONES =
+      false;
+
+
+    setTimeout(
+      function() {
+
+        cargarNotificaciones(
+          true
+        );
+
+      },
+      150
+    );
+
+  }
 
 }
 
