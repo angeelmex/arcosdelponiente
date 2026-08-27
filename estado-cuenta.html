@@ -481,7 +481,216 @@ function volverMenu() {
 
 
 
-function cargarEstadoCuenta() {
+const MINUTOS_CACHE_LOCAL_ESTADO_CUENTA_V3 =
+  10;
+
+const MILISEGUNDOS_CACHE_LOCAL_ESTADO_CUENTA_V3 =
+  MINUTOS_CACHE_LOCAL_ESTADO_CUENTA_V3 *
+  60 *
+  1000;
+
+
+
+function obtenerClaveCacheLocalEstadoCuentaV3_() {
+
+  try {
+
+    const residenteTexto =
+      sessionStorage.getItem(
+        "residente"
+      );
+
+
+    if (
+      !residenteTexto
+    ) {
+
+      return "";
+
+    }
+
+
+    const residente =
+      JSON.parse(
+        residenteTexto
+      );
+
+
+    const idResidente =
+      residente &&
+      residente.idResidente
+        ? String(
+            residente.idResidente
+          )
+        : "";
+
+
+    if (
+      !idResidente
+    ) {
+
+      return "";
+
+    }
+
+
+    return (
+      "arcos_estado_cuenta_v3_" +
+      idResidente
+    );
+
+  }
+  catch (error) {
+
+    return "";
+
+  }
+
+}
+
+
+
+function obtenerCacheLocalEstadoCuentaV3_() {
+
+  try {
+
+    const clave =
+      obtenerClaveCacheLocalEstadoCuentaV3_();
+
+
+    if (
+      !clave
+    ) {
+
+      return null;
+
+    }
+
+
+    const cacheTexto =
+      localStorage.getItem(
+        clave
+      );
+
+
+    if (
+      !cacheTexto
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        cacheTexto
+      );
+
+
+    if (
+      !cache ||
+      !cache.fecha ||
+      !cache.datos
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+
+function guardarCacheLocalEstadoCuentaV3_(
+  datos
+) {
+
+  try {
+
+    const clave =
+      obtenerClaveCacheLocalEstadoCuentaV3_();
+
+
+    if (
+      !clave
+    ) {
+
+      return;
+
+    }
+
+
+    localStorage.setItem(
+      clave,
+      JSON.stringify(
+        {
+          fecha:
+            Date.now(),
+
+          datos:
+            datos
+        }
+      )
+    );
+
+  }
+  catch (error) {
+
+    /*
+     * El caché local es solo una optimización.
+     * Si falla, la página funciona como antes.
+     */
+
+  }
+
+}
+
+
+
+function cargarEstadoCuenta(
+  forzarActualizacion
+) {
+
+  /*
+   * Para una entrada normal intentamos primero
+   * la copia local del teléfono.
+   */
+  if (
+    !forzarActualizacion
+  ) {
+
+    const cacheLocal =
+      obtenerCacheLocalEstadoCuentaV3_();
+
+
+    if (
+      cacheLocal &&
+      Date.now() -
+        cacheLocal.fecha <
+        MILISEGUNDOS_CACHE_LOCAL_ESTADO_CUENTA_V3
+    ) {
+
+      pintar(
+        cacheLocal.datos
+      );
+
+      return;
+
+    }
+
+  }
+
 
   mostrarCargando();
 
@@ -539,7 +748,6 @@ function cargarEstadoCuenta() {
   );
 
 }
-
 
 
 function consultarEstado() {
@@ -678,8 +886,17 @@ function consultarEstado() {
       }
 
 
+      const datosEstadoCuenta =
+        respuesta.datos || {};
+
+
+      guardarCacheLocalEstadoCuentaV3_(
+        datosEstadoCuenta
+      );
+
+
       pintar(
-        respuesta.datos || {}
+        datosEstadoCuenta
       );
 
     };
