@@ -341,28 +341,59 @@ const MAX_CONSULTAS =
   30;
 
 
+const CACHE_LOCAL_NOTIFICACIONES_V4 =
+  "arcos_notificaciones_v4";
 
-const CACHE_LOCAL_NOTIFICACIONES_V3 =
-  "arcos_notificaciones_cache_v3";
+let ACCION_ACTUAL =
+  "";
 
-const MAX_EDAD_CACHE_NOTIFICACIONES_V3 =
-  6 * 60 * 60 * 1000;
+let CACHE_ACTUAL =
+  null;
 
-const CACHE_FLAGS_NOTIFICACIONES_V3 =
-  "arcos-flags-v3";
+let TOUCH_INICIO_Y =
+  null;
 
-const FLAG_NUEVA_NOTIFICACION_V3 =
-  "./flag-nueva-notificacion";
-
-let FORZAR_ACTUALIZACION_NOTIFICACIONES =
-  false;
-
-let REFRESCAR_DESPUES_NOTIFICACIONES =
+let REFRESCANDO_POR_GESTO =
   false;
 
 
 
-function obtenerClaveCacheNotificacionesV3_() {
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    if (
+      !TOKEN
+    ) {
+
+      window.location.href =
+        "login.html";
+
+      return;
+
+    }
+
+
+    iniciarNotificacionesRapidasV4_();
+
+
+    activarJaloneoActualizarV4_();
+
+  }
+);
+
+
+
+function volverMenu() {
+
+  window.location.href =
+    "menu.html";
+
+}
+
+
+
+function claveCacheNotificacionesV4_() {
 
   try {
 
@@ -376,7 +407,7 @@ function obtenerClaveCacheNotificacionesV3_() {
       !residenteTexto
     ) {
 
-      return CACHE_LOCAL_NOTIFICACIONES_V3;
+      return CACHE_LOCAL_NOTIFICACIONES_V4;
 
     }
 
@@ -387,7 +418,7 @@ function obtenerClaveCacheNotificacionesV3_() {
       );
 
 
-    const idResidente =
+    const id =
       residente &&
       residente.idResidente
         ? String(
@@ -396,18 +427,18 @@ function obtenerClaveCacheNotificacionesV3_() {
         : "";
 
 
-    return idResidente
+    return id
       ? (
-          CACHE_LOCAL_NOTIFICACIONES_V3 +
+          CACHE_LOCAL_NOTIFICACIONES_V4 +
           "_" +
-          idResidente
+          id
         )
-      : CACHE_LOCAL_NOTIFICACIONES_V3;
+      : CACHE_LOCAL_NOTIFICACIONES_V4;
 
   }
   catch (error) {
 
-    return CACHE_LOCAL_NOTIFICACIONES_V3;
+    return CACHE_LOCAL_NOTIFICACIONES_V4;
 
   }
 
@@ -415,18 +446,18 @@ function obtenerClaveCacheNotificacionesV3_() {
 
 
 
-function obtenerCacheLocalNotificacionesV3_() {
+function leerCacheNotificacionesV4_() {
 
   try {
 
-    const cacheTexto =
+    const textoCache =
       localStorage.getItem(
-        obtenerClaveCacheNotificacionesV3_()
+        claveCacheNotificacionesV4_()
       );
 
 
     if (
-      !cacheTexto
+      !textoCache
     ) {
 
       return null;
@@ -436,13 +467,12 @@ function obtenerCacheLocalNotificacionesV3_() {
 
     const cache =
       JSON.parse(
-        cacheTexto
+        textoCache
       );
 
 
     if (
       !cache ||
-      !cache.fecha ||
       !Array.isArray(
         cache.notificaciones
       )
@@ -466,26 +496,35 @@ function obtenerCacheLocalNotificacionesV3_() {
 
 
 
-function guardarCacheLocalNotificacionesV3_(
-  notificaciones
+function guardarCacheNotificacionesV4_(
+  notificaciones,
+  version
 ) {
 
   try {
 
-    localStorage.setItem(
-      obtenerClaveCacheNotificacionesV3_(),
-      JSON.stringify(
-        {
-          fecha:
-            Date.now(),
+    CACHE_ACTUAL = {
+      notificaciones:
+        Array.isArray(
+          notificaciones
+        )
+          ? notificaciones
+          : [],
 
-          notificaciones:
-            Array.isArray(
-              notificaciones
-            )
-              ? notificaciones
-              : []
-        }
+      version:
+        String(
+          version || ""
+        ),
+
+      fecha:
+        Date.now()
+    };
+
+
+    localStorage.setItem(
+      claveCacheNotificacionesV4_(),
+      JSON.stringify(
+        CACHE_ACTUAL
       )
     );
 
@@ -493,7 +532,8 @@ function guardarCacheLocalNotificacionesV3_(
   catch (error) {
 
     /*
-     * El caché local es únicamente una optimización.
+     * Si falla el almacenamiento local,
+     * la bandeja sigue funcionando normalmente.
      */
 
   }
@@ -502,122 +542,30 @@ function guardarCacheLocalNotificacionesV3_(
 
 
 
-async function hayNuevaNotificacionV3_() {
+function iniciarNotificacionesRapidasV4_() {
 
-  try {
-
-    if (
-      !("caches" in window)
-    ) {
-
-      return false;
-
-    }
+  CACHE_ACTUAL =
+    leerCacheNotificacionesV4_();
 
 
-    const cache =
-      await caches.open(
-        CACHE_FLAGS_NOTIFICACIONES_V3
-      );
-
-
-    const respuesta =
-      await cache.match(
-        FLAG_NUEVA_NOTIFICACION_V3
-      );
-
-
-    return !!respuesta;
-
-  }
-  catch (error) {
-
-    return false;
-
-  }
-
-}
-
-
-
-async function limpiarMarcaNuevaNotificacionV3_() {
-
-  try {
-
-    if (
-      !("caches" in window)
-    ) {
-
-      return;
-
-    }
-
-
-    const cache =
-      await caches.open(
-        CACHE_FLAGS_NOTIFICACIONES_V3
-      );
-
-
-    await cache.delete(
-      FLAG_NUEVA_NOTIFICACION_V3
-    );
-
-  }
-  catch (error) {
+  if (
+    CACHE_ACTUAL
+  ) {
 
     /*
-     * Si no se puede limpiar la marca, la próxima
-     * entrada simplemente volverá a consultar.
+     * Pintamos de inmediato lo último conocido.
      */
-
-  }
-
-}
-
-
-
-async function iniciarNotificacionesV3_() {
-
-  const hayNueva =
-    await hayNuevaNotificacionV3_();
-
-
-  const cacheLocal =
-    obtenerCacheLocalNotificacionesV3_();
-
-
-  /*
-   * Si llegó una notificación push, SIEMPRE consultamos
-   * nuevamente para traer la bandeja actualizada.
-   */
-  if (
-    hayNueva
-  ) {
-
-    cargarNotificaciones(
-      true
-    );
-
-    return;
-
-  }
-
-
-  /*
-   * Si no hay nada nuevo, mostramos la última bandeja
-   * inmediatamente. Solo hacemos una actualización de
-   * respaldo si han pasado más de 6 horas.
-   */
-  if (
-    cacheLocal &&
-    Date.now() -
-      cacheLocal.fecha <
-      MAX_EDAD_CACHE_NOTIFICACIONES_V3
-  ) {
-
     pintarNotificaciones(
-      cacheLocal.notificaciones
+      CACHE_ACTUAL.notificaciones
+    );
+
+
+    /*
+     * Después solo preguntamos si la versión cambió.
+     * Esto NO lee toda la hoja de notificaciones.
+     */
+    ejecutarOperacion(
+      "notificacionesVersion"
     );
 
     return;
@@ -625,6 +573,10 @@ async function iniciarNotificacionesV3_() {
   }
 
 
+  /*
+   * Primera entrada con esta versión:
+   * necesitamos traer la bandeja completa una vez.
+   */
   cargarNotificaciones(
     true
   );
@@ -633,128 +585,233 @@ async function iniciarNotificacionesV3_() {
 
 
 
-if (
-  navigator.serviceWorker
+function cargarNotificaciones(
+  forzar
 ) {
 
-  navigator.serviceWorker.addEventListener(
-    "message",
+  if (
+    forzar
+  ) {
+
+    ejecutarOperacion(
+      "notificacionesListar"
+    );
+
+    return;
+
+  }
+
+
+  iniciarNotificacionesRapidasV4_();
+
+}
+
+
+
+function activarJaloneoActualizarV4_() {
+
+  document.addEventListener(
+    "touchstart",
     function(evento) {
 
-      const datos =
-        evento &&
-        evento.data
-          ? evento.data
-          : {};
-
-
       if (
-        datos.tipo ===
-        "NUEVA_NOTIFICACION"
+        window.scrollY <= 0 &&
+        evento.touches &&
+        evento.touches.length === 1
       ) {
 
-        /*
-         * Si la bandeja está abierta cuando llega el push,
-         * se refresca sola.
-         */
-        if (
-          operacionActual
-        ) {
+        TOUCH_INICIO_Y =
+          evento.touches[0].clientY;
 
-          REFRESCAR_DESPUES_NOTIFICACIONES =
-            true;
+      }
+      else {
 
-          return;
-
-        }
-
-
-        cargarNotificaciones(
-          true
-        );
+        TOUCH_INICIO_Y =
+          null;
 
       }
 
+    },
+    {
+      passive:
+        true
     }
   );
 
-}
+
+  document.addEventListener(
+    "touchend",
+    function(evento) {
+
+      if (
+        TOUCH_INICIO_Y === null ||
+        REFRESCANDO_POR_GESTO
+      ) {
+
+        return;
+
+      }
 
 
-
-document.addEventListener(
-  "DOMContentLoaded",
-  function() {
-
-    if (
-      !TOKEN
-    ) {
-
-      window.location.href =
-        "login.html";
-
-      return;
-
-    }
+      const toque =
+        evento.changedTouches &&
+        evento.changedTouches[0]
+          ? evento.changedTouches[0]
+          : null;
 
 
-    iniciarNotificacionesV3_();
+      if (
+        !toque
+      ) {
 
-  }
-);
+        TOUCH_INICIO_Y =
+          null;
 
+        return;
 
-
-function volverMenu() {
-
-  window.location.href =
-    "menu.html";
-
-}
+      }
 
 
-
-function cargarNotificaciones(
-  forzarActualizacion
-) {
-
-  FORZAR_ACTUALIZACION_NOTIFICACIONES =
-    !!forzarActualizacion;
+      const distancia =
+        toque.clientY -
+        TOUCH_INICIO_Y;
 
 
-  /*
-   * Si no se pidió actualización y tenemos datos locales,
-   * los mostramos sin tocar Apps Script.
-   */
-  if (
-    !FORZAR_ACTUALIZACION_NOTIFICACIONES
-  ) {
-
-    const cacheLocal =
-      obtenerCacheLocalNotificacionesV3_();
+      TOUCH_INICIO_Y =
+        null;
 
 
-    if (
-      cacheLocal
-    ) {
+      if (
+        distancia < 80 ||
+        window.scrollY > 0
+      ) {
 
-      pintarNotificaciones(
-        cacheLocal.notificaciones
+        return;
+
+      }
+
+
+      REFRESCANDO_POR_GESTO =
+        true;
+
+
+      mostrarIndicadorActualizandoV4_();
+
+
+      cargarNotificaciones(
+        true
       );
 
-      return;
-
+    },
+    {
+      passive:
+        true
     }
-
-  }
-
-
-  ejecutarOperacion(
-    "notificacionesListar"
   );
 
 }
 
+
+
+function mostrarIndicadorActualizandoV4_() {
+
+  let indicador =
+    document.getElementById(
+      "indicadorActualizandoV4"
+    );
+
+
+  if (
+    !indicador
+  ) {
+
+    indicador =
+      document.createElement(
+        "div"
+      );
+
+
+    indicador.id =
+      "indicadorActualizandoV4";
+
+
+    indicador.style.position =
+      "fixed";
+
+    indicador.style.top =
+      "12px";
+
+    indicador.style.left =
+      "50%";
+
+    indicador.style.transform =
+      "translateX(-50%)";
+
+    indicador.style.zIndex =
+      "9999";
+
+    indicador.style.padding =
+      "8px 13px";
+
+    indicador.style.borderRadius =
+      "18px";
+
+    indicador.style.background =
+      "rgba(25, 55, 75, .92)";
+
+    indicador.style.color =
+      "#fff";
+
+    indicador.style.fontSize =
+      "13px";
+
+    indicador.style.fontWeight =
+      "700";
+
+    indicador.style.boxShadow =
+      "0 4px 16px rgba(0,0,0,.18)";
+
+
+    document.body.appendChild(
+      indicador
+    );
+
+  }
+
+
+  indicador.textContent =
+    "Actualizando...";
+
+
+  indicador.style.display =
+    "block";
+
+}
+
+
+
+function ocultarIndicadorActualizandoV4_() {
+
+  REFRESCANDO_POR_GESTO =
+    false;
+
+
+  const indicador =
+    document.getElementById(
+      "indicadorActualizandoV4"
+    );
+
+
+  if (
+    indicador
+  ) {
+
+    indicador.style.display =
+      "none";
+
+  }
+
+}
 
 
 function ejecutarOperacion(
@@ -768,6 +825,10 @@ function ejecutarOperacion(
     return;
 
   }
+
+
+  ACCION_ACTUAL =
+    accion;
 
 
   operacionActual =
@@ -852,6 +913,9 @@ function consultarEstado() {
 
     operacionActual =
       "";
+
+
+    ocultarIndicadorActualizandoV4_();
 
     return;
 
@@ -1023,11 +1087,86 @@ function procesarResultado(
     !resultado.ok
   ) {
 
+    ocultarIndicadorActualizandoV4_();
+
+
+    /*
+     * Si ya teníamos bandeja en pantalla, un fallo
+     * temporal al comprobar versión no la borra.
+     */
+    if (
+      CACHE_ACTUAL
+    ) {
+
+      return;
+
+    }
+
+
     mostrarError(
       resultado &&
       resultado.mensaje
         ? resultado.mensaje
         : "No fue posible cargar tus notificaciones."
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * COMPROBACIÓN LIGERA:
+   * solo compara la versión. Si no cambió, no se
+   * vuelve a descargar toda la bandeja.
+   */
+  if (
+    ACCION_ACTUAL ===
+      "notificacionesVersion"
+  ) {
+
+    const versionServidor =
+      resultado.datos
+        ? String(
+            resultado.datos.version ||
+            ""
+          )
+        : "";
+
+
+    const versionLocal =
+      CACHE_ACTUAL
+        ? String(
+            CACHE_ACTUAL.version ||
+            ""
+          )
+        : "";
+
+
+    if (
+      versionServidor ===
+        versionLocal
+    ) {
+
+      ocultarIndicadorActualizandoV4_();
+
+      return;
+
+    }
+
+
+    /*
+     * Hay algo nuevo: ahora sí pedimos la lista completa.
+     */
+    setTimeout(
+      function() {
+
+        cargarNotificaciones(
+          true
+        );
+
+      },
+      50
     );
 
     return;
@@ -1042,8 +1181,15 @@ function procesarResultado(
       : [];
 
 
-  guardarCacheLocalNotificacionesV3_(
-    notificaciones
+  const version =
+    resultado.datos
+      ? resultado.datos.version
+      : "";
+
+
+  guardarCacheNotificacionesV4_(
+    notificaciones,
+    version
   );
 
 
@@ -1052,36 +1198,9 @@ function procesarResultado(
   );
 
 
-  limpiarMarcaNuevaNotificacionV3_();
-
-
-  FORZAR_ACTUALIZACION_NOTIFICACIONES =
-    false;
-
-
-  if (
-    REFRESCAR_DESPUES_NOTIFICACIONES
-  ) {
-
-    REFRESCAR_DESPUES_NOTIFICACIONES =
-      false;
-
-
-    setTimeout(
-      function() {
-
-        cargarNotificaciones(
-          true
-        );
-
-      },
-      150
-    );
-
-  }
+  ocultarIndicadorActualizandoV4_();
 
 }
-
 
 
 function pintarNotificaciones(
