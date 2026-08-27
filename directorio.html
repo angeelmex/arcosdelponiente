@@ -429,6 +429,13 @@ document.addEventListener(
 
 
 
+const CACHE_LOCAL_DIRECTORIO_V3 =
+  "arcos_directorio_cache_v3";
+
+const MILISEGUNDOS_CACHE_LOCAL_DIRECTORIO_V3 =
+  5 * 60 * 1000;
+
+
 function cargarDirectorio() {
 
   TOKEN =
@@ -449,29 +456,76 @@ function cargarDirectorio() {
   }
 
 
+  /*
+   * PRIMERA MEJORA:
+   * Si este teléfono ya cargó el directorio recientemente,
+   * lo pintamos de inmediato, sin esperar a Apps Script.
+   */
+  const cacheLocal =
+    obtenerCacheLocalDirectorioV3_();
+
+
+  if (
+    cacheLocal &&
+    cacheLocal.datos
+  ) {
+
+    pintarDirectorioV3_(
+      cacheLocal.datos
+    );
+
+
+    /*
+     * Si todavía está fresco (5 min), no hacemos
+     * ninguna llamada al servidor.
+     */
+    if (
+      Date.now() -
+      cacheLocal.fecha <
+      MILISEGUNDOS_CACHE_LOCAL_DIRECTORIO_V3
+    ) {
+
+      return;
+
+    }
+
+  }
+
+
+  /*
+   * Si no había caché o ya venció, consultamos Apps Script.
+   * Si había datos viejos, se siguen viendo mientras actualiza.
+   */
   ejecutarOperacionDirectorioV3(
     "directorioDatos",
     function(resultado) {
-
-      document
-        .getElementById(
-          "cargando"
-        )
-        .style.display =
-          "none";
-
 
       if (
         !resultado ||
         !resultado.ok
       ) {
 
-        mostrarError(
-          resultado &&
-          resultado.mensaje
-            ? resultado.mensaje
-            : "No fue posible cargar el directorio."
-        );
+        if (
+          !cacheLocal
+        ) {
+
+          document
+            .getElementById(
+              "cargando"
+            )
+            .style.display =
+              "none";
+
+
+          mostrarError(
+            resultado &&
+            resultado.mensaje
+              ? resultado.mensaje
+              : "No fue posible cargar el directorio."
+          );
+
+        }
+
 
         return;
 
@@ -486,29 +540,30 @@ function cargarDirectorio() {
         };
 
 
-      renderizarLista(
-        "listaComite",
-        datos.comite || [],
-        "COMITE"
+      guardarCacheLocalDirectorioV3_(
+        datos
       );
 
 
-      renderizarLista(
-        "listaNegocios",
-        datos.negocios || [],
-        "NEGOCIO"
+      pintarDirectorioV3_(
+        datos
       );
-
-
-      document
-        .getElementById(
-          "contenido"
-        )
-        .style.display =
-          "block";
 
     },
     function() {
+
+      /*
+       * Si ya teníamos una copia local visible,
+       * un fallo temporal de red no borra el directorio.
+       */
+      if (
+        cacheLocal
+      ) {
+
+        return;
+
+      }
+
 
       document
         .getElementById(
@@ -524,6 +579,135 @@ function cargarDirectorio() {
 
     }
   );
+
+}
+
+
+function pintarDirectorioV3_(
+  datos
+) {
+
+  datos =
+    datos || {
+      comite: [],
+      negocios: []
+    };
+
+
+  renderizarLista(
+    "listaComite",
+    datos.comite || [],
+    "COMITE"
+  );
+
+
+  renderizarLista(
+    "listaNegocios",
+    datos.negocios || [],
+    "NEGOCIO"
+  );
+
+
+  document
+    .getElementById(
+      "cargando"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "contenido"
+    )
+    .style.display =
+      "block";
+
+}
+
+
+function obtenerCacheLocalDirectorioV3_() {
+
+  try {
+
+    const textoCache =
+      localStorage.getItem(
+        CACHE_LOCAL_DIRECTORIO_V3
+      );
+
+
+    if (
+      !textoCache
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        textoCache
+      );
+
+
+    if (
+      !cache ||
+      !cache.fecha ||
+      !cache.datos ||
+      !Array.isArray(
+        cache.datos.comite
+      ) ||
+      !Array.isArray(
+        cache.datos.negocios
+      )
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+function guardarCacheLocalDirectorioV3_(
+  datos
+) {
+
+  try {
+
+    localStorage.setItem(
+      CACHE_LOCAL_DIRECTORIO_V3,
+      JSON.stringify(
+        {
+          fecha:
+            Date.now(),
+
+          datos:
+            datos
+        }
+      )
+    );
+
+  }
+  catch (error) {
+
+    /*
+     * Si localStorage no está disponible,
+     * simplemente seguimos sin caché local.
+     */
+
+  }
 
 }
 
