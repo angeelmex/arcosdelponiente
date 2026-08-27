@@ -263,6 +263,19 @@ let intentosCargaChat =
   0;
 
 
+const CACHE_LOCAL_CHAT_V3 =
+  "arcos_chat_caseta_v3";
+
+const INTERVALO_VERSION_CHAT_V3 =
+  2000;
+
+let VERSION_CHAT_ACTUAL =
+  "";
+
+let comprobandoVersionChat =
+  false;
+
+
 document.addEventListener(
   "DOMContentLoaded",
   function() {
@@ -290,9 +303,7 @@ document.addEventListener(
     catch (e) {}
 
 
-    cargarChat(
-      true
-    );
+    iniciarChatRapidoV3_();
 
 
     iniciarActualizacionChat();
@@ -310,8 +321,8 @@ document.addEventListener(
         "visible"
     ) {
 
-      cargarChat(
-        false
+      comprobarVersionChatV3_(
+        true
       );
 
       iniciarActualizacionChat();
@@ -614,6 +625,273 @@ function operacion(
 
 
 
+function claveCacheChatV3_() {
+
+  try {
+
+    const residenteTexto =
+      sessionStorage.getItem(
+        "residente"
+      );
+
+
+    if (
+      !residenteTexto
+    ) {
+
+      return CACHE_LOCAL_CHAT_V3;
+
+    }
+
+
+    const residente =
+      JSON.parse(
+        residenteTexto
+      );
+
+
+    const idResidente =
+      residente &&
+      residente.idResidente
+        ? String(
+            residente.idResidente
+          )
+        : "";
+
+
+    return idResidente
+      ? (
+          CACHE_LOCAL_CHAT_V3 +
+          "_" +
+          idResidente
+        )
+      : CACHE_LOCAL_CHAT_V3;
+
+  }
+  catch (error) {
+
+    return CACHE_LOCAL_CHAT_V3;
+
+  }
+
+}
+
+
+
+function leerCacheChatV3_() {
+
+  try {
+
+    const textoCache =
+      localStorage.getItem(
+        claveCacheChatV3_()
+      );
+
+
+    if (
+      !textoCache
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        textoCache
+      );
+
+
+    if (
+      !cache ||
+      !cache.datos ||
+      !Array.isArray(
+        cache.datos.mensajes
+      )
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+
+function guardarCacheChatV3_(
+  datos
+) {
+
+  try {
+
+    datos =
+      datos || {};
+
+
+    VERSION_CHAT_ACTUAL =
+      String(
+        datos.version || ""
+      );
+
+
+    localStorage.setItem(
+      claveCacheChatV3_(),
+      JSON.stringify(
+        {
+          fecha:
+            Date.now(),
+
+          datos:
+            datos
+        }
+      )
+    );
+
+  }
+  catch (error) {
+
+    /*
+     * El caché local es una optimización.
+     */
+
+  }
+
+}
+
+
+
+function iniciarChatRapidoV3_() {
+
+  const cache =
+    leerCacheChatV3_();
+
+
+  if (
+    cache &&
+    cache.datos
+  ) {
+
+    /*
+     * Abrimos con los últimos mensajes inmediatamente.
+     */
+    VERSION_CHAT_ACTUAL =
+      String(
+        cache.datos.version || ""
+      );
+
+
+    pintarChat(
+      cache.datos
+    );
+
+
+    /*
+     * Enseguida comprobamos si existe algo nuevo.
+     */
+    comprobarVersionChatV3_(
+      true
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Primera vez en este teléfono:
+   * sí necesitamos una carga completa.
+   */
+  cargarChat(
+    true
+  );
+
+}
+
+
+
+function comprobarVersionChatV3_(
+  inmediata
+) {
+
+  if (
+    comprobandoVersionChat ||
+    chatCargando ||
+    document.visibilityState !==
+      "visible"
+  ) {
+
+    return;
+
+  }
+
+
+  comprobandoVersionChat =
+    true;
+
+
+  operacion(
+    "chatCasetaVersion",
+    {},
+    function(resultado) {
+
+      comprobandoVersionChat =
+        false;
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        return;
+
+      }
+
+
+      const versionServidor =
+        resultado.datos
+          ? String(
+              resultado.datos.version ||
+              ""
+            )
+          : "";
+
+
+      if (
+        versionServidor !==
+        VERSION_CHAT_ACTUAL
+      ) {
+
+        cargarChat(
+          false
+        );
+
+      }
+
+    },
+    function() {
+
+      comprobandoVersionChat =
+        false;
+
+    }
+  );
+
+}
+
+
+
 function cargarChat(
   mostrarCargando
 ) {
@@ -671,8 +949,17 @@ function cargarChat(
       }
 
 
+      const datosChat =
+        resultado.datos || {};
+
+
+      guardarCacheChatV3_(
+        datosChat
+      );
+
+
       pintarChat(
-        resultado.datos || {}
+        datosChat
       );
 
     },
@@ -735,14 +1022,14 @@ function iniciarActualizacionChat() {
             "visible"
         ) {
 
-          cargarChat(
+          comprobarVersionChatV3_(
             false
           );
 
         }
 
       },
-      5000
+      INTERVALO_VERSION_CHAT_V3
     );
 
 }
@@ -845,8 +1132,17 @@ function enviarMensaje() {
         "";
 
 
+      const datosChat =
+        resultado.datos || {};
+
+
+      guardarCacheChatV3_(
+        datosChat
+      );
+
+
       pintarChat(
-        resultado.datos || {}
+        datosChat
       );
 
     },
