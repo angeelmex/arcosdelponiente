@@ -288,7 +288,7 @@
 
       <a
         class="volver"
-        href="menu.html"
+        href="#" onclick="volverMenuConRefrescoV3(); return false;"
         aria-label="Volver al menú"
       >
         ←
@@ -2822,6 +2822,18 @@ function escaparHtml(
 
 }
 
+
+
+
+
+function volverMenuConRefrescoV3() {
+
+  window.location.replace(
+    "menu.html?refrescar=1&t=" +
+    Date.now()
+  );
+
+}
 
 </script>
 

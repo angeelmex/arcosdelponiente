@@ -3424,6 +3424,137 @@ document.addEventListener(
   }
 );
 
+
+
+
+/*************************************************
+ * REFRESCO DE CONEXIÓN AL VOLVER AL MENÚ
+ *
+ * Solo se ejecuta cuando otra pantalla regresa con
+ * ?refrescar=1. Hace UNA llamada GET ligera a api=inicio
+ * para abrir una conexión nueva con Apps Script.
+ *
+ * No envía POST, no repite operaciones y no modifica datos.
+ *************************************************/
+
+function refrescarConexionMenuV3() {
+
+  try {
+
+    const parametros =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    if (
+      parametros.get(
+        "refrescar"
+      ) !== "1"
+    ) {
+
+      return;
+
+    }
+
+
+    const nombreCallback =
+      "refrescoMenuV3_" +
+      Date.now() +
+      "_" +
+      Math.random()
+        .toString(36)
+        .slice(2);
+
+
+    const script =
+      document.createElement(
+        "script"
+      );
+
+
+    function limpiar() {
+
+      try {
+
+        delete window[
+          nombreCallback
+        ];
+
+      }
+      catch (error) {}
+
+
+      try {
+
+        script.remove();
+
+      }
+      catch (error) {}
+
+    }
+
+
+    window[
+      nombreCallback
+    ] =
+      function() {
+
+        limpiar();
+
+      };
+
+
+    script.onerror =
+      function() {
+
+        limpiar();
+
+      };
+
+
+    script.src =
+      URL_BACKEND +
+      "?api=inicio" +
+      "&callback=" +
+      encodeURIComponent(
+        nombreCallback
+      ) +
+      "&t=" +
+      Date.now();
+
+
+    document.body.appendChild(
+      script
+    );
+
+
+    /*
+     * Limpiamos la URL para que refrescar el menú manualmente
+     * no repita esta llamada una y otra vez.
+     */
+    try {
+
+      history.replaceState(
+        null,
+        "",
+        "menu.html"
+      );
+
+    }
+    catch (error) {}
+
+  }
+  catch (error) {}
+
+}
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  refrescarConexionMenuV3
+);
+
 </script>
 
 </body>
