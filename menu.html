@@ -1227,7 +1227,7 @@ function iniciarRevisionPendientesChat() {
         }
 
       },
-      5000
+      15000
     );
 
 }
@@ -2422,7 +2422,50 @@ function consultarEstadoOperacionV3() {
     };
 
 
-  document.body.appendChild(
+  
+
+    /*
+     * WATCHDOG DE CONSULTA DE ESTADO
+     * Solo recupera una consulta JSONP colgada.
+     * NO reenvía el POST y NO cambia el requestId.
+     */
+    const timeoutConsultaEstadoV3 =
+      setTimeout(
+        function() {
+
+          if (
+            script &&
+            script.isConnected &&
+            typeof script.onerror ===
+              "function"
+          ) {
+
+            script.onerror();
+
+          }
+
+        },
+        8000
+      );
+
+
+    script.addEventListener(
+      "load",
+      function() {
+
+        clearTimeout(
+          timeoutConsultaEstadoV3
+        );
+
+      },
+      {
+        once:
+          true
+      }
+    );
+
+
+document.body.appendChild(
     script
   );
 
@@ -2934,7 +2977,50 @@ function cargarPendientesChatMenu() {
       };
 
 
-    document.body.appendChild(
+    
+
+    /*
+     * WATCHDOG DE CONSULTA DE ESTADO
+     * Solo recupera una consulta JSONP colgada.
+     * NO reenvía el POST y NO cambia el requestId.
+     */
+    const timeoutConsultaEstadoV3 =
+      setTimeout(
+        function() {
+
+          if (
+            script &&
+            script.isConnected &&
+            typeof script.onerror ===
+              "function"
+          ) {
+
+            script.onerror();
+
+          }
+
+        },
+        8000
+      );
+
+
+    script.addEventListener(
+      "load",
+      function() {
+
+        clearTimeout(
+          timeoutConsultaEstadoV3
+        );
+
+      },
+      {
+        once:
+          true
+      }
+    );
+
+
+document.body.appendChild(
       script
     );
 
