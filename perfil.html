@@ -547,6 +547,7 @@ import {
 import {
   getMessaging,
   getToken,
+  deleteToken,
   isSupported
 } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-messaging.js";
 
@@ -591,6 +592,10 @@ window.revisarNotificaciones =
 
 window.activarNotificaciones =
   activarNotificaciones;
+
+
+window.reactivarNotificaciones =
+  reactivarNotificaciones;
 
 
 window.copiarTokenPrueba =
@@ -705,11 +710,15 @@ async function revisarNotificaciones() {
 
 
     boton.textContent =
-      "NOTIFICACIONES ACTIVADAS";
+      "REACTIVAR NOTIFICACIONES";
 
 
     boton.disabled =
-      true;
+      false;
+
+
+    boton.onclick =
+      reactivarNotificaciones;
 
 
     botonToken.style.display =
@@ -751,6 +760,10 @@ async function revisarNotificaciones() {
 
   boton.disabled =
     false;
+
+
+  boton.onclick =
+    activarNotificaciones;
 
 }
 
@@ -922,6 +935,277 @@ async function activarNotificaciones() {
 
     mostrarMensaje(
       "No fue posible activar las notificaciones.",
+      "error"
+    );
+
+  }
+
+}
+
+
+async function reactivarNotificaciones() {
+
+  const boton =
+    document.getElementById(
+      "btnActivarNotificaciones"
+    );
+
+
+  const estado =
+    document.getElementById(
+      "estadoNotificaciones"
+    );
+
+
+  try {
+
+    boton.disabled =
+      true;
+
+
+    boton.textContent =
+      "REACTIVANDO...";
+
+
+    if (
+      !("Notification" in window) ||
+      !("serviceWorker" in navigator)
+    ) {
+
+      throw new Error(
+        "Las notificaciones no son compatibles en este dispositivo."
+      );
+
+    }
+
+
+    const compatible =
+      await isSupported();
+
+
+    if (
+      !compatible
+    ) {
+
+      throw new Error(
+        "Las notificaciones no son compatibles en este dispositivo."
+      );
+
+    }
+
+
+    let permiso =
+      Notification.permission;
+
+
+    if (
+      permiso ===
+        "default"
+    ) {
+
+      permiso =
+        await Notification.requestPermission();
+
+    }
+
+
+    if (
+      permiso !==
+        "granted"
+    ) {
+
+      estado.textContent =
+        "BLOQUEADAS";
+
+
+      estado.className =
+        "estado-notificacion bloqueado";
+
+
+      boton.textContent =
+        "NOTIFICACIONES BLOQUEADAS";
+
+
+      boton.disabled =
+        true;
+
+
+      mostrarMensaje(
+        "Activa las notificaciones desde los ajustes del dispositivo.",
+        "error"
+      );
+
+
+      return;
+
+    }
+
+
+    /*
+     * Conservamos el mismo Service Worker.
+     * No lo desregistramos ni modificamos su lógica.
+     */
+    const registro =
+      await navigator.serviceWorker.register(
+        "./service-worker.js",
+        {
+          scope:
+            "./"
+        }
+      );
+
+
+    await navigator.serviceWorker.ready;
+
+
+    const app =
+      initializeApp(
+        FIREBASE_CONFIG
+      );
+
+
+    const messaging =
+      getMessaging(
+        app
+      );
+
+
+    /*
+     * Pedimos a Firebase renovar el registro push.
+     * Si el token anterior todavía es válido, deleteToken lo
+     * elimina antes de solicitar uno nuevo. Si la eliminación
+     * falla por un estado viejo de iOS, continuamos y Firebase
+     * decide el token disponible.
+     */
+    try {
+
+      await deleteToken(
+        messaging
+      );
+
+    }
+    catch (errorDeleteToken) {
+
+      console.warn(
+        "No fue posible eliminar el token anterior; se intentará renovar.",
+        errorDeleteToken
+      );
+
+    }
+
+
+    TOKEN_FCM =
+      "";
+
+
+    localStorage.removeItem(
+      "tokenNotificacionesArcos"
+    );
+
+
+    const tokenNuevo =
+      await getToken(
+        messaging,
+        {
+          vapidKey:
+            VAPID_PUBLICA,
+
+          serviceWorkerRegistration:
+            registro
+        }
+      );
+
+
+    if (
+      !tokenNuevo
+    ) {
+
+      throw new Error(
+        "Firebase no devolvió un token."
+      );
+
+    }
+
+
+    TOKEN_FCM =
+      tokenNuevo;
+
+
+    localStorage.setItem(
+      "tokenNotificacionesArcos",
+      TOKEN_FCM
+    );
+
+
+    /*
+     * Conservamos el mismo deviceId.
+     * El backend reemplaza la fila de este dispositivo en vez
+     * de crear duplicados y además invalida la caché de tokens.
+     */
+    const registrado =
+      await registrarTokenEnSistema(
+        TOKEN_FCM
+      );
+
+
+    if (
+      !registrado
+    ) {
+
+      throw new Error(
+        "No fue posible registrar nuevamente el dispositivo."
+      );
+
+    }
+
+
+    estado.textContent =
+      "ACTIVADAS";
+
+
+    estado.className =
+      "estado-notificacion activo";
+
+
+    boton.textContent =
+      "REACTIVAR NOTIFICACIONES";
+
+
+    boton.disabled =
+      false;
+
+
+    boton.onclick =
+      reactivarNotificaciones;
+
+
+    mostrarMensaje(
+      "Notificaciones reactivadas correctamente.",
+      "ok"
+    );
+
+  }
+  catch (error) {
+
+    console.error(
+      error
+    );
+
+
+    boton.disabled =
+      false;
+
+
+    boton.textContent =
+      "REACTIVAR NOTIFICACIONES";
+
+
+    boton.onclick =
+      reactivarNotificaciones;
+
+
+    mostrarMensaje(
+      "No fue posible reactivar las notificaciones. Intenta nuevamente.",
       "error"
     );
 
