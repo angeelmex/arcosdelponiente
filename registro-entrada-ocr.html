@@ -486,10 +486,6 @@ function darAccesoOCR() {
     return;
   }
 
-  /*
-   * La foto se conserva SIEMPRE para el registro real.
-   * Captura manual solo evita mandar esa imagen a Vision.
-   */
   if (!fotoIdentificacionBase64) {
     mostrarAlerta("Atención","ERROR EN FOTO DE IDENTIFICACIÓN","error");
     return;
@@ -520,83 +516,292 @@ function darAccesoOCR() {
 
   const boton = document.getElementById("btnDarAcceso");
   boton.disabled = true;
-  boton.textContent = "LEYENDO DATOS...";
-  mostrarEstado("Leyendo identificación y placas...");
 
   /*
-   * ETAPA 1: OCR.
-   * Si el guardia escribió manualmente un dato,
-   * esa imagen NO viaja a Google Vision.
+   * Si las placas fueron escritas manualmente, no usamos Vision.
+   * Si no, usamos EXACTAMENTE el lector aislado que ya comprobamos:
+   *   ocrPlacaPrueba + imagenBase64
+   */
+  if (
+    tipoAcceso === "VEHICULAR" &&
+    !placaManual
+  ) {
+
+    boton.textContent = "LEYENDO PLACAS...";
+    mostrarEstado("Leyendo placas...");
+
+    apiPost(
+      "ocrPlacaPrueba",
+      {
+        imagenBase64:
+          fotoPlacasBase64
+      },
+      function(resultadoPlaca) {
+
+        if (
+          !resultadoPlaca ||
+          !resultadoPlaca.ok
+        ) {
+
+          restaurarBoton();
+          ocultarEstado();
+
+          mostrarAlerta(
+            "Atención",
+            "ERROR EN FOTO DE PLACAS",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        const datosPlaca =
+          resultadoPlaca.datos ||
+          resultadoPlaca;
+
+
+        const placaDetectada =
+          String(
+            datosPlaca.placaSugerida ||
+            datosPlaca.placa ||
+            datosPlaca.sugerencia ||
+            ""
+          )
+            .trim()
+            .toUpperCase()
+            .replace(
+              /[^A-Z0-9]/g,
+              ""
+            );
+
+
+        if (
+          !placaDetectada
+        ) {
+
+          restaurarBoton();
+          ocultarEstado();
+
+          mostrarAlerta(
+            "Atención",
+            "ERROR EN FOTO DE PLACAS",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        const extraPlacas =
+          String(
+            datosPlaca.observacionesOCR ||
+            datosPlaca.extra ||
+            datosPlaca.textoExtra ||
+            datosPlaca.textoOCR ||
+            datosPlaca.texto ||
+            ""
+          ).trim();
+
+
+        procesarIdentificacionYRegistrar(
+          calle,
+          numero,
+          tipoVisita,
+          nombreManual,
+          placaDetectada,
+          observacionesManual,
+          extraPlacas
+        );
+
+      }
+    );
+
+    return;
+
+  }
+
+
+  procesarIdentificacionYRegistrar(
+    calle,
+    numero,
+    tipoVisita,
+    nombreManual,
+    tipoAcceso === "VEHICULAR"
+      ? placaManual
+      : "",
+    observacionesManual,
+    ""
+  );
+}
+
+
+function procesarIdentificacionYRegistrar(
+  calle,
+  numero,
+  tipoVisita,
+  nombreManual,
+  placaFinal,
+  observacionesManual,
+  extraPlacasComprobado
+) {
+
+  const boton =
+    document.getElementById(
+      "btnDarAcceso"
+    );
+
+
+  boton.textContent =
+    nombreManual
+      ? "REGISTRANDO..."
+      : "LEYENDO IDENTIFICACIÓN...";
+
+
+  mostrarEstado(
+    nombreManual
+      ? "Preparando registro..."
+      : "Leyendo identificación..."
+  );
+
+
+  /*
+   * Aquí la placa YA quedó resuelta.
+   * La enviamos como placaManual para que la ruta combinada
+   * NO vuelva a consultar Vision para placas.
+   *
+   * Por eso el lector de placas usado en producción es
+   * exactamente el mismo ocrPlacaPrueba que comprobamos.
    */
   apiPost(
     "ocrIngresoPrueba",
     {
-      calle:calle,
-      numero:numero,
-      tipoVisita:tipoVisita,
-      tipoAcceso:tipoAcceso,
-      nombreManual:nombreManual,
-      placaManual:placaManual,
+      calle:
+        calle,
+
+      numero:
+        numero,
+
+      tipoVisita:
+        tipoVisita,
+
+      tipoAcceso:
+        tipoAcceso,
+
+      nombreManual:
+        nombreManual,
+
+      placaManual:
+        placaFinal,
+
       imagenIdentificacionBase64:
-        nombreManual ? "" : fotoIdentificacionBase64,
-      /*
-       * COMPATIBILIDAD OCR:
-       * El Code.gs que venimos usando en esta prueba toma
-       * la foto desde "imagenBase64" y la entrega internamente
-       * como "imagenPlacaBase64". En versiones posteriores
-       * también puede recibirse directamente como
-       * "imagenPlacaBase64".
-       *
-       * Mandamos AMBOS nombres con la MISMA foto. Esto no
-       * genera dos consultas a Vision: solo evita que la foto
-       * se pierda entre versiones de la ruta.
-       */
+        nombreManual
+          ? ""
+          : fotoIdentificacionBase64,
+
       imagenBase64:
-        (tipoAcceso === "VEHICULAR" && !placaManual)
-          ? fotoPlacasBase64
-          : "",
+        "",
 
       imagenPlacaBase64:
-        (tipoAcceso === "VEHICULAR" && !placaManual)
-          ? fotoPlacasBase64
-          : ""
+        ""
     },
-    function(resultadoOCR){
-      if (!resultadoOCR || !resultadoOCR.ok) {
+    function(resultadoOCR) {
+
+      if (
+        !resultadoOCR ||
+        !resultadoOCR.ok
+      ) {
+
         restaurarBoton();
         ocultarEstado();
 
-        const etapa = resultadoOCR && resultadoOCR.etapaError
-          ? String(resultadoOCR.etapaError)
-          : "";
 
-        if (etapa.indexOf("IDENTIFICACION") !== -1 || etapa.indexOf("NOMBRE") !== -1) {
-          mostrarAlerta("Atención","ERROR EN FOTO DE IDENTIFICACIÓN","error");
-        } else if (etapa.indexOf("PLACA") !== -1) {
-          mostrarAlerta("Atención","ERROR EN FOTO DE PLACAS","error");
-        } else {
-          mostrarAlerta("Atención","ERROR EN EL ESCANEO","error");
+        const etapa =
+          resultadoOCR &&
+          resultadoOCR.etapaError
+            ? String(
+                resultadoOCR.etapaError
+              )
+            : "";
+
+
+        if (
+          etapa.indexOf(
+            "IDENTIFICACION"
+          ) !== -1 ||
+          etapa.indexOf(
+            "NOMBRE"
+          ) !== -1
+        ) {
+
+          mostrarAlerta(
+            "Atención",
+            "ERROR EN FOTO DE IDENTIFICACIÓN",
+            "error"
+          );
+
         }
+        else {
+
+          mostrarAlerta(
+            "Atención",
+            "ERROR EN EL ESCANEO",
+            "error"
+          );
+
+        }
+
+
         return;
+
       }
+
+
+      const extraPlacasFinal =
+        extraPlacasComprobado ||
+        resultadoOCR.extraPlacas ||
+        "";
+
 
       registrarAccesoReal(
         {
-          calle:calle,
-          numero:numero,
-          tipoVisita:tipoVisita,
-          tipoAcceso:tipoAcceso,
-          nombreVisitante:resultadoOCR.nombre,
-          placas:resultadoOCR.placa || "",
-          observacionesManual:observacionesManual,
-          extraPlacas:resultadoOCR.extraPlacas || "",
-          extraIdentificacion:resultadoOCR.extraIdentificacion || ""
+          calle:
+            calle,
+
+          numero:
+            numero,
+
+          tipoVisita:
+            tipoVisita,
+
+          tipoAcceso:
+            tipoAcceso,
+
+          nombreVisitante:
+            resultadoOCR.nombre,
+
+          placas:
+            placaFinal,
+
+          observacionesManual:
+            observacionesManual,
+
+          extraPlacas:
+            extraPlacasFinal,
+
+          extraIdentificacion:
+            resultadoOCR.extraIdentificacion ||
+            ""
         }
       );
-    },
-    false
+
+    }
   );
+
 }
+
 
 function registrarAccesoReal(datosOCR) {
   const boton = document.getElementById("btnDarAcceso");
