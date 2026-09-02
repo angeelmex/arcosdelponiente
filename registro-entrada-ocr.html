@@ -650,13 +650,73 @@ function registrarAccesoReal(datosOCR) {
       ocultarEstado();
 
       if (!resultado || !resultado.ok) {
+
+        const mensajeServidor =
+          resultado && resultado.mensaje
+            ? String(resultado.mensaje)
+            : "";
+
+
+        const mensajeNormalizado =
+          mensajeServidor
+            .toUpperCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g,"");
+
+
+        let mensajeGuardia =
+          "ERROR AL REGISTRAR ACCESO";
+
+
+        /*
+         * El backend real puede devolver mensajes técnicos
+         * como "Escribe las placas del vehículo".
+         * Al guardia le mostramos únicamente qué captura debe
+         * revisar, conservando el mensaje real solo en servidor.
+         */
+        if (
+          mensajeNormalizado.indexOf("PLACA") !== -1
+        ) {
+
+          mensajeGuardia =
+            "ERROR EN FOTO DE PLACAS";
+
+        }
+        else if (
+          mensajeNormalizado.indexOf("IDENTIFIC") !== -1 ||
+          mensajeNormalizado.indexOf("NOMBRE") !== -1
+        ) {
+
+          mensajeGuardia =
+            "ERROR EN FOTO DE IDENTIFICACIÓN";
+
+        }
+        else if (
+          mensajeNormalizado.indexOf("NIP") !== -1
+        ) {
+
+          mensajeGuardia =
+            "ERROR EN NIP";
+
+        }
+        else if (
+          mensajeNormalizado.indexOf("DOMICILIO") !== -1 ||
+          mensajeNormalizado.indexOf("CALLE") !== -1 ||
+          mensajeNormalizado.indexOf("NUMERO") !== -1
+        ) {
+
+          mensajeGuardia =
+            "ERROR EN DOMICILIO";
+
+        }
+
+
         mostrarAlerta(
           "No se pudo dar acceso",
-          resultado && resultado.mensaje
-            ? resultado.mensaje
-            : "ERROR AL REGISTRAR ACCESO",
+          mensajeGuardia,
           "error"
         );
+
         return;
       }
 
