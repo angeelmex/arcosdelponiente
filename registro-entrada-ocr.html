@@ -1522,7 +1522,7 @@ function darAccesoPrueba() {
   ) {
 
     mostrarMensaje(
-      "Toma foto de la identificación o usa ESCRIBIR MANUALMENTE.",
+      "ERROR EN FOTO DE IDENTIFICACIÓN",
       "error"
     );
 
@@ -1543,7 +1543,7 @@ function darAccesoPrueba() {
   ) {
 
     mostrarMensaje(
-      "Toma foto de placas o usa ESCRIBIR MANUALMENTE.",
+      "ERROR EN FOTO DE PLACAS",
       "error"
     );
 
@@ -1626,70 +1626,61 @@ function darAccesoPrueba() {
         !resultado.ok
       ) {
 
-        let mensajeError =
+        const etapa =
           resultado &&
-          resultado.mensaje
-            ? resultado.mensaje
-            : "No fue posible completar la prueba.";
+          resultado.etapaError
+            ? String(
+                resultado.etapaError
+              )
+            : "";
+
+
+        let mensajeCorto =
+          "ERROR EN EL REGISTRO";
 
 
         if (
-          resultado &&
-          resultado.hojaPrueba &&
-          resultado.filaGuardada
+          etapa.indexOf(
+            "IDENTIFICACION"
+          ) !== -1 ||
+          etapa.indexOf(
+            "NOMBRE"
+          ) !== -1
         ) {
 
-          mensajeError +=
-            " La prueba de error quedó guardada en " +
-            resultado.hojaPrueba +
-            ", fila " +
-            resultado.filaGuardada +
-            ".";
+          mensajeCorto =
+            "ERROR EN FOTO DE IDENTIFICACIÓN";
+
+        }
+        else if (
+          etapa.indexOf(
+            "PLACA"
+          ) !== -1
+        ) {
+
+          mensajeCorto =
+            "ERROR EN FOTO DE PLACAS";
 
         }
 
 
         mostrarAlerta(
-          "No se pudo completar el registro",
-          mensajeError,
+          "Atención",
+          mensajeCorto,
           "error"
         );
 
 
-        if (
-          resultado &&
-          (
-            resultado.reglaNombre ||
-            resultado.confianzaNombre
+        /*
+         * El detalle técnico sigue guardándose en OCR_PRUEBAS
+         * para nosotros, pero el guardia no lo ve.
+         */
+        document
+          .getElementById(
+            "resultado"
           )
-        ) {
-
-          document
-            .getElementById(
-              "resultado"
-            )
-            .textContent =
-              "Diagnóstico de prueba\n" +
-              "Regla: " +
-              (
-                resultado.reglaNombre ||
-                "-"
-              ) +
-              "\nConfianza: " +
-              (
-                resultado.confianzaNombre ||
-                "-"
-              );
-
-
-          document
-            .getElementById(
-              "resultado"
-            )
-            .style.display =
-              "block";
-
-        }
+          .style.display =
+            "none";
 
 
         return;
