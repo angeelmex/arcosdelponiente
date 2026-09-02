@@ -1552,13 +1552,70 @@ function darAccesoPrueba() {
         !resultado.ok
       ) {
 
-        mostrarMensaje(
+        let mensajeError =
           resultado &&
           resultado.mensaje
             ? resultado.mensaje
-            : "No fue posible completar la prueba.",
+            : "No fue posible completar la prueba.";
+
+
+        if (
+          resultado &&
+          resultado.hojaPrueba &&
+          resultado.filaGuardada
+        ) {
+
+          mensajeError +=
+            " La prueba de error quedó guardada en " +
+            resultado.hojaPrueba +
+            ", fila " +
+            resultado.filaGuardada +
+            ".";
+
+        }
+
+
+        mostrarMensaje(
+          mensajeError,
           "error"
         );
+
+
+        if (
+          resultado &&
+          (
+            resultado.reglaNombre ||
+            resultado.confianzaNombre
+          )
+        ) {
+
+          document
+            .getElementById(
+              "resultado"
+            )
+            .textContent =
+              "Diagnóstico de prueba\n" +
+              "Regla: " +
+              (
+                resultado.reglaNombre ||
+                "-"
+              ) +
+              "\nConfianza: " +
+              (
+                resultado.confianzaNombre ||
+                "-"
+              );
+
+
+          document
+            .getElementById(
+              "resultado"
+            )
+            .style.display =
+              "block";
+
+        }
+
 
         return;
 
@@ -1610,6 +1667,16 @@ function darAccesoPrueba() {
                   r.observacionesFinales
                 )
               : ""
+          ) +
+          "\nRegla de nombre: " +
+          escaparTexto(
+            r.reglaNombre ||
+            "-"
+          ) +
+          "\nConfianza: " +
+          escaparTexto(
+            r.confianzaNombre ||
+            "-"
           ) +
           "\nHoja: " +
           escaparTexto(
