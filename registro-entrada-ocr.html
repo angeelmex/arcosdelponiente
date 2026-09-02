@@ -252,6 +252,79 @@
       line-height:1.4
     }
 
+    .alerta-overlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(20,40,55,.45);
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:9999
+    }
+
+    .alerta-overlay.visible{
+      display:flex
+    }
+
+    .alerta-caja{
+      width:100%;
+      max-width:390px;
+      background:white;
+      border-radius:22px;
+      padding:22px 20px 18px;
+      text-align:center;
+      box-shadow:0 18px 50px rgba(0,0,0,.22)
+    }
+
+    .alerta-icono{
+      width:58px;
+      height:58px;
+      margin:0 auto 12px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:30px;
+      font-weight:900
+    }
+
+    .alerta-icono.error{
+      background:#fdecec;
+      color:#9c3030
+    }
+
+    .alerta-icono.ok{
+      background:#e9f7ee;
+      color:#267245
+    }
+
+    .alerta-titulo{
+      margin:0 0 8px;
+      color:#204d5d;
+      font-size:21px;
+      font-weight:900
+    }
+
+    .alerta-texto{
+      margin:0;
+      color:#5f7082;
+      font-size:15px;
+      line-height:1.5
+    }
+
+    .alerta-boton{
+      width:100%;
+      min-height:50px;
+      margin-top:18px;
+      border:none;
+      border-radius:14px;
+      background:#204d5d;
+      color:white;
+      font-size:16px;
+      font-weight:900
+    }
+
     @media(max-width:360px){
       h1{font-size:27px}
       .selector{grid-template-columns:1fr}
@@ -1576,7 +1649,8 @@ function darAccesoPrueba() {
         }
 
 
-        mostrarMensaje(
+        mostrarAlerta(
+          "No se pudo completar el registro",
           mensajeError,
           "error"
         );
@@ -2093,13 +2167,46 @@ function mostrarMensaje(
     );
 
 
+  /*
+   * Los errores ya no se dejan abajo del formulario.
+   * Se muestran como alerta visible para el guardia.
+   */
+  if (
+    tipo === "error" &&
+    String(
+      texto || ""
+    ).trim() !== ""
+  ) {
+
+    mensaje.className =
+      "mensaje";
+
+
+    mensaje.textContent =
+      "";
+
+
+    mostrarAlerta(
+      "Atención",
+      texto,
+      "error"
+    );
+
+
+    return;
+
+  }
+
+
   mensaje.className =
-    "mensaje " +
-    tipo;
+    texto
+      ? "mensaje " +
+        tipo
+      : "mensaje";
 
 
   mensaje.textContent =
-    texto;
+    texto || "";
 
 }
 
@@ -2131,7 +2238,115 @@ function escaparTexto(
     );
 
 }
+
+function mostrarAlerta(
+  titulo,
+  texto,
+  tipo
+) {
+
+  const overlay =
+    document.getElementById(
+      "alertaOverlay"
+    );
+
+
+  const icono =
+    document.getElementById(
+      "alertaIcono"
+    );
+
+
+  document
+    .getElementById(
+      "alertaTitulo"
+    )
+    .textContent =
+      titulo ||
+      "Atención";
+
+
+  document
+    .getElementById(
+      "alertaTexto"
+    )
+    .textContent =
+      texto ||
+      "";
+
+
+  icono.className =
+    "alerta-icono " +
+    (
+      tipo === "ok"
+        ? "ok"
+        : "error"
+    );
+
+
+  icono.textContent =
+    tipo === "ok"
+      ? "✓"
+      : "!";
+
+
+  overlay.classList.add(
+    "visible"
+  );
+
+
+  setTimeout(
+    function() {
+
+      document
+        .getElementById(
+          "alertaBoton"
+        )
+        .focus();
+
+    },
+    20
+  );
+
+}
+
+
+function cerrarAlerta() {
+
+  document
+    .getElementById(
+      "alertaOverlay"
+    )
+    .classList.remove(
+      "visible"
+    );
+
+}
+
 </script>
+
+<div
+  id="alertaOverlay"
+  class="alerta-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="alertaTitulo"
+  aria-describedby="alertaTexto"
+>
+  <div class="alerta-caja">
+    <div id="alertaIcono" class="alerta-icono error">!</div>
+    <h2 id="alertaTitulo" class="alerta-titulo">Atención</h2>
+    <p id="alertaTexto" class="alerta-texto"></p>
+    <button
+      id="alertaBoton"
+      class="alerta-boton"
+      type="button"
+      onclick="cerrarAlerta()"
+    >
+      ENTENDIDO
+    </button>
+  </div>
+</div>
 
 </body>
 </html>
