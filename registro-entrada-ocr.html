@@ -540,12 +540,10 @@ function darAccesoOCR() {
       imagenIdentificacionBase64:
         nombreManual ? "" : fotoIdentificacionBase64,
       /*
-       * IMPORTANTE:
-       * La ruta actual de Code.gs "ocrIngresoPrueba" recibe
-       * la foto de placas con el nombre histórico "imagenBase64".
-       * Conservamos ese nombre para no tocar Code.gs.
+       * La función OCR combinada actual recibe la fotografía
+       * de placas como imagenPlacaBase64.
        */
-      imagenBase64:
+      imagenPlacaBase64:
         (tipoAcceso === "VEHICULAR" && !placaManual)
           ? fotoPlacasBase64
           : ""
