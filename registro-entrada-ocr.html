@@ -540,9 +540,22 @@ function darAccesoOCR() {
       imagenIdentificacionBase64:
         nombreManual ? "" : fotoIdentificacionBase64,
       /*
-       * La función OCR combinada actual recibe la fotografía
-       * de placas como imagenPlacaBase64.
+       * COMPATIBILIDAD OCR:
+       * El Code.gs que venimos usando en esta prueba toma
+       * la foto desde "imagenBase64" y la entrega internamente
+       * como "imagenPlacaBase64". En versiones posteriores
+       * también puede recibirse directamente como
+       * "imagenPlacaBase64".
+       *
+       * Mandamos AMBOS nombres con la MISMA foto. Esto no
+       * genera dos consultas a Vision: solo evita que la foto
+       * se pierda entre versiones de la ruta.
        */
+      imagenBase64:
+        (tipoAcceso === "VEHICULAR" && !placaManual)
+          ? fotoPlacasBase64
+          : "",
+
       imagenPlacaBase64:
         (tipoAcceso === "VEHICULAR" && !placaManual)
           ? fotoPlacasBase64
