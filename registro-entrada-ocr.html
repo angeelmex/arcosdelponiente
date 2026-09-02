@@ -4,460 +4,1048 @@
   <meta charset="UTF-8">
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
   >
-  <meta
-    name="theme-color"
-    content="#204d5d"
-  >
-  <title>Prueba OCR de placas</title>
+  <meta name="theme-color" content="#f4f7fb">
+  <title>Prueba OCR - Control de acceso</title>
 
   <style>
-    * {
-      box-sizing: border-box;
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:#f4f7fb;
+      color:#204d5d
     }
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f4f7fb;
-      color: #1e2d3d;
+    .pagina{
+      min-height:100vh;
+      padding:22px 14px 34px
     }
 
-    .pagina {
-      min-height: 100vh;
-      padding: 20px 14px 32px;
+    .contenedor{
+      max-width:560px;
+      margin:0 auto
     }
 
-    .contenedor {
-      width: 100%;
-      max-width: 560px;
-      margin: 0 auto;
+    h1{
+      margin:0 0 6px;
+      font-size:30px;
+      line-height:1.1
     }
 
-    .tarjeta {
-      background: white;
-      border-radius: 22px;
-      padding: 20px;
-      box-shadow:
-        0 8px 28px
-        rgba(20, 55, 95, .10);
+    .sub{
+      color:#718198;
+      margin:0 0 18px;
+      font-size:17px
     }
 
-    h1 {
-      margin: 0 0 8px;
-      font-size: 24px;
-      color: #204d5d;
+    .modo-prueba{
+      margin:0 0 18px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:#edf3f6;
+      color:#496576;
+      font-size:13px;
+      line-height:1.45
     }
 
-    .sub {
-      margin: 0 0 18px;
-      color: #65768a;
-      line-height: 1.45;
-      font-size: 14px;
+    .panel{
+      background:white;
+      border-radius:24px;
+      padding:22px 18px 24px;
+      box-shadow:0 7px 24px rgba(20,55,95,.10)
     }
 
-    .bloque {
-      margin-top: 18px;
+    .volver{
+      border:none;
+      background:transparent;
+      padding:0;
+      margin:0 0 18px;
+      color:#204d5d;
+      font-size:18px;
+      font-weight:900
     }
 
-    .etiqueta {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 800;
-      color: #32475a;
-      font-size: 14px;
+    .grupo{
+      margin-bottom:18px
     }
 
-    input[type="file"],
-    input[type="text"] {
-      width: 100%;
-      min-height: 52px;
-      border: 1px solid #d6e0e8;
-      border-radius: 14px;
-      padding: 12px;
-      font-size: 16px;
-      background: white;
+    label.titulo{
+      display:block;
+      margin:0 0 8px;
+      font-size:16px;
+      font-weight:900;
+      color:#204d5d
     }
 
-    .preview {
-      display: none;
-      margin-top: 12px;
-      width: 100%;
-      max-height: 300px;
-      object-fit: contain;
-      border-radius: 14px;
-      background: #eef3f7;
+    select,
+    input[type="text"],
+    textarea{
+      width:100%;
+      min-height:58px;
+      padding:14px 16px;
+      border:2px solid #d9e3e9;
+      border-radius:17px;
+      background:white;
+      color:#20384f;
+      font-size:18px;
+      outline:none
     }
 
-    .acciones {
-      display: grid;
-      gap: 10px;
-      margin-top: 18px;
+    textarea{
+      min-height:110px;
+      resize:vertical
     }
 
-    button {
-      min-height: 54px;
-      border: none;
-      border-radius: 14px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
+    select:focus,
+    input[type="text"]:focus,
+    textarea:focus{
+      border-color:#204d5d
     }
 
-    .principal {
-      background: #204d5d;
-      color: white;
+    .selector{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px
     }
 
-    .secundario {
-      background: #edf3f6;
-      color: #204d5d;
-      border: 1px solid #d8e1e8;
+    .selector button{
+      min-height:68px;
+      border:2px solid #d9e3e9;
+      border-radius:17px;
+      background:white;
+      color:#204d5d;
+      font-size:17px;
+      font-weight:900
     }
 
-    button:disabled {
-      opacity: .55;
-      cursor: default;
+    .selector button.activo{
+      border-color:#204d5d;
+      background:#edf3f6
     }
 
-    .resultado {
-      display: none;
-      margin-top: 18px;
-      padding: 16px;
-      border-radius: 16px;
-      background: #f7fafc;
-      border: 1px solid #dbe4ea;
+    .foto-input{
+      display:none
     }
 
-    .resultado-titulo {
-      font-size: 13px;
-      font-weight: 800;
-      color: #65768a;
-      margin-bottom: 8px;
+    .foto-btn{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+      min-height:62px;
+      padding:13px 12px;
+      border:2px solid #204d5d;
+      border-radius:17px;
+      background:white;
+      color:#204d5d;
+      font-size:17px;
+      font-weight:900;
+      text-align:center;
+      cursor:pointer
     }
 
-    .placa {
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      color: #204d5d;
-      word-break: break-word;
+    .foto-btn.lista{
+      background:#edf7ef;
+      border-color:#238c45;
+      color:#267245
     }
 
-    .detalle {
-      margin-top: 10px;
-      white-space: pre-wrap;
-      font-size: 13px;
-      color: #5f7082;
-      line-height: 1.45;
+    .manual-btn{
+      display:block;
+      width:max-content;
+      max-width:100%;
+      margin:8px auto 0;
+      padding:9px 13px;
+      border:1px solid #cfdce3;
+      border-radius:12px;
+      background:#f6f9fb;
+      color:#496576;
+      font-size:13px;
+      font-weight:800
     }
 
-    .mensaje {
-      display: none;
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 700;
+    .manual{
+      display:none;
+      margin-top:10px
     }
 
-    .mensaje.ok {
-      display: block;
-      background: #e9f7ee;
-      color: #267245;
+    .manual.activo{
+      display:block
     }
 
-    .mensaje.error {
-      display: block;
-      background: #fdecec;
-      color: #9c3030;
+    .preview{
+      display:none;
+      margin-top:10px;
+      overflow:hidden;
+      border-radius:14px;
+      background:#eef3f7
     }
 
-    .nota {
-      margin-top: 16px;
-      font-size: 12px;
-      color: #7a8898;
-      line-height: 1.45;
+    .preview img{
+      display:block;
+      width:100%;
+      max-height:240px;
+      object-fit:contain
+    }
+
+    .principal{
+      width:100%;
+      min-height:64px;
+      border:none;
+      border-radius:18px;
+      background:#238c45;
+      color:white;
+      font-size:20px;
+      font-weight:900
+    }
+
+    .principal:disabled{
+      opacity:.6
+    }
+
+    .mensaje{
+      display:none;
+      margin:16px 0 0;
+      padding:13px 14px;
+      border-radius:13px;
+      font-size:14px;
+      line-height:1.45;
+      font-weight:800
+    }
+
+    .mensaje.ok{
+      display:block;
+      background:#e9f7ee;
+      color:#267245
+    }
+
+    .mensaje.error{
+      display:block;
+      background:#fdecec;
+      color:#9c3030
+    }
+
+    .resultado{
+      display:none;
+      margin-top:16px;
+      padding:15px;
+      border:1px solid #dbe4ea;
+      border-radius:15px;
+      background:#f7fafc;
+      color:#496576;
+      font-size:14px;
+      line-height:1.55;
+      white-space:pre-line
+    }
+
+    .resultado strong{
+      color:#204d5d
+    }
+
+    .mini{
+      margin-top:7px;
+      color:#7d8c9a;
+      font-size:12px;
+      line-height:1.4
+    }
+
+    @media(max-width:360px){
+      h1{font-size:27px}
+      .selector{grid-template-columns:1fr}
+      select,input[type="text"],textarea{font-size:16px}
+      .foto-btn{font-size:15px}
     }
   </style>
 </head>
 
 <body>
-
 <div class="pagina">
-
   <div class="contenedor">
 
-    <div class="tarjeta">
+    <h1>Control de acceso</h1>
+    <div class="sub">Registro rápido para guardias</div>
 
-      <h1>
-        Prueba OCR de placas
-      </h1>
+    <div class="modo-prueba">
+      <strong>PRUEBA OCR:</strong> esta página guarda únicamente en la hoja
+      <strong>OCR_PRUEBAS</strong>. No crea un acceso real ni manda notificaciones.
+    </div>
 
+    <section class="panel">
 
-      <p class="sub">
-        <strong>MODO PRUEBA:</strong> toma la foto de placas y la foto de la
-        identificación. Al presionar REGISTRAR INGRESO se leen ambos datos
-        automáticamente y se guarda una fila de prueba en Google Sheets.
-        Si el guardia escribe placas o nombre manualmente, esa imagen no se
-        manda a Google Vision.
-      </p>
+      <button
+        class="volver"
+        type="button"
+        onclick="history.back()"
+      >
+        ← VOLVER
+      </button>
 
+      <div class="grupo">
+        <label class="titulo" for="calle">Calle</label>
+        <select id="calle" onchange="cargarNumeros()">
+          <option value="">Selecciona calle</option>
+        </select>
+      </div>
 
-      <div class="bloque">
+      <div class="grupo">
+        <label class="titulo" for="numero">Número</label>
+        <select id="numero">
+          <option value="">Selecciona número</option>
+        </select>
+      </div>
 
-        <label
-          class="etiqueta"
-          for="fotoPlaca"
-        >
-          Tomar foto de la placa
-        </label>
+      <div class="grupo">
+        <label class="titulo" for="tipoVisita">Tipo de visita</label>
+        <select id="tipoVisita">
+          <option value="">Selecciona tipo</option>
+        </select>
+      </div>
 
+      <div class="grupo">
+        <label class="titulo">Tipo de acceso</label>
+
+        <div class="selector">
+          <button
+            id="btnPeatonal"
+            type="button"
+            onclick="seleccionarAcceso('PEATONAL')"
+          >
+            PEATONAL
+          </button>
+
+          <button
+            id="btnVehicular"
+            type="button"
+            onclick="seleccionarAcceso('VEHICULAR')"
+          >
+            VEHICULAR
+          </button>
+        </div>
+      </div>
+
+      <div class="grupo">
+        <label class="titulo">Foto de identificación</label>
 
         <input
-          id="fotoPlaca"
+          id="fotoIdentificacion"
+          class="foto-input"
           type="file"
           accept="image/*"
           capture="environment"
+          onchange="procesarFotoIdentificacion(this)"
         >
-
-
-        <img
-          id="preview"
-          class="preview"
-          alt="Vista previa de la placa"
-        >
-
-      </div>
-
-
-      <div class="bloque">
-        <label class="etiqueta" for="fotoIdentificacion">Tomar foto de la identificación</label>
-        <input id="fotoIdentificacion" type="file" accept="image/*" capture="environment">
-        <img id="previewIdentificacion" class="preview" alt="Vista previa de la identificación">
-      </div>
-
-      <div class="acciones">
-
-        <button
-          id="btnEscribir"
-          class="secundario"
-          type="button"
-          onclick="mostrarCapturaManual()"
-        >
-          ESCRIBIR PLACAS
-        </button>
-
-        <button
-          id="btnEscribirNombre"
-          class="secundario"
-          type="button"
-          onclick="mostrarNombreManual()"
-        >
-          ESCRIBIR NOMBRE
-        </button>
-
-        <button
-          id="btnRegistrar"
-          class="principal"
-          type="button"
-          onclick="registrarIngresoPrueba()"
-        >
-          REGISTRAR INGRESO
-        </button>
-      </div>
-
-
-      <div
-        id="capturaManual"
-        class="bloque"
-        style="display:none;"
-      >
 
         <label
-          class="etiqueta"
-          for="placaManual"
+          id="btnFotoIdentificacion"
+          class="foto-btn"
+          for="fotoIdentificacion"
         >
-          Placas
+          📷 TOMAR FOTO DE IDENTIFICACIÓN
         </label>
 
-
-        <input
-          id="placaManual"
-          type="text"
-          inputmode="text"
-          autocomplete="off"
-          autocapitalize="characters"
-          placeholder="Ej. STX123A"
+        <button
+          class="manual-btn"
+          type="button"
+          onclick="alternarManualNombre()"
         >
+          ESCRIBIR MANUALMENTE
+        </button>
+
+        <div id="manualNombre" class="manual">
+          <input
+            id="nombreManual"
+            type="text"
+            maxlength="100"
+            autocomplete="off"
+            placeholder="Nombre del visitante"
+          >
+
+          <div class="mini">
+            Si escribes el nombre aquí, la foto de identificación no se manda a Google Vision.
+          </div>
+        </div>
+
+        <div id="previewIdentificacion" class="preview">
+          <img id="imgIdentificacion" alt="Identificación">
+        </div>
+      </div>
+
+      <div id="bloqueVehicular" style="display:none;">
+
+        <div class="grupo">
+          <label class="titulo">Foto de placas</label>
+
+          <input
+            id="fotoPlacas"
+            class="foto-input"
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onchange="procesarFotoPlacas(this)"
+          >
+
+          <label
+            id="btnFotoPlacas"
+            class="foto-btn"
+            for="fotoPlacas"
+          >
+            📷 TOMAR FOTO DE PLACAS
+          </label>
+
+          <button
+            class="manual-btn"
+            type="button"
+            onclick="alternarManualPlacas()"
+          >
+            ESCRIBIR MANUALMENTE
+          </button>
+
+          <div id="manualPlacas" class="manual">
+            <input
+              id="placaManual"
+              type="text"
+              maxlength="12"
+              autocapitalize="characters"
+              autocomplete="off"
+              placeholder="ABC123"
+              oninput="normalizarPlacasInput(this)"
+            >
+
+            <div class="mini">
+              Si escribes las placas aquí, la foto de placas no se manda a Google Vision.
+            </div>
+          </div>
+
+          <div id="previewPlacas" class="preview">
+            <img id="imgPlacas" alt="Placas">
+          </div>
+        </div>
 
       </div>
 
+      <div class="grupo">
+        <label class="titulo" for="observaciones">Observaciones</label>
 
-      <div id="capturaNombreManual" class="bloque" style="display:none;">
-        <label class="etiqueta" for="nombreManual">Nombre del visitante</label>
-        <input id="nombreManual" type="text" autocomplete="off" placeholder="Nombre completo">
+        <textarea
+          id="observaciones"
+          maxlength="500"
+          placeholder="Opcional"
+        ></textarea>
       </div>
 
-      <div id="resultadoNombre" class="resultado">
-        <div class="resultado-titulo">Nombre detectado</div>
-        <div id="nombreDetectado" class="placa" style="font-size:22px;letter-spacing:0;">—</div>
-        
-      </div>
-
-      <div
-        id="resultado"
-        class="resultado"
+      <button
+        id="btnDarAcceso"
+        class="principal"
+        type="button"
+        onclick="darAccesoPrueba()"
       >
+        DAR ACCESO
+      </button>
 
-        <div class="resultado-titulo">
-          Placas detectadas
-        </div>
+      <div id="mensaje" class="mensaje"></div>
 
+      <div id="resultado" class="resultado"></div>
 
-        <div
-          id="placaDetectada"
-          class="placa"
-        >
-          —
-        </div>
-
-
-        <div
-          class="resultado-titulo"
-          style="margin-top:14px;"
-        >
-          Texto completo leído por Google Vision
-        </div>
-
-
-        <div
-          id="textoDetectado"
-          class="detalle"
-        >
-          —
-        </div>
-
-      </div>
-
-
-      <div id="resultadoGuardado" class="resultado">
-        <div class="resultado-titulo">Registro de prueba guardado</div>
-        <div id="resumenGuardado" class="detalle">—</div>
-      </div>
-
-      <div
-        id="mensaje"
-        class="mensaje"
-      ></div>
-
-
-      <div class="nota">
-        Para esta prueba procura que la placa ocupe buena parte de
-        la fotografía, esté enfocada y tenga la menor cantidad
-        posible de reflejos.
-      </div>
-
-    </div>
+    </section>
 
   </div>
-
 </div>
 
-
 <form
-  id="formOCR"
+  id="formApi"
   method="post"
   action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
-  target="iframeOCR"
+  target="frameApi"
   style="display:none;"
->
-
-  <input
-    id="ocrAccion"
-    name="accion"
-    type="hidden"
-    value="ocrIngresoPruebaGuardar"
-  >
-
-  <input
-    id="ocrRequestId"
-    name="requestId"
-    type="hidden"
-  >
-
-  <input
-    id="ocrImagenBase64"
-    name="imagenBase64"
-    type="hidden"
-  >
-
-  <input id="ocrTipo" name="tipo" type="hidden">
-  <input id="ocrImagenIdentificacionBase64" name="imagenIdentificacionBase64" type="hidden">
-  <input id="ocrPlacaManual" name="placaManual" type="hidden">
-  <input id="ocrNombreManual" name="nombreManual" type="hidden">
-
-</form>
-
+></form>
 
 <iframe
-  id="iframeOCR"
-  name="iframeOCR"
+  id="frameApi"
+  name="frameApi"
   style="display:none;width:0;height:0;border:0;"
-  title="Procesando OCR"
+  title="Procesando"
 ></iframe>
 
-
 <script>
-
 const URL_BACKEND =
   "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
 
+const CLAVE_LOCAL_GUARDIAS =
+  "claveGuardiasArcosV3";
 
-let FOTO_BASE64 =
+const CACHE_DATOS_GUARDIAS =
+  "arcos_guardias_datos_v3";
+
+const CACHE_NUMEROS_PREFIJO =
+  "arcos_guardias_numeros_v3_";
+
+let claveGuardias =
+  localStorage.getItem(
+    CLAVE_LOCAL_GUARDIAS
+  ) || "";
+
+let tipoAcceso =
   "";
 
-let FOTO_IDENTIFICACION_BASE64 = "";
+let fotoPlacasBase64 =
+  "";
 
+let fotoIdentificacionBase64 =
+  "";
 
-let OCR_OPERACION =
+let operacionActual =
   null;
 
 
-document
-  .getElementById(
-    "fotoPlaca"
-  )
-  .addEventListener(
-    "change",
-    prepararFoto
+/***************************************
+ * INICIO
+ ***************************************/
+
+iniciarPagina();
+
+
+function iniciarPagina() {
+
+  cargarDatosIniciales();
+
+}
+
+
+function cargarDatosIniciales() {
+
+  const cache =
+    leerCacheDatosGuardias();
+
+
+  if (
+    cache &&
+    cache.datos
+  ) {
+
+    pintarDatosIniciales(
+      cache.datos
+    );
+
+  }
+
+
+  if (
+    !claveGuardias
+  ) {
+
+    if (
+      !cache
+    ) {
+
+      mostrarMensaje(
+        "Abre primero la app normal de guardias e ingresa con la clave. Después vuelve a esta página de prueba.",
+        "error"
+      );
+
+    }
+
+    return;
+
+  }
+
+
+  apiPost(
+    "guardiasDatos",
+    {},
+    function(resultado) {
+
+      if (
+        resultado &&
+        resultado.ok &&
+        resultado.datos
+      ) {
+
+        pintarDatosIniciales(
+          resultado.datos
+        );
+
+
+        try {
+
+          localStorage.setItem(
+            CACHE_DATOS_GUARDIAS,
+            JSON.stringify({
+              fecha:
+                Date.now(),
+
+              datos:
+                resultado.datos
+            })
+          );
+
+        }
+        catch (error) {}
+
+      }
+
+    },
+    true
   );
 
-document
-  .getElementById(
-    "fotoIdentificacion"
-  )
-  .addEventListener(
-    "change",
-    prepararIdentificacion
+}
+
+
+function leerCacheDatosGuardias() {
+
+  try {
+
+    const texto =
+      localStorage.getItem(
+        CACHE_DATOS_GUARDIAS
+      );
+
+
+    if (
+      !texto
+    ) {
+
+      return null;
+
+    }
+
+
+    return JSON.parse(
+      texto
+    );
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+function pintarDatosIniciales(
+  datos
+) {
+
+  const calle =
+    document.getElementById(
+      "calle"
+    );
+
+
+  const tipo =
+    document.getElementById(
+      "tipoVisita"
+    );
+
+
+  calle.innerHTML =
+    '<option value="">Selecciona calle</option>';
+
+
+  (datos.calles || [])
+    .forEach(
+      function(valor) {
+
+        const op =
+          document.createElement(
+            "option"
+          );
+
+
+        op.value =
+          valor;
+
+
+        op.textContent =
+          valor;
+
+
+        calle.appendChild(
+          op
+        );
+
+      }
+    );
+
+
+  tipo.innerHTML =
+    '<option value="">Selecciona tipo</option>';
+
+
+  (datos.tiposVisita || [])
+    .forEach(
+      function(valor) {
+
+        const op =
+          document.createElement(
+            "option"
+          );
+
+
+        op.value =
+          valor;
+
+
+        op.textContent =
+          valor;
+
+
+        tipo.appendChild(
+          op
+        );
+
+      }
+    );
+
+}
+
+
+/***************************************
+ * CALLE / NÚMERO
+ ***************************************/
+
+function claveCacheNumeros(
+  calle
+) {
+
+  return (
+    CACHE_NUMEROS_PREFIJO +
+    encodeURIComponent(
+      String(
+        calle || ""
+      )
+        .trim()
+        .toUpperCase()
+    )
+  );
+
+}
+
+
+function cargarNumeros() {
+
+  const calle =
+    document
+      .getElementById(
+        "calle"
+      )
+      .value;
+
+
+  const numero =
+    document.getElementById(
+      "numero"
+    );
+
+
+  numero.innerHTML =
+    '<option value="">Selecciona número</option>';
+
+
+  if (
+    !calle
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const texto =
+      localStorage.getItem(
+        claveCacheNumeros(
+          calle
+        )
+      );
+
+
+    if (
+      texto
+    ) {
+
+      const cache =
+        JSON.parse(
+          texto
+        );
+
+
+      if (
+        cache &&
+        Array.isArray(
+          cache.numeros
+        )
+      ) {
+
+        pintarNumeros(
+          cache.numeros
+        );
+
+      }
+
+    }
+
+  }
+  catch (error) {}
+
+
+  if (
+    !claveGuardias
+  ) {
+
+    return;
+
+  }
+
+
+  apiPost(
+    "guardiasNumeros",
+    {
+      calle:
+        calle
+    },
+    function(resultado) {
+
+      if (
+        resultado &&
+        resultado.ok
+      ) {
+
+        const numeros =
+          resultado.datos &&
+          Array.isArray(
+            resultado.datos.numeros
+          )
+            ? resultado.datos.numeros
+            : [];
+
+
+        pintarNumeros(
+          numeros
+        );
+
+
+        try {
+
+          localStorage.setItem(
+            claveCacheNumeros(
+              calle
+            ),
+            JSON.stringify({
+              fecha:
+                Date.now(),
+
+              numeros:
+                numeros
+            })
+          );
+
+        }
+        catch (error) {}
+
+      }
+
+    },
+    true
+  );
+
+}
+
+
+function pintarNumeros(
+  numeros
+) {
+
+  const numero =
+    document.getElementById(
+      "numero"
+    );
+
+
+  numero.innerHTML =
+    '<option value="">Selecciona número</option>';
+
+
+  (numeros || [])
+    .forEach(
+      function(valor) {
+
+        const op =
+          document.createElement(
+            "option"
+          );
+
+
+        op.value =
+          valor;
+
+
+        op.textContent =
+          valor;
+
+
+        numero.appendChild(
+          op
+        );
+
+      }
+    );
+
+}
+
+
+/***************************************
+ * TIPO DE ACCESO
+ ***************************************/
+
+function seleccionarAcceso(
+  valor
+) {
+
+  tipoAcceso =
+    valor;
+
+
+  document
+    .getElementById(
+      "btnPeatonal"
+    )
+    .classList.toggle(
+      "activo",
+      valor === "PEATONAL"
+    );
+
+
+  document
+    .getElementById(
+      "btnVehicular"
+    )
+    .classList.toggle(
+      "activo",
+      valor === "VEHICULAR"
+    );
+
+
+  document
+    .getElementById(
+      "bloqueVehicular"
+    )
+    .style.display =
+      valor === "VEHICULAR"
+        ? "block"
+        : "none";
+
+}
+
+
+/***************************************
+ * MANUAL
+ ***************************************/
+
+function alternarManualNombre() {
+
+  const bloque =
+    document.getElementById(
+      "manualNombre"
+    );
+
+
+  bloque.classList.toggle(
+    "activo"
   );
 
 
-async function prepararFoto(
-  evento
+  if (
+    bloque.classList.contains(
+      "activo"
+    )
+  ) {
+
+    document
+      .getElementById(
+        "nombreManual"
+      )
+      .focus();
+
+  }
+
+}
+
+
+function alternarManualPlacas() {
+
+  const bloque =
+    document.getElementById(
+      "manualPlacas"
+    );
+
+
+  bloque.classList.toggle(
+    "activo"
+  );
+
+
+  if (
+    bloque.classList.contains(
+      "activo"
+    )
+  ) {
+
+    document
+      .getElementById(
+        "placaManual"
+      )
+      .focus();
+
+  }
+
+}
+
+
+function normalizarPlacasInput(
+  input
+) {
+
+  input.value =
+    String(
+      input.value || ""
+    )
+      .toUpperCase()
+      .replace(
+        /[^A-Z0-9]/g,
+        ""
+      )
+      .slice(
+        0,
+        12
+      );
+
+}
+
+
+/***************************************
+ * FOTOS
+ ***************************************/
+
+async function procesarFotoPlacas(
+  input
 ) {
 
   const archivo =
-    evento.target.files &&
-    evento.target.files[0];
+    input.files &&
+    input.files[0];
 
 
   if (
     !archivo
   ) {
 
-    FOTO_BASE64 =
+    fotoPlacasBase64 =
       "";
 
     return;
@@ -475,36 +1063,50 @@ async function prepararFoto(
       );
 
 
-    FOTO_BASE64 =
+    fotoPlacasBase64 =
       procesada.base64;
 
 
-    const preview =
+    document
+      .getElementById(
+        "imgPlacas"
+      )
+      .src =
+        "data:image/jpeg;base64," +
+        fotoPlacasBase64;
+
+
+    document
+      .getElementById(
+        "previewPlacas"
+      )
+      .style.display =
+        "block";
+
+
+    const boton =
       document.getElementById(
-        "preview"
+        "btnFotoPlacas"
       );
 
 
-    preview.src =
-      "data:image/jpeg;base64," +
-      FOTO_BASE64;
+    boton.classList.add(
+      "lista"
+    );
 
 
-    preview.style.display =
-      "block";
-
-
-    ocultarMensaje();
+    boton.textContent =
+      "✓ FOTO DE PLACAS LISTA";
 
   }
   catch (error) {
 
-    FOTO_BASE64 =
+    fotoPlacasBase64 =
       "";
 
 
     mostrarMensaje(
-      "No fue posible preparar la fotografía.",
+      "No fue posible preparar la foto de placas.",
       "error"
     );
 
@@ -513,18 +1115,29 @@ async function prepararFoto(
 }
 
 
-async function prepararIdentificacion(evento) {
+async function procesarFotoIdentificacion(
+  input
+) {
 
   const archivo =
-    evento.target.files &&
-    evento.target.files[0];
+    input.files &&
+    input.files[0];
 
-  if (!archivo) {
-    FOTO_IDENTIFICACION_BASE64 = "";
+
+  if (
+    !archivo
+  ) {
+
+    fotoIdentificacionBase64 =
+      "";
+
     return;
+
   }
 
+
   try {
+
     const procesada =
       await comprimirImagen(
         archivo,
@@ -532,50 +1145,55 @@ async function prepararIdentificacion(evento) {
         0.82
       );
 
-    FOTO_IDENTIFICACION_BASE64 =
+
+    fotoIdentificacionBase64 =
       procesada.base64;
 
-    const preview =
-      document.getElementById(
+
+    document
+      .getElementById(
+        "imgIdentificacion"
+      )
+      .src =
+        "data:image/jpeg;base64," +
+        fotoIdentificacionBase64;
+
+
+    document
+      .getElementById(
         "previewIdentificacion"
+      )
+      .style.display =
+        "block";
+
+
+    const boton =
+      document.getElementById(
+        "btnFotoIdentificacion"
       );
 
-    preview.src =
-      "data:image/jpeg;base64," +
-      FOTO_IDENTIFICACION_BASE64;
 
-    preview.style.display =
-      "block";
+    boton.classList.add(
+      "lista"
+    );
 
-    ocultarMensaje();
+
+    boton.textContent =
+      "✓ FOTO DE IDENTIFICACIÓN LISTA";
+
   }
   catch (error) {
-    FOTO_IDENTIFICACION_BASE64 = "";
+
+    fotoIdentificacionBase64 =
+      "";
+
 
     mostrarMensaje(
-      "No fue posible preparar la fotografía de identificación.",
+      "No fue posible preparar la identificación.",
       "error"
     );
+
   }
-
-}
-
-
-function mostrarNombreManual() {
-
-  const bloque =
-    document.getElementById(
-      "capturaNombreManual"
-    );
-
-  bloque.style.display =
-    "block";
-
-  document
-    .getElementById(
-      "nombreManual"
-    )
-    .focus();
 
 }
 
@@ -664,19 +1282,17 @@ function comprimirImagen(
                 alto;
 
 
-              const contexto =
-                canvas.getContext(
+              canvas
+                .getContext(
                   "2d"
+                )
+                .drawImage(
+                  imagen,
+                  0,
+                  0,
+                  ancho,
+                  alto
                 );
-
-
-              contexto.drawImage(
-                imagen,
-                0,
-                0,
-                ancho,
-                alto
-              );
 
 
               const dataUrl =
@@ -713,31 +1329,14 @@ function comprimirImagen(
 }
 
 
-function mostrarCapturaManual() {
+/***************************************
+ * DAR ACCESO - PRUEBA
+ ***************************************/
 
-  const bloque =
-    document.getElementById(
-      "capturaManual"
-    );
-
-
-  bloque.style.display =
-    "block";
-
-
-  document
-    .getElementById(
-      "placaManual"
-    )
-    .focus();
-
-}
-
-
-function analizarPlaca() {
+function darAccesoPrueba() {
 
   if (
-    OCR_OPERACION
+    operacionActual
   ) {
 
     return;
@@ -745,312 +1344,429 @@ function analizarPlaca() {
   }
 
 
-  const placaManual =
-    document
-      .getElementById(
-        "placaManual"
-      )
-      .value
-      .trim();
+  const datos = {
+    calle:
+      document
+        .getElementById(
+          "calle"
+        )
+        .value,
+
+    numero:
+      document
+        .getElementById(
+          "numero"
+        )
+        .value,
+
+    tipoVisita:
+      document
+        .getElementById(
+          "tipoVisita"
+        )
+        .value,
+
+    tipoAcceso:
+      tipoAcceso,
+
+    nombreManual:
+      document
+        .getElementById(
+          "nombreManual"
+        )
+        .value
+        .trim(),
+
+    placaManual:
+      document
+        .getElementById(
+          "placaManual"
+        )
+        .value
+        .trim(),
+
+    observaciones:
+      document
+        .getElementById(
+          "observaciones"
+        )
+        .value
+        .trim()
+  };
 
 
   if (
-    placaManual
+    !datos.calle ||
+    !datos.numero
   ) {
 
-    document
-      .getElementById(
-        "placaDetectada"
+    mostrarMensaje(
+      "Selecciona calle y número.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !datos.tipoVisita
+  ) {
+
+    mostrarMensaje(
+      "Selecciona el tipo de visita.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !datos.tipoAcceso
+  ) {
+
+    mostrarMensaje(
+      "Selecciona PEATONAL o VEHICULAR.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Si el nombre fue escrito manualmente, la foto
+   * de identificación NO se manda a Google Vision.
+   */
+  if (
+    !datos.nombreManual &&
+    !fotoIdentificacionBase64
+  ) {
+
+    mostrarMensaje(
+      "Toma foto de la identificación o usa ESCRIBIR MANUALMENTE.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Para peatonal no exigimos placa.
+   * Para vehicular: foto o captura manual.
+   */
+  if (
+    datos.tipoAcceso ===
+      "VEHICULAR" &&
+    !datos.placaManual &&
+    !fotoPlacasBase64
+  ) {
+
+    mostrarMensaje(
+      "Toma foto de placas o usa ESCRIBIR MANUALMENTE.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const boton =
+    document.getElementById(
+      "btnDarAcceso"
+    );
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "LEYENDO DATOS...";
+
+
+  /*
+   * No enviamos la imagen correspondiente si ya fue
+   * capturada manualmente.
+   */
+  const parametros = {
+    calle:
+      datos.calle,
+
+    numero:
+      datos.numero,
+
+    tipoVisita:
+      datos.tipoVisita,
+
+    tipoAcceso:
+      datos.tipoAcceso,
+
+    observaciones:
+      datos.observaciones,
+
+    nombreManual:
+      datos.nombreManual,
+
+    placaManual:
+      datos.placaManual,
+
+    imagenIdentificacionBase64:
+      datos.nombreManual
+        ? ""
+        : fotoIdentificacionBase64,
+
+    imagenPlacaBase64:
+      (
+        datos.tipoAcceso ===
+          "VEHICULAR" &&
+        !datos.placaManual
       )
-      .textContent =
-        placaManual
-          .toUpperCase()
-          .replace(
-            /[^A-Z0-9]/g,
-            ""
+        ? fotoPlacasBase64
+        : ""
+  };
+
+
+  apiPost(
+    "ocrIngresoPruebaGuardar",
+    parametros,
+    function(resultado) {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "DAR ACCESO";
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible completar la prueba.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const r =
+        resultado;
+
+
+      document
+        .getElementById(
+          "resultado"
+        )
+        .innerHTML =
+          "<strong>PRUEBA GUARDADA</strong>" +
+          "\nCalle: " +
+          escaparTexto(
+            r.calle
+          ) +
+          " " +
+          escaparTexto(
+            r.numero
+          ) +
+          "\nNombre: " +
+          escaparTexto(
+            r.nombre
+          ) +
+          "\nTipo de visita: " +
+          escaparTexto(
+            r.tipoVisita
+          ) +
+          "\nTipo de acceso: " +
+          escaparTexto(
+            r.tipoAcceso
+          ) +
+          (
+            r.placa
+              ? "\nPlacas: " +
+                escaparTexto(
+                  r.placa
+                )
+              : ""
+          ) +
+          (
+            r.observacionesFinales
+              ? "\nObservaciones: " +
+                escaparTexto(
+                  r.observacionesFinales
+                )
+              : ""
+          ) +
+          "\nHoja: " +
+          escaparTexto(
+            r.hojaPrueba
+          ) +
+          " · Fila " +
+          escaparTexto(
+            r.filaGuardada
           );
 
 
-    const detallePlacaManual =
-      document.getElementById("textoDetectado");
-
-    if (detallePlacaManual) {
-      detallePlacaManual.textContent =
-        "Captura manual. No se realizó consulta OCR.";
-    }
-
-
-    document
-      .getElementById(
-        "resultado"
-      )
-      .style.display =
-        "block";
+      document
+        .getElementById(
+          "resultado"
+        )
+        .style.display =
+          "block";
 
 
-    mostrarMensaje(
-      "Placas capturadas manualmente.",
-      "ok"
-    );
+      mostrarMensaje(
+        "Ingreso de prueba guardado correctamente.",
+        "ok"
+      );
 
-
-    return;
-
-  }
-
-
-  if (
-    !FOTO_BASE64
-  ) {
-
-    mostrarMensaje(
-      "Primero toma una fotografía de la placa.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  ocultarMensaje();
-
-
-  document
-    .getElementById(
-      "resultado"
-    )
-    .style.display =
-      "none";
-
-
-  const boton =
-    document.getElementById(
-      "btnAnalizar"
-    );
-
-
-  boton.disabled =
-    true;
-
-
-  boton.textContent =
-    "ANALIZANDO...";
-
-
-  const requestId =
-    generarRequestIdOCR();
-
-
-  OCR_OPERACION = {
-    requestId:
-      requestId,
-
-    consultas:
-      0,
-
-    tipo:
-      "PLACA"
-  };
-
-
-  document
-    .getElementById(
-      "ocrRequestId"
-    )
-    .value =
-      requestId;
-
-
-  document
-    .getElementById(
-      "ocrImagenBase64"
-    )
-    .value =
-      FOTO_BASE64;
-
-
-  document
-    .getElementById(
-      "ocrTipo"
-    )
-    .value =
-      "PLACA";
-
-
-  document
-    .getElementById(
-      "formOCR"
-    )
-    .submit();
-
-
-  setTimeout(
-    consultarEstadoOCR,
-    800
+    },
+    false
   );
 
 }
 
 
-function analizarIdentificacion() {
+/***************************************
+ * API POST + JSONP
+ ***************************************/
+
+function apiPost(
+  accion,
+  parametros,
+  exito,
+  usarClaveGuardias
+) {
 
   if (
-    OCR_OPERACION
+    operacionActual
   ) {
 
     return;
 
   }
-
-
-  const nombreManual =
-    document
-      .getElementById(
-        "nombreManual"
-      )
-      .value
-      .trim();
-
-
-  if (
-    nombreManual
-  ) {
-
-    document
-      .getElementById(
-        "nombreDetectado"
-      )
-      .textContent =
-        nombreManual;
-
-
-    const detalleNombreManual =
-      document.getElementById("textoIdentificacion");
-
-    if (detalleNombreManual) {
-      detalleNombreManual.textContent =
-        "Captura manual. No se realizó consulta OCR.";
-    }
-
-
-    document
-      .getElementById(
-        "resultadoNombre"
-      )
-      .style.display =
-        "block";
-
-
-    mostrarMensaje(
-      "Nombre capturado manualmente.",
-      "ok"
-    );
-
-
-    return;
-
-  }
-
-
-  if (
-    !FOTO_IDENTIFICACION_BASE64
-  ) {
-
-    mostrarMensaje(
-      "Primero toma una fotografía de la identificación o escribe el nombre manualmente.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  ocultarMensaje();
-
-
-  document
-    .getElementById(
-      "resultadoNombre"
-    )
-    .style.display =
-      "none";
-
-
-  const boton =
-    document.getElementById(
-      "btnAnalizarNombre"
-    );
-
-
-  boton.disabled =
-    true;
-
-
-  boton.textContent =
-    "LEYENDO IDENTIFICACIÓN...";
 
 
   const requestId =
-    generarRequestIdOCR();
+    generarRequestId();
 
 
-  OCR_OPERACION = {
+  operacionActual = {
     requestId:
       requestId,
 
-    consultas:
-      0,
-
-    tipo:
-      "IDENTIFICACION"
+    intentos:
+      0
   };
 
 
-  document
-    .getElementById(
-      "ocrRequestId"
-    )
-    .value =
-      requestId;
+  const form =
+    document.getElementById(
+      "formApi"
+    );
 
 
-  document
-    .getElementById(
-      "ocrImagenBase64"
-    )
-    .value =
-      FOTO_IDENTIFICACION_BASE64;
+  form.innerHTML =
+    "";
 
 
-  document
-    .getElementById(
-      "ocrTipo"
-    )
-    .value =
-      "IDENTIFICACION";
+  const datos =
+    Object.assign(
+      {},
+      parametros || {},
+      {
+        accion:
+          accion,
+
+        requestId:
+          requestId
+      }
+    );
 
 
-  document
-    .getElementById(
-      "formOCR"
-    )
-    .submit();
+  if (
+    usarClaveGuardias
+  ) {
+
+    datos.claveGuardias =
+      claveGuardias;
+
+  }
+
+
+  Object.keys(
+    datos
+  )
+    .forEach(
+      function(nombre) {
+
+        const input =
+          document.createElement(
+            "input"
+          );
+
+
+        input.type =
+          "hidden";
+
+
+        input.name =
+          nombre;
+
+
+        input.value =
+          datos[nombre] == null
+            ? ""
+            : String(
+                datos[nombre]
+              );
+
+
+        form.appendChild(
+          input
+        );
+
+      }
+    );
+
+
+  form.submit();
 
 
   setTimeout(
-    consultarEstadoOCR,
-    800
+    function() {
+
+      consultarResultado(
+        exito
+      );
+
+    },
+    650
   );
 
 }
 
 
-function consultarEstadoOCR() {
+function consultarResultado(
+  exito
+) {
 
   if (
-    !OCR_OPERACION
+    !operacionActual
   ) {
 
     return;
@@ -1058,21 +1774,56 @@ function consultarEstadoOCR() {
   }
 
 
-  OCR_OPERACION.consultas++;
+  operacionActual.intentos++;
 
 
   if (
-    OCR_OPERACION.consultas >
-      50
+    operacionActual.intentos >
+      90
   ) {
 
-    terminarOCRError(
-      "El análisis está tardando demasiado. Intenta nuevamente."
+    operacionActual =
+      null;
+
+
+    mostrarMensaje(
+      "La solicitud tardó demasiado. Intenta nuevamente.",
+      "error"
     );
 
+
+    const boton =
+      document.getElementById(
+        "btnDarAcceso"
+      );
+
+
+    if (
+      boton
+    ) {
+
+      boton.disabled =
+        false;
+
+
+      boton.textContent =
+        "DAR ACCESO";
+
+    }
+
+
     return;
 
   }
+
+
+  const callback =
+    "ocrPruebaCallback_" +
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2);
 
 
   const script =
@@ -1081,41 +1832,99 @@ function consultarEstadoOCR() {
     );
 
 
-  const callback =
-    "recibirOCR_" +
-    Date.now() +
-    "_" +
-    Math.random()
-      .toString(36)
-      .slice(2);
-
-
   window[
     callback
   ] =
     function(resultado) {
 
       try {
-
         script.remove();
-
       }
       catch (error) {}
 
 
       try {
-
         delete window[
           callback
         ];
-
       }
       catch (error) {}
 
 
-      procesarEstadoOCR(
-        resultado
-      );
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        const final =
+          resultado;
+
+
+        operacionActual =
+          null;
+
+
+        exito(
+          final
+        );
+
+
+        return;
+
+      }
+
+
+      const datos =
+        resultado.datos ||
+        {};
+
+
+      if (
+        datos.estado ===
+          "PENDIENTE"
+      ) {
+
+        setTimeout(
+          function() {
+
+            consultarResultado(
+              exito
+            );
+
+          },
+          600
+        );
+
+        return;
+
+      }
+
+
+      operacionActual =
+        null;
+
+
+      if (
+        datos.estado ===
+          "LISTO"
+      ) {
+
+        exito(
+          datos.resultado
+        );
+
+      }
+      else {
+
+        exito({
+          ok:
+            false,
+
+          mensaje:
+            "No fue posible recuperar el resultado."
+        });
+
+      }
 
     };
 
@@ -1124,33 +1933,29 @@ function consultarEstadoOCR() {
     function() {
 
       try {
-
         script.remove();
-
       }
       catch (error) {}
 
 
       try {
-
         delete window[
           callback
         ];
-
       }
       catch (error) {}
 
 
-      if (
-        OCR_OPERACION
-      ) {
+      setTimeout(
+        function() {
 
-        setTimeout(
-          consultarEstadoOCR,
-          900
-        );
+          consultarResultado(
+            exito
+          );
 
-      }
+        },
+        800
+      );
 
     };
 
@@ -1160,7 +1965,7 @@ function consultarEstadoOCR() {
     "?api=operacionEstado" +
     "&requestId=" +
     encodeURIComponent(
-      OCR_OPERACION.requestId
+      operacionActual.requestId
     ) +
     "&callback=" +
     encodeURIComponent(
@@ -1177,237 +1982,7 @@ function consultarEstadoOCR() {
 }
 
 
-function procesarEstadoOCR(
-  resultado
-) {
-
-  if (
-    !OCR_OPERACION
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    !resultado ||
-    !resultado.ok
-  ) {
-
-    terminarOCRError(
-      "No fue posible consultar el resultado."
-    );
-
-    return;
-
-  }
-
-
-  const datos =
-    resultado.datos ||
-    {};
-
-
-  if (
-    datos.estado ===
-      "PENDIENTE"
-  ) {
-
-    setTimeout(
-      consultarEstadoOCR,
-      700
-    );
-
-    return;
-
-  }
-
-
-  if (
-    datos.estado !==
-      "LISTO" ||
-    !datos.resultado
-  ) {
-
-    terminarOCRError(
-      "No fue posible completar el análisis."
-    );
-
-    return;
-
-  }
-
-
-  const respuesta =
-    datos.resultado;
-
-
-  const tipoOperacion =
-    OCR_OPERACION.tipo ||
-    "PLACA";
-
-
-  OCR_OPERACION =
-    null;
-
-
-  restaurarBotonOCR();
-
-
-  if (
-    !respuesta.ok
-  ) {
-
-    mostrarMensaje(
-      respuesta.mensaje ||
-      "No fue posible analizar la fotografía.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if (
-    tipoOperacion ===
-      "IDENTIFICACION"
-  ) {
-
-    document
-      .getElementById(
-        "nombreDetectado"
-      )
-      .textContent =
-        respuesta.nombre ||
-        "NO RECONOCIDO";
-
-
-    const detalleIdentificacion =
-      document.getElementById("textoIdentificacion");
-
-    if (detalleIdentificacion) {
-      detalleIdentificacion.textContent =
-        respuesta.texto ||
-        "Sin texto detectado.";
-    }
-
-
-    document
-      .getElementById(
-        "resultadoNombre"
-      )
-      .style.display =
-        "block";
-
-
-    mostrarMensaje(
-      respuesta.nombre
-        ? "Nombre leído correctamente."
-        : "Google Vision leyó la identificación, pero no encontró un nombre claro.",
-      respuesta.nombre
-        ? "ok"
-        : "error"
-    );
-
-
-    return;
-
-  }
-
-
-  document
-    .getElementById(
-      "placaDetectada"
-    )
-    .textContent =
-      respuesta.placa ||
-      "NO RECONOCIDA";
-
-
-  const detallePlaca =
-    document.getElementById("textoDetectado");
-
-  if (detallePlaca) {
-    detallePlaca.textContent =
-      respuesta.texto ||
-      "Sin texto detectado.";
-  }
-
-
-  document
-    .getElementById(
-      "resultado"
-    )
-    .style.display =
-      "block";
-
-
-  mostrarMensaje(
-    respuesta.placa
-      ? "Lectura terminada."
-      : "Google Vision leyó la imagen, pero no encontró una placa clara.",
-    respuesta.placa
-      ? "ok"
-      : "error"
-  );
-
-}
-
-
-function terminarOCRError(
-  mensaje
-) {
-
-  OCR_OPERACION =
-    null;
-
-
-  restaurarBotonOCR();
-
-
-  mostrarMensaje(
-    mensaje,
-    "error"
-  );
-
-}
-
-
-function restaurarBotonOCR() {
-
-  const boton =
-    document.getElementById(
-      "btnAnalizar"
-    );
-
-
-  const botonNombre =
-    document.getElementById(
-      "btnAnalizarNombre"
-    );
-
-
-  boton.disabled =
-    false;
-
-
-  boton.textContent =
-    "ANALIZAR PLACA";
-
-
-  botonNombre.disabled =
-    false;
-
-
-  botonNombre.textContent =
-    "LEER NOMBRE DE IDENTIFICACIÓN";
-
-}
-
-
-function generarRequestIdOCR() {
+function generarRequestId() {
 
   if (
     window.crypto &&
@@ -1415,18 +1990,22 @@ function generarRequestIdOCR() {
       "function"
   ) {
 
-    return crypto.randomUUID();
+    return crypto
+      .randomUUID()
+      .replace(
+        /-/g,
+        ""
+      );
 
   }
 
 
   return (
-    Date.now() +
-    "_" +
+    Date.now()
+      .toString(36) +
     Math.random()
       .toString(36)
       .slice(2) +
-    "_" +
     Math.random()
       .toString(36)
       .slice(2)
@@ -1446,221 +2025,45 @@ function mostrarMensaje(
     );
 
 
-  mensaje.textContent =
-    texto;
-
-
   mensaje.className =
     "mensaje " +
     tipo;
 
-}
-
-
-function ocultarMensaje() {
-
-  const mensaje =
-    document.getElementById(
-      "mensaje"
-    );
-
-
-  mensaje.className =
-    "mensaje";
-
 
   mensaje.textContent =
-    "";
+    texto;
 
 }
 
 
-function registrarIngresoPrueba() {
-
-  if (OCR_OPERACION) {
-    return;
-  }
-
-  const placaManual =
-    document.getElementById("placaManual").value.trim();
-
-  const nombreManual =
-    document.getElementById("nombreManual").value.trim();
-
-  if (!placaManual && !FOTO_BASE64) {
-    mostrarMensaje(
-      "Falta la placa: toma una foto o escribe las placas.",
-      "error"
-    );
-    return;
-  }
-
-  if (!nombreManual && !FOTO_IDENTIFICACION_BASE64) {
-    mostrarMensaje(
-      "Falta el nombre: toma una foto de la identificación o escribe el nombre.",
-      "error"
-    );
-    return;
-  }
-
-  const boton =
-    document.getElementById("btnRegistrar");
-
-  boton.disabled = true;
-  boton.textContent = "LEYENDO DATOS...";
-
-  ocultarMensaje();
-
-  const requestId =
-    generarRequestIdOCR();
-
-  OCR_OPERACION = {
-    requestId: requestId,
-    consultas: 0,
-    tipo: "INGRESO_COMBINADO"
-  };
-
-  document.getElementById("ocrRequestId").value =
-    requestId;
-
-  document.getElementById("ocrTipo").value =
-    "INGRESO_COMBINADO";
-
-  document.getElementById("ocrImagenBase64").value =
-    FOTO_BASE64 || "";
-
-  document.getElementById("ocrImagenIdentificacionBase64").value =
-    FOTO_IDENTIFICACION_BASE64 || "";
-
-  document.getElementById("ocrPlacaManual").value =
-    placaManual;
-
-  document.getElementById("ocrNombreManual").value =
-    nombreManual;
-
-  document.getElementById("formOCR").submit();
-
-  setTimeout(
-    consultarEstadoOCR,
-    800
-  );
-}
-
-const procesarEstadoOCRBase =
-  procesarEstadoOCR;
-
-procesarEstadoOCR =
-  function(resultado) {
-
-    if (
-      !OCR_OPERACION ||
-      OCR_OPERACION.tipo !== "INGRESO_COMBINADO"
-    ) {
-      return procesarEstadoOCRBase(resultado);
-    }
-
-    if (!resultado || !resultado.ok) {
-      terminarIngresoPruebaError(
-        "No fue posible consultar el resultado."
-      );
-      return;
-    }
-
-    const datos =
-      resultado.datos || {};
-
-    if (datos.estado === "PENDIENTE") {
-      setTimeout(
-        consultarEstadoOCR,
-        700
-      );
-      return;
-    }
-
-    if (
-      datos.estado !== "LISTO" ||
-      !datos.resultado
-    ) {
-      terminarIngresoPruebaError(
-        "No fue posible completar el análisis."
-      );
-      return;
-    }
-
-    const respuesta =
-      datos.resultado;
-
-    OCR_OPERACION = null;
-
-    const boton =
-      document.getElementById("btnRegistrar");
-
-    boton.disabled = false;
-    boton.textContent = "REGISTRAR INGRESO";
-
-    if (!respuesta.ok) {
-      mostrarMensaje(
-        respuesta.mensaje ||
-        "No fue posible analizar los datos.",
-        "error"
-      );
-      return;
-    }
-
-    document.getElementById("placaDetectada").textContent =
-      respuesta.placa || "NO RECONOCIDA";
-
-    document.getElementById("resultado").style.display =
-      "block";
-
-    document.getElementById("nombreDetectado").textContent =
-      respuesta.nombre || "NO RECONOCIDO";
-
-    document.getElementById("resultadoNombre").style.display =
-      "block";
-
-    document.getElementById("resumenGuardado").textContent =
-      "Nombre: " +
-      respuesta.nombre +
-      "\nPlacas: " +
-      respuesta.placa +
-      (respuesta.observacionesOCR
-        ? "\nObservaciones OCR: " + respuesta.observacionesOCR
-        : "") +
-      "\nHoja: " +
-      (respuesta.hojaPrueba || "OCR_PRUEBAS") +
-      "\nFila: " +
-      (respuesta.filaGuardada || "-");
-
-    document.getElementById("resultadoGuardado").style.display =
-      "block";
-
-    mostrarMensaje(
-      "Ingreso de prueba guardado correctamente.",
-      "ok"
-    );
-  };
-
-function terminarIngresoPruebaError(
-  mensaje
+function escaparTexto(
+  valor
 ) {
 
-  OCR_OPERACION = null;
+  return String(
+    valor == null
+      ? ""
+      : valor
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    );
 
-  const boton =
-    document.getElementById("btnRegistrar");
-
-  boton.disabled = false;
-  boton.textContent = "REGISTRAR INGRESO";
-
-  mostrarMensaje(
-    mensaje,
-    "error"
-  );
 }
-
 </script>
-
 
 </body>
 </html>
