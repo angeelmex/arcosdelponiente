@@ -7,366 +7,74 @@
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
   >
   <meta name="theme-color" content="#f4f7fb">
-  <title>Prueba OCR - Control de acceso</title>
+  <title>Control de acceso OCR</title>
 
   <style>
     *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      font-family:Arial,Helvetica,sans-serif;
-      background:#f4f7fb;
-      color:#204d5d
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:#204d5d}
+    .pagina{min-height:100vh;padding:22px 14px 34px}
+    .contenedor{max-width:560px;margin:0 auto}
+    h1{margin:0 0 6px;font-size:30px;line-height:1.1}
+    .sub{color:#718198;margin:0 0 18px;font-size:17px}
+    .panel{background:white;border-radius:24px;padding:22px 18px 24px;box-shadow:0 7px 24px rgba(20,55,95,.10)}
+    .volver{border:none;background:transparent;padding:0;margin:0 0 18px;color:#204d5d;font-size:18px;font-weight:900}
+    .grupo{margin-bottom:18px}
+    label.titulo{display:block;margin:0 0 8px;font-size:16px;font-weight:900;color:#204d5d}
+    select,input[type="text"],input[type="tel"],textarea{
+      width:100%;min-height:58px;padding:14px 16px;border:2px solid #d9e3e9;border-radius:17px;
+      background:white;color:#20384f;font-size:18px;outline:none
     }
-
-    .pagina{
-      min-height:100vh;
-      padding:22px 14px 34px
-    }
-
-    .contenedor{
-      max-width:560px;
-      margin:0 auto
-    }
-
-    h1{
-      margin:0 0 6px;
-      font-size:30px;
-      line-height:1.1
-    }
-
-    .sub{
-      color:#718198;
-      margin:0 0 18px;
-      font-size:17px
-    }
-
-    .modo-prueba{
-      margin:0 0 18px;
-      padding:12px 14px;
-      border-radius:14px;
-      background:#edf3f6;
-      color:#496576;
-      font-size:13px;
-      line-height:1.45
-    }
-
-    .panel{
-      background:white;
-      border-radius:24px;
-      padding:22px 18px 24px;
-      box-shadow:0 7px 24px rgba(20,55,95,.10)
-    }
-
-    .volver{
-      border:none;
-      background:transparent;
-      padding:0;
-      margin:0 0 18px;
-      color:#204d5d;
-      font-size:18px;
-      font-weight:900
-    }
-
-    .grupo{
-      margin-bottom:18px
-    }
-
-    label.titulo{
-      display:block;
-      margin:0 0 8px;
-      font-size:16px;
-      font-weight:900;
-      color:#204d5d
-    }
-
-    select,
-    input[type="text"],
-    textarea{
-      width:100%;
-      min-height:58px;
-      padding:14px 16px;
-      border:2px solid #d9e3e9;
-      border-radius:17px;
-      background:white;
-      color:#20384f;
-      font-size:18px;
-      outline:none
-    }
-
-    textarea{
-      min-height:110px;
-      resize:vertical
-    }
-
-    select:focus,
-    input[type="text"]:focus,
-    textarea:focus{
-      border-color:#204d5d
-    }
-
-    .selector{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px
-    }
-
-    .selector button{
-      min-height:68px;
-      border:2px solid #d9e3e9;
-      border-radius:17px;
-      background:white;
-      color:#204d5d;
-      font-size:17px;
-      font-weight:900
-    }
-
-    .selector button.activo{
-      border-color:#204d5d;
-      background:#edf3f6
-    }
-
-    .foto-input{
-      display:none
-    }
-
-    .foto-btn{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      width:100%;
-      min-height:62px;
-      padding:13px 12px;
-      border:2px solid #204d5d;
-      border-radius:17px;
-      background:white;
-      color:#204d5d;
-      font-size:17px;
-      font-weight:900;
-      text-align:center;
-      cursor:pointer
-    }
-
-    .foto-btn.lista{
-      background:#edf7ef;
-      border-color:#238c45;
-      color:#267245
-    }
-
-    .manual-btn{
-      display:block;
-      width:max-content;
-      max-width:100%;
-      margin:8px auto 0;
-      padding:9px 13px;
-      border:1px solid #cfdce3;
-      border-radius:12px;
-      background:#f6f9fb;
-      color:#496576;
-      font-size:13px;
-      font-weight:800
-    }
-
-    .manual{
-      display:none;
-      margin-top:10px
-    }
-
-    .manual.activo{
-      display:block
-    }
-
-    .preview{
-      display:none;
-      margin-top:10px;
-      overflow:hidden;
-      border-radius:14px;
-      background:#eef3f7
-    }
-
-    .preview img{
-      display:block;
-      width:100%;
-      max-height:240px;
-      object-fit:contain
-    }
-
-    .principal{
-      width:100%;
-      min-height:64px;
-      border:none;
-      border-radius:18px;
-      background:#238c45;
-      color:white;
-      font-size:20px;
-      font-weight:900
-    }
-
-    .principal:disabled{
-      opacity:.6
-    }
-
-    .mensaje{
-      display:none;
-      margin:16px 0 0;
-      padding:13px 14px;
-      border-radius:13px;
-      font-size:14px;
-      line-height:1.45;
-      font-weight:800
-    }
-
-    .mensaje.ok{
-      display:block;
-      background:#e9f7ee;
-      color:#267245
-    }
-
-    .mensaje.error{
-      display:block;
-      background:#fdecec;
-      color:#9c3030
-    }
-
-    .resultado{
-      display:none;
-      margin-top:16px;
-      padding:15px;
-      border:1px solid #dbe4ea;
-      border-radius:15px;
-      background:#f7fafc;
-      color:#496576;
-      font-size:14px;
-      line-height:1.55;
-      white-space:pre-line
-    }
-
-    .resultado strong{
-      color:#204d5d
-    }
-
-    .mini{
-      margin-top:7px;
-      color:#7d8c9a;
-      font-size:12px;
-      line-height:1.4
-    }
-
-    .alerta-overlay{
-      display:none;
-      position:fixed;
-      inset:0;
-      background:rgba(20,40,55,.45);
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-      z-index:9999
-    }
-
-    .alerta-overlay.visible{
-      display:flex
-    }
-
-    .alerta-caja{
-      width:100%;
-      max-width:390px;
-      background:white;
-      border-radius:22px;
-      padding:22px 20px 18px;
-      text-align:center;
-      box-shadow:0 18px 50px rgba(0,0,0,.22)
-    }
-
-    .alerta-icono{
-      width:58px;
-      height:58px;
-      margin:0 auto 12px;
-      border-radius:50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:30px;
-      font-weight:900
-    }
-
-    .alerta-icono.error{
-      background:#fdecec;
-      color:#9c3030
-    }
-
-    .alerta-icono.ok{
-      background:#e9f7ee;
-      color:#267245
-    }
-
-    .alerta-titulo{
-      margin:0 0 8px;
-      color:#204d5d;
-      font-size:21px;
-      font-weight:900
-    }
-
-    .alerta-texto{
-      margin:0;
-      color:#5f7082;
-      font-size:15px;
-      line-height:1.5
-    }
-
-    .alerta-boton{
-      width:100%;
-      min-height:50px;
-      margin-top:18px;
-      border:none;
-      border-radius:14px;
-      background:#204d5d;
-      color:white;
-      font-size:16px;
-      font-weight:900
-    }
-
-    @media(max-width:360px){
-      h1{font-size:27px}
-      .selector{grid-template-columns:1fr}
-      select,input[type="text"],textarea{font-size:16px}
-      .foto-btn{font-size:15px}
-    }
+    textarea{min-height:110px;resize:vertical}
+    select:focus,input:focus,textarea:focus{border-color:#204d5d}
+    .selector{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .selector button{min-height:68px;border:2px solid #d9e3e9;border-radius:17px;background:white;color:#204d5d;font-size:17px;font-weight:900}
+    .selector button.activo{border-color:#204d5d;background:#edf3f6}
+    .foto-input{display:none}
+    .foto-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:62px;padding:13px 12px;border:2px solid #204d5d;border-radius:17px;background:white;color:#204d5d;font-size:17px;font-weight:900;text-align:center;cursor:pointer}
+    .foto-btn.lista{background:#edf7ef;border-color:#238c45;color:#267245}
+    .manual-btn{display:block;width:max-content;max-width:100%;margin:8px auto 0;padding:9px 13px;border:1px solid #cfdce3;border-radius:12px;background:#f6f9fb;color:#496576;font-size:13px;font-weight:800}
+    .manual{display:none;margin-top:10px}
+    .manual.activo{display:block}
+    .preview{display:none;margin-top:10px;overflow:hidden;border-radius:14px;background:#eef3f7}
+    .preview img{display:block;width:100%;max-height:240px;object-fit:contain}
+    .principal{width:100%;min-height:64px;border:none;border-radius:18px;background:#238c45;color:white;font-size:20px;font-weight:900}
+    .principal:disabled{opacity:.6}
+    .mensaje{display:none;margin:16px 0 0;padding:13px 14px;border-radius:13px;font-size:14px;line-height:1.45;font-weight:800}
+    .mensaje.ok{display:block;background:#e9f7ee;color:#267245}
+    .estado{display:none;margin-top:16px;padding:14px;border-radius:14px;background:#edf3f6;color:#496576;font-size:14px;font-weight:800;text-align:center}
+    .overlay{display:none;position:fixed;inset:0;background:rgba(20,40,55,.48);align-items:center;justify-content:center;padding:20px;z-index:9999}
+    .overlay.visible{display:flex}
+    .modal{width:100%;max-width:390px;background:white;border-radius:22px;padding:22px 20px 18px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.22)}
+    .icono{width:58px;height:58px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;background:#fdecec;color:#9c3030}
+    .icono.ok{background:#e9f7ee;color:#267245}
+    .modal h2{margin:0 0 8px;color:#204d5d;font-size:21px}
+    .modal p{margin:0;color:#5f7082;font-size:15px;line-height:1.5}
+    .modal .boton{width:100%;min-height:50px;margin-top:14px;border:none;border-radius:14px;background:#204d5d;color:white;font-size:16px;font-weight:900}
+    .modal .boton.sec{background:#edf3f6;color:#204d5d;border:1px solid #cfdce3}
+    .nip-input{margin-top:14px;text-align:center;font-size:25px!important;letter-spacing:5px;font-weight:900}
+    @media(max-width:360px){h1{font-size:27px}.selector{grid-template-columns:1fr}select,input,textarea{font-size:16px}.foto-btn{font-size:15px}}
   </style>
 </head>
-
 <body>
+
 <div class="pagina">
   <div class="contenedor">
-
     <h1>Control de acceso</h1>
     <div class="sub">Registro rápido para guardias</div>
 
-    <div class="modo-prueba">
-      <strong>PRUEBA OCR:</strong> esta página guarda únicamente los datos en la hoja
-      <strong>OCR_PRUEBAS</strong>. No crea un acceso real ni manda notificaciones.
-      Las fotos no se guardan en esta prueba; en la integración oficial sí se conservarán.
-    </div>
-
     <section class="panel">
-
-      <button
-        class="volver"
-        type="button"
-        onclick="history.back()"
-      >
-        ← VOLVER
-      </button>
+      <button class="volver" type="button" onclick="history.back()">← VOLVER</button>
 
       <div class="grupo">
         <label class="titulo" for="calle">Calle</label>
-        <select id="calle" onchange="cargarNumeros()">
+        <select id="calle" onchange="cargarNumeros();reiniciarConfirmacion();">
           <option value="">Selecciona calle</option>
         </select>
       </div>
 
       <div class="grupo">
         <label class="titulo" for="numero">Número</label>
-        <select id="numero">
+        <select id="numero" onchange="cargarContactoEntradaManual()">
           <option value="">Selecciona número</option>
         </select>
       </div>
@@ -380,66 +88,20 @@
 
       <div class="grupo">
         <label class="titulo">Tipo de acceso</label>
-
         <div class="selector">
-          <button
-            id="btnPeatonal"
-            type="button"
-            onclick="seleccionarAcceso('PEATONAL')"
-          >
-            PEATONAL
-          </button>
-
-          <button
-            id="btnVehicular"
-            type="button"
-            onclick="seleccionarAcceso('VEHICULAR')"
-          >
-            VEHICULAR
-          </button>
+          <button id="btnPeatonal" type="button" onclick="seleccionarAcceso('PEATONAL')">PEATONAL</button>
+          <button id="btnVehicular" type="button" onclick="seleccionarAcceso('VEHICULAR')">VEHICULAR</button>
         </div>
       </div>
 
       <div class="grupo">
         <label class="titulo">Foto de identificación</label>
+        <input id="fotoIdentificacion" class="foto-input" type="file" accept="image/*" capture="environment" onchange="procesarFotoIdentificacion(this)">
+        <label id="btnFotoIdentificacion" class="foto-btn" for="fotoIdentificacion">📷 TOMAR FOTO DE IDENTIFICACIÓN</label>
 
-        <input
-          id="fotoIdentificacion"
-          class="foto-input"
-          type="file"
-          accept="image/*"
-          capture="environment"
-          onchange="procesarFotoIdentificacion(this)"
-        >
-
-        <label
-          id="btnFotoIdentificacion"
-          class="foto-btn"
-          for="fotoIdentificacion"
-        >
-          📷 TOMAR FOTO DE IDENTIFICACIÓN
-        </label>
-
-        <button
-          class="manual-btn"
-          type="button"
-          onclick="alternarManualNombre()"
-        >
-          ESCRIBIR MANUALMENTE
-        </button>
-
+        <button class="manual-btn" type="button" onclick="alternarManualNombre()">ESCRIBIR MANUALMENTE</button>
         <div id="manualNombre" class="manual">
-          <input
-            id="nombreManual"
-            type="text"
-            maxlength="100"
-            autocomplete="off"
-            placeholder="Nombre del visitante"
-          >
-
-          <div class="mini">
-            Si escribes el nombre aquí, la foto de identificación no se manda a Google Vision.
-          </div>
+          <input id="nombreManual" type="text" maxlength="100" autocomplete="off" placeholder="Nombre del visitante">
         </div>
 
         <div id="previewIdentificacion" class="preview">
@@ -448,1896 +110,787 @@
       </div>
 
       <div id="bloqueVehicular" style="display:none;">
-
         <div class="grupo">
           <label class="titulo">Foto de placas</label>
+          <input id="fotoPlacas" class="foto-input" type="file" accept="image/*" capture="environment" onchange="procesarFotoPlacas(this)">
+          <label id="btnFotoPlacas" class="foto-btn" for="fotoPlacas">📷 TOMAR FOTO DE PLACAS</label>
 
-          <input
-            id="fotoPlacas"
-            class="foto-input"
-            type="file"
-            accept="image/*"
-            capture="environment"
-            onchange="procesarFotoPlacas(this)"
-          >
-
-          <label
-            id="btnFotoPlacas"
-            class="foto-btn"
-            for="fotoPlacas"
-          >
-            📷 TOMAR FOTO DE PLACAS
-          </label>
-
-          <button
-            class="manual-btn"
-            type="button"
-            onclick="alternarManualPlacas()"
-          >
-            ESCRIBIR MANUALMENTE
-          </button>
-
+          <button class="manual-btn" type="button" onclick="alternarManualPlacas()">ESCRIBIR MANUALMENTE</button>
           <div id="manualPlacas" class="manual">
-            <input
-              id="placaManual"
-              type="text"
-              maxlength="12"
-              autocapitalize="characters"
-              autocomplete="off"
-              placeholder="ABC123"
-              oninput="normalizarPlacasInput(this)"
-            >
-
-            <div class="mini">
-              Si escribes las placas aquí, la foto de placas no se manda a Google Vision.
-            </div>
+            <input id="placaManual" type="text" maxlength="12" autocapitalize="characters" autocomplete="off" placeholder="ABC123" oninput="normalizarPlacasInput(this)">
           </div>
 
           <div id="previewPlacas" class="preview">
             <img id="imgPlacas" alt="Placas">
           </div>
         </div>
-
       </div>
 
       <div class="grupo">
         <label class="titulo" for="observaciones">Observaciones</label>
-
-        <textarea
-          id="observaciones"
-          maxlength="500"
-          placeholder="Opcional"
-        ></textarea>
+        <textarea id="observaciones" maxlength="1500" placeholder="Opcional"></textarea>
       </div>
 
-      <button
-        id="btnDarAcceso"
-        class="principal"
-        type="button"
-        onclick="darAccesoPrueba()"
-      >
-        DAR ACCESO
-      </button>
-
+      <button id="btnDarAcceso" class="principal" type="button" onclick="darAccesoOCR()">DAR ACCESO</button>
+      <div id="estadoProceso" class="estado"></div>
       <div id="mensaje" class="mensaje"></div>
-
-      <div id="resultado" class="resultado"></div>
-
     </section>
-
   </div>
 </div>
 
-<form
-  id="formApi"
-  method="post"
-  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
-  target="frameApi"
-  style="display:none;"
-></form>
+<div id="alertaOverlay" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div id="alertaIcono" class="icono">!</div>
+    <h2 id="alertaTitulo">Atención</h2>
+    <p id="alertaTexto"></p>
+    <button class="boton" type="button" onclick="cerrarAlerta()">ENTENDIDO</button>
+  </div>
+</div>
 
-<iframe
-  id="frameApi"
-  name="frameApi"
-  style="display:none;width:0;height:0;border:0;"
-  title="Procesando"
-></iframe>
+<div id="modalTelefono" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="icono">☎</div>
+    <h2>Confirmar con residente</h2>
+    <p>Este domicilio requiere confirmación telefónica antes de dar acceso.</p>
+    <button id="btnLlamar" class="boton" type="button" onclick="llamarResidente()">LLAMAR</button>
+    <button id="btnContinuarTelefono" class="boton sec" type="button" onclick="continuarTelefono()" disabled>CONTINUAR REGISTRO</button>
+  </div>
+</div>
+
+<div id="modalNip" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="icono">#</div>
+    <h2>Confirmar NIP</h2>
+    <p>Ingresa el NIP proporcionado por el visitante.</p>
+    <input id="nipManual" class="nip-input" type="tel" inputmode="numeric" maxlength="8" placeholder="NIP">
+    <button class="boton" type="button" onclick="validarNipManual()">VALIDAR NIP</button>
+    <button class="boton sec" type="button" onclick="cerrarModalNip()">CANCELAR</button>
+  </div>
+</div>
+
+<form id="formApi" method="post"
+  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
+  target="frameApi" style="display:none;"></form>
+<iframe id="frameApi" name="frameApi" style="display:none;width:0;height:0;border:0;" title="Procesando"></iframe>
 
 <script>
 const URL_BACKEND =
   "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
 
-const CLAVE_LOCAL_GUARDIAS =
-  "claveGuardiasArcosV3";
+const CLAVE_LOCAL_GUARDIAS = "claveGuardiasArcosV3";
+const CACHE_DATOS_GUARDIAS = "arcos_guardias_datos_v3";
+const CACHE_NUMEROS_PREFIJO = "arcos_guardias_numeros_v3_";
 
-const CACHE_DATOS_GUARDIAS =
-  "arcos_guardias_datos_v3";
+let claveGuardias = localStorage.getItem(CLAVE_LOCAL_GUARDIAS) || "";
+let tipoAcceso = "";
+let fotoPlacasBase64 = "";
+let fotoPlacasMime = "";
+let fotoIdentificacionBase64 = "";
+let fotoIdentificacionMime = "";
+let operacionActual = null;
 
-const CACHE_NUMEROS_PREFIJO =
-  "arcos_guardias_numeros_v3_";
-
-let claveGuardias =
-  localStorage.getItem(
-    CLAVE_LOCAL_GUARDIAS
-  ) || "";
-
-let tipoAcceso =
-  "";
-
-let fotoPlacasBase64 =
-  "";
-
-let fotoIdentificacionBase64 =
-  "";
-
-let operacionActual =
-  null;
-
-
-/***************************************
- * INICIO
- ***************************************/
+let telefonoEntradaManual = "";
+let requiereConfirmacionTelefonica = false;
+let confirmacionTelefonicaCompleta = false;
+let requiereConfirmacionNip = false;
+let nipAutorizadoEntradaManual = "";
+let autorizacionCasetaId = "";
+let autorizacionCasetaDisponible = false;
 
 iniciarPagina();
 
-
 function iniciarPagina() {
-
   cargarDatosIniciales();
-
 }
 
-
 function cargarDatosIniciales() {
-
-  const cache =
-    leerCacheDatosGuardias();
-
-
-  if (
-    cache &&
-    cache.datos
-  ) {
-
-    pintarDatosIniciales(
-      cache.datos
-    );
-
-  }
-
-
-  if (
-    !claveGuardias
-  ) {
-
-    if (
-      !cache
-    ) {
-
-      mostrarMensaje(
-        "Abre primero la app normal de guardias e ingresa con la clave. Después vuelve a esta página de prueba.",
-        "error"
-      );
-
+  try {
+    const cacheTexto = localStorage.getItem(CACHE_DATOS_GUARDIAS);
+    if (cacheTexto) {
+      const cache = JSON.parse(cacheTexto);
+      if (cache && cache.datos) {
+        pintarDatosIniciales(cache.datos);
+      }
     }
+  } catch (error) {}
 
+  if (!claveGuardias) {
+    mostrarAlerta(
+      "Atención",
+      "Abre primero la app normal de guardias e ingresa con la clave.",
+      "error"
+    );
     return;
-
   }
-
 
   apiPost(
     "guardiasDatos",
     {},
     function(resultado) {
-
-      if (
-        resultado &&
-        resultado.ok &&
-        resultado.datos
-      ) {
-
-        pintarDatosIniciales(
-          resultado.datos
-        );
-
-
+      if (resultado && resultado.ok && resultado.datos) {
+        pintarDatosIniciales(resultado.datos);
         try {
-
           localStorage.setItem(
             CACHE_DATOS_GUARDIAS,
-            JSON.stringify({
-              fecha:
-                Date.now(),
-
-              datos:
-                resultado.datos
-            })
+            JSON.stringify({fecha:Date.now(),datos:resultado.datos})
           );
-
-        }
-        catch (error) {}
-
+        } catch (error) {}
       }
-
     },
     true
   );
-
 }
 
+function pintarDatosIniciales(datos) {
+  const calle = document.getElementById("calle");
+  const tipo = document.getElementById("tipoVisita");
 
-function leerCacheDatosGuardias() {
+  calle.innerHTML = '<option value="">Selecciona calle</option>';
+  (datos.calles || []).forEach(function(valor){
+    const op = document.createElement("option");
+    op.value = valor;
+    op.textContent = valor;
+    calle.appendChild(op);
+  });
 
-  try {
-
-    const texto =
-      localStorage.getItem(
-        CACHE_DATOS_GUARDIAS
-      );
-
-
-    if (
-      !texto
-    ) {
-
-      return null;
-
-    }
-
-
-    return JSON.parse(
-      texto
-    );
-
-  }
-  catch (error) {
-
-    return null;
-
-  }
-
+  tipo.innerHTML = '<option value="">Selecciona tipo</option>';
+  (datos.tiposVisita || []).forEach(function(valor){
+    const op = document.createElement("option");
+    op.value = valor;
+    op.textContent = valor;
+    tipo.appendChild(op);
+  });
 }
-
-
-function pintarDatosIniciales(
-  datos
-) {
-
-  const calle =
-    document.getElementById(
-      "calle"
-    );
-
-
-  const tipo =
-    document.getElementById(
-      "tipoVisita"
-    );
-
-
-  calle.innerHTML =
-    '<option value="">Selecciona calle</option>';
-
-
-  (datos.calles || [])
-    .forEach(
-      function(valor) {
-
-        const op =
-          document.createElement(
-            "option"
-          );
-
-
-        op.value =
-          valor;
-
-
-        op.textContent =
-          valor;
-
-
-        calle.appendChild(
-          op
-        );
-
-      }
-    );
-
-
-  tipo.innerHTML =
-    '<option value="">Selecciona tipo</option>';
-
-
-  (datos.tiposVisita || [])
-    .forEach(
-      function(valor) {
-
-        const op =
-          document.createElement(
-            "option"
-          );
-
-
-        op.value =
-          valor;
-
-
-        op.textContent =
-          valor;
-
-
-        tipo.appendChild(
-          op
-        );
-
-      }
-    );
-
-}
-
-
-/***************************************
- * CALLE / NÚMERO
- ***************************************/
-
-function claveCacheNumeros(
-  calle
-) {
-
-  return (
-    CACHE_NUMEROS_PREFIJO +
-    encodeURIComponent(
-      String(
-        calle || ""
-      )
-        .trim()
-        .toUpperCase()
-    )
-  );
-
-}
-
 
 function cargarNumeros() {
+  const calle = document.getElementById("calle").value;
+  const numero = document.getElementById("numero");
+  numero.innerHTML = '<option value="">Selecciona número</option>';
 
-  const calle =
-    document
-      .getElementById(
-        "calle"
-      )
-      .value;
-
-
-  const numero =
-    document.getElementById(
-      "numero"
-    );
-
-
-  numero.innerHTML =
-    '<option value="">Selecciona número</option>';
-
-
-  if (
-    !calle
-  ) {
-
-    return;
-
-  }
-
+  if (!calle) return;
 
   try {
-
-    const texto =
-      localStorage.getItem(
-        claveCacheNumeros(
-          calle
-        )
-      );
-
-
-    if (
-      texto
-    ) {
-
-      const cache =
-        JSON.parse(
-          texto
-        );
-
-
-      if (
-        cache &&
-        Array.isArray(
-          cache.numeros
-        )
-      ) {
-
-        pintarNumeros(
-          cache.numeros
-        );
-
-      }
-
+    const cacheTexto = localStorage.getItem(
+      CACHE_NUMEROS_PREFIJO + encodeURIComponent(calle.trim().toUpperCase())
+    );
+    if (cacheTexto) {
+      const cache = JSON.parse(cacheTexto);
+      if (cache && Array.isArray(cache.numeros)) pintarNumeros(cache.numeros);
     }
-
-  }
-  catch (error) {}
-
-
-  if (
-    !claveGuardias
-  ) {
-
-    return;
-
-  }
-
+  } catch (error) {}
 
   apiPost(
     "guardiasNumeros",
-    {
-      calle:
-        calle
-    },
-    function(resultado) {
-
-      if (
-        resultado &&
-        resultado.ok
-      ) {
-
+    {calle:calle},
+    function(resultado){
+      if (resultado && resultado.ok) {
         const numeros =
-          resultado.datos &&
-          Array.isArray(
-            resultado.datos.numeros
-          )
+          resultado.datos && Array.isArray(resultado.datos.numeros)
             ? resultado.datos.numeros
             : [];
-
-
-        pintarNumeros(
-          numeros
-        );
-
-
+        pintarNumeros(numeros);
         try {
-
           localStorage.setItem(
-            claveCacheNumeros(
-              calle
-            ),
-            JSON.stringify({
-              fecha:
-                Date.now(),
-
-              numeros:
-                numeros
-            })
+            CACHE_NUMEROS_PREFIJO + encodeURIComponent(calle.trim().toUpperCase()),
+            JSON.stringify({fecha:Date.now(),numeros:numeros})
           );
-
-        }
-        catch (error) {}
-
+        } catch (error) {}
       }
-
     },
     true
   );
-
 }
 
-
-function pintarNumeros(
-  numeros
-) {
-
-  const numero =
-    document.getElementById(
-      "numero"
-    );
-
-
-  numero.innerHTML =
-    '<option value="">Selecciona número</option>';
-
-
-  (numeros || [])
-    .forEach(
-      function(valor) {
-
-        const op =
-          document.createElement(
-            "option"
-          );
-
-
-        op.value =
-          valor;
-
-
-        op.textContent =
-          valor;
-
-
-        numero.appendChild(
-          op
-        );
-
-      }
-    );
-
+function pintarNumeros(numeros) {
+  const numero = document.getElementById("numero");
+  numero.innerHTML = '<option value="">Selecciona número</option>';
+  (numeros || []).forEach(function(valor){
+    const op = document.createElement("option");
+    op.value = valor;
+    op.textContent = valor;
+    numero.appendChild(op);
+  });
 }
 
-
-/***************************************
- * TIPO DE ACCESO
- ***************************************/
-
-function seleccionarAcceso(
-  valor
-) {
-
-  tipoAcceso =
-    valor;
-
-
-  document
-    .getElementById(
-      "btnPeatonal"
-    )
-    .classList.toggle(
-      "activo",
-      valor === "PEATONAL"
-    );
-
-
-  document
-    .getElementById(
-      "btnVehicular"
-    )
-    .classList.toggle(
-      "activo",
-      valor === "VEHICULAR"
-    );
-
-
-  document
-    .getElementById(
-      "bloqueVehicular"
-    )
-    .style.display =
-      valor === "VEHICULAR"
-        ? "block"
-        : "none";
-
+function reiniciarConfirmacion() {
+  telefonoEntradaManual = "";
+  requiereConfirmacionTelefonica = false;
+  confirmacionTelefonicaCompleta = false;
+  requiereConfirmacionNip = false;
+  nipAutorizadoEntradaManual = "";
+  autorizacionCasetaId = "";
+  autorizacionCasetaDisponible = false;
 }
 
-
-/***************************************
- * MANUAL
- ***************************************/
-
-function alternarManualNombre() {
-
-  const bloque =
-    document.getElementById(
-      "manualNombre"
-    );
-
-
-  bloque.classList.toggle(
-    "activo"
-  );
-
-
-  if (
-    bloque.classList.contains(
-      "activo"
-    )
-  ) {
-
-    document
-      .getElementById(
-        "nombreManual"
-      )
-      .focus();
-
-  }
-
-}
-
-
-function alternarManualPlacas() {
-
-  const bloque =
-    document.getElementById(
-      "manualPlacas"
-    );
-
-
-  bloque.classList.toggle(
-    "activo"
-  );
-
-
-  if (
-    bloque.classList.contains(
-      "activo"
-    )
-  ) {
-
-    document
-      .getElementById(
-        "placaManual"
-      )
-      .focus();
-
-  }
-
-}
-
-
-function normalizarPlacasInput(
-  input
-) {
-
-  input.value =
-    String(
-      input.value || ""
-    )
-      .toUpperCase()
-      .replace(
-        /[^A-Z0-9]/g,
-        ""
-      )
-      .slice(
-        0,
-        12
-      );
-
-}
-
-
-/***************************************
- * FOTOS
- ***************************************/
-
-async function procesarFotoPlacas(
-  input
-) {
-
-  const archivo =
-    input.files &&
-    input.files[0];
-
-
-  if (
-    !archivo
-  ) {
-
-    fotoPlacasBase64 =
-      "";
-
-    return;
-
-  }
-
-
-  try {
-
-    const procesada =
-      await comprimirImagen(
-        archivo,
-        1280,
-        0.78
-      );
-
-
-    fotoPlacasBase64 =
-      procesada.base64;
-
-
-    document
-      .getElementById(
-        "imgPlacas"
-      )
-      .src =
-        "data:image/jpeg;base64," +
-        fotoPlacasBase64;
-
-
-    document
-      .getElementById(
-        "previewPlacas"
-      )
-      .style.display =
-        "block";
-
-
-    const boton =
-      document.getElementById(
-        "btnFotoPlacas"
-      );
-
-
-    boton.classList.add(
-      "lista"
-    );
-
-
-    boton.textContent =
-      "✓ FOTO DE PLACAS LISTA";
-
-  }
-  catch (error) {
-
-    fotoPlacasBase64 =
-      "";
-
-
-    mostrarMensaje(
-      "No fue posible preparar la foto de placas.",
-      "error"
-    );
-
-  }
-
-}
-
-
-async function procesarFotoIdentificacion(
-  input
-) {
-
-  const archivo =
-    input.files &&
-    input.files[0];
-
-
-  if (
-    !archivo
-  ) {
-
-    fotoIdentificacionBase64 =
-      "";
-
-    return;
-
-  }
-
-
-  try {
-
-    const procesada =
-      await comprimirImagen(
-        archivo,
-        1600,
-        0.82
-      );
-
-
-    fotoIdentificacionBase64 =
-      procesada.base64;
-
-
-    document
-      .getElementById(
-        "imgIdentificacion"
-      )
-      .src =
-        "data:image/jpeg;base64," +
-        fotoIdentificacionBase64;
-
-
-    document
-      .getElementById(
-        "previewIdentificacion"
-      )
-      .style.display =
-        "block";
-
-
-    const boton =
-      document.getElementById(
-        "btnFotoIdentificacion"
-      );
-
-
-    boton.classList.add(
-      "lista"
-    );
-
-
-    boton.textContent =
-      "✓ FOTO DE IDENTIFICACIÓN LISTA";
-
-  }
-  catch (error) {
-
-    fotoIdentificacionBase64 =
-      "";
-
-
-    mostrarMensaje(
-      "No fue posible preparar la identificación.",
-      "error"
-    );
-
-  }
-
-}
-
-
-function comprimirImagen(
-  archivo,
-  maximo,
-  calidad
-) {
-
-  return new Promise(
-    function(resolve, reject) {
-
-      const lector =
-        new FileReader();
-
-
-      lector.onerror =
-        reject;
-
-
-      lector.onload =
-        function() {
-
-          const imagen =
-            new Image();
-
-
-          imagen.onerror =
-            reject;
-
-
-          imagen.onload =
-            function() {
-
-              let ancho =
-                imagen.width;
-
-
-              let alto =
-                imagen.height;
-
-
-              const escala =
-                Math.min(
-                  1,
-                  maximo /
-                  Math.max(
-                    ancho,
-                    alto
-                  )
-                );
-
-
-              ancho =
-                Math.max(
-                  1,
-                  Math.round(
-                    ancho *
-                    escala
-                  )
-                );
-
-
-              alto =
-                Math.max(
-                  1,
-                  Math.round(
-                    alto *
-                    escala
-                  )
-                );
-
-
-              const canvas =
-                document.createElement(
-                  "canvas"
-                );
-
-
-              canvas.width =
-                ancho;
-
-
-              canvas.height =
-                alto;
-
-
-              canvas
-                .getContext(
-                  "2d"
-                )
-                .drawImage(
-                  imagen,
-                  0,
-                  0,
-                  ancho,
-                  alto
-                );
-
-
-              const dataUrl =
-                canvas.toDataURL(
-                  "image/jpeg",
-                  calidad
-                );
-
-
-              resolve({
-                base64:
-                  dataUrl
-                    .split(
-                      ","
-                    )[1]
-              });
-
-            };
-
-
-          imagen.src =
-            lector.result;
-
-        };
-
-
-      lector.readAsDataURL(
-        archivo
-      );
-
-    }
-  );
-
-}
-
-
-/***************************************
- * DAR ACCESO - PRUEBA
- ***************************************/
-
-function darAccesoPrueba() {
-
-  if (
-    operacionActual
-  ) {
-
-    return;
-
-  }
-
-
-  const datos = {
-    calle:
-      document
-        .getElementById(
-          "calle"
-        )
-        .value,
-
-    numero:
-      document
-        .getElementById(
-          "numero"
-        )
-        .value,
-
-    tipoVisita:
-      document
-        .getElementById(
-          "tipoVisita"
-        )
-        .value,
-
-    tipoAcceso:
-      tipoAcceso,
-
-    nombreManual:
-      document
-        .getElementById(
-          "nombreManual"
-        )
-        .value
-        .trim(),
-
-    placaManual:
-      document
-        .getElementById(
-          "placaManual"
-        )
-        .value
-        .trim(),
-
-    observaciones:
-      document
-        .getElementById(
-          "observaciones"
-        )
-        .value
-        .trim()
-  };
-
-
-  if (
-    !datos.calle ||
-    !datos.numero
-  ) {
-
-    mostrarMensaje(
-      "Selecciona calle y número.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if (
-    !datos.tipoVisita
-  ) {
-
-    mostrarMensaje(
-      "Selecciona el tipo de visita.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if (
-    !datos.tipoAcceso
-  ) {
-
-    mostrarMensaje(
-      "Selecciona PEATONAL o VEHICULAR.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  /*
-   * Si el nombre fue escrito manualmente, la foto
-   * de identificación NO se manda a Google Vision.
-   */
-  if (
-    !datos.nombreManual &&
-    !fotoIdentificacionBase64
-  ) {
-
-    mostrarMensaje(
-      "ERROR EN FOTO DE IDENTIFICACIÓN",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  /*
-   * Para peatonal no exigimos placa.
-   * Para vehicular: foto o captura manual.
-   */
-  if (
-    datos.tipoAcceso ===
-      "VEHICULAR" &&
-    !datos.placaManual &&
-    !fotoPlacasBase64
-  ) {
-
-    mostrarMensaje(
-      "ERROR EN FOTO DE PLACAS",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  const boton =
-    document.getElementById(
-      "btnDarAcceso"
-    );
-
-
-  boton.disabled =
-    true;
-
-
-  boton.textContent =
-    "LEYENDO DATOS...";
-
-
-  /*
-   * No enviamos la imagen correspondiente si ya fue
-   * capturada manualmente.
-   */
-  const parametros = {
-    calle:
-      datos.calle,
-
-    numero:
-      datos.numero,
-
-    tipoVisita:
-      datos.tipoVisita,
-
-    tipoAcceso:
-      datos.tipoAcceso,
-
-    observaciones:
-      datos.observaciones,
-
-    nombreManual:
-      datos.nombreManual,
-
-    placaManual:
-      datos.placaManual,
-
-    imagenIdentificacionBase64:
-      datos.nombreManual
-        ? ""
-        : fotoIdentificacionBase64,
-
-    imagenPlacaBase64:
-      (
-        datos.tipoAcceso ===
-          "VEHICULAR" &&
-        !datos.placaManual
-      )
-        ? fotoPlacasBase64
-        : ""
-  };
-
+function cargarContactoEntradaManual() {
+  reiniciarConfirmacion();
+
+  const calle = document.getElementById("calle").value;
+  const numero = document.getElementById("numero").value;
+  if (!calle || !numero) return;
 
   apiPost(
-    "ocrIngresoPruebaGuardar",
-    parametros,
-    function(resultado) {
+    "guardiasContacto",
+    {calle:calle,numero:numero},
+    function(resultado){
+      if (!resultado || !resultado.ok || !resultado.datos) return;
 
-      boton.disabled =
-        false;
+      telefonoEntradaManual =
+        String(resultado.datos.telefono || "").replace(/[^\d+]/g,"");
 
+      requiereConfirmacionTelefonica =
+        resultado.datos.requiereConfirmacionTelefonica === true;
 
-      boton.textContent =
-        "DAR ACCESO";
+      requiereConfirmacionNip =
+        resultado.datos.requiereConfirmacionNip === true;
 
+      autorizacionCasetaDisponible =
+        resultado.datos.autorizacionCasetaDisponible === true;
 
+      autorizacionCasetaId =
+        resultado.datos.autorizacionCasetaId || "";
+
+      /*
+       * Si el residente ya compartió una autorización activa,
+       * esta página la usa igual que la ruta normal del servidor.
+       */
       if (
-        !resultado ||
-        !resultado.ok
+        requiereConfirmacionNip &&
+        autorizacionCasetaDisponible &&
+        autorizacionCasetaId
       ) {
+        requiereConfirmacionNip = false;
+      }
+    },
+    true
+  );
+}
 
-        const etapa =
-          resultado &&
-          resultado.etapaError
-            ? String(
-                resultado.etapaError
-              )
-            : "";
+function seleccionarAcceso(valor) {
+  tipoAcceso = valor;
+  document.getElementById("btnPeatonal").classList.toggle("activo", valor === "PEATONAL");
+  document.getElementById("btnVehicular").classList.toggle("activo", valor === "VEHICULAR");
+  document.getElementById("bloqueVehicular").style.display =
+    valor === "VEHICULAR" ? "block" : "none";
+}
 
+function alternarManualNombre() {
+  const b = document.getElementById("manualNombre");
+  b.classList.toggle("activo");
+  if (b.classList.contains("activo")) document.getElementById("nombreManual").focus();
+}
 
-        let mensajeCorto =
-          "ERROR EN EL REGISTRO";
+function alternarManualPlacas() {
+  const b = document.getElementById("manualPlacas");
+  b.classList.toggle("activo");
+  if (b.classList.contains("activo")) document.getElementById("placaManual").focus();
+}
 
+function normalizarPlacasInput(input) {
+  input.value = String(input.value || "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g,"")
+    .slice(0,12);
+}
 
-        if (
-          etapa.indexOf(
-            "IDENTIFICACION"
-          ) !== -1 ||
-          etapa.indexOf(
-            "NOMBRE"
-          ) !== -1
-        ) {
+async function procesarFotoIdentificacion(input) {
+  const archivo = input.files && input.files[0];
+  if (!archivo) return;
 
-          mensajeCorto =
-            "ERROR EN FOTO DE IDENTIFICACIÓN";
+  try {
+    const procesada = await comprimirImagen(archivo,1600,0.82);
+    fotoIdentificacionBase64 = procesada.base64;
+    fotoIdentificacionMime = "image/jpeg";
+    document.getElementById("imgIdentificacion").src =
+      "data:image/jpeg;base64," + fotoIdentificacionBase64;
+    document.getElementById("previewIdentificacion").style.display = "block";
+    const b = document.getElementById("btnFotoIdentificacion");
+    b.classList.add("lista");
+    b.textContent = "✓ FOTO DE IDENTIFICACIÓN LISTA";
+  } catch (error) {
+    fotoIdentificacionBase64 = "";
+    fotoIdentificacionMime = "";
+    mostrarAlerta("Atención","ERROR EN FOTO DE IDENTIFICACIÓN","error");
+  }
+}
 
+async function procesarFotoPlacas(input) {
+  const archivo = input.files && input.files[0];
+  if (!archivo) return;
+
+  try {
+    const procesada = await comprimirImagen(archivo,1280,0.78);
+    fotoPlacasBase64 = procesada.base64;
+    fotoPlacasMime = "image/jpeg";
+    document.getElementById("imgPlacas").src =
+      "data:image/jpeg;base64," + fotoPlacasBase64;
+    document.getElementById("previewPlacas").style.display = "block";
+    const b = document.getElementById("btnFotoPlacas");
+    b.classList.add("lista");
+    b.textContent = "✓ FOTO DE PLACAS LISTA";
+  } catch (error) {
+    fotoPlacasBase64 = "";
+    fotoPlacasMime = "";
+    mostrarAlerta("Atención","ERROR EN FOTO DE PLACAS","error");
+  }
+}
+
+function comprimirImagen(archivo,maximo,calidad) {
+  return new Promise(function(resolve,reject){
+    const lector = new FileReader();
+    lector.onerror = reject;
+    lector.onload = function(){
+      const imagen = new Image();
+      imagen.onerror = reject;
+      imagen.onload = function(){
+        let ancho = imagen.width;
+        let alto = imagen.height;
+        const escala = Math.min(1,maximo/Math.max(ancho,alto));
+        ancho = Math.max(1,Math.round(ancho*escala));
+        alto = Math.max(1,Math.round(alto*escala));
+        const canvas = document.createElement("canvas");
+        canvas.width = ancho;
+        canvas.height = alto;
+        canvas.getContext("2d").drawImage(imagen,0,0,ancho,alto);
+        const dataUrl = canvas.toDataURL("image/jpeg",calidad);
+        resolve({base64:dataUrl.split(",")[1]});
+      };
+      imagen.src = lector.result;
+    };
+    lector.readAsDataURL(archivo);
+  });
+}
+
+function darAccesoOCR() {
+  if (operacionActual) return;
+
+  const calle = document.getElementById("calle").value;
+  const numero = document.getElementById("numero").value;
+  const tipoVisita = document.getElementById("tipoVisita").value;
+  const nombreManual = document.getElementById("nombreManual").value.trim();
+  const placaManual = document.getElementById("placaManual").value.trim();
+  const observacionesManual = document.getElementById("observaciones").value.trim();
+
+  if (!calle || !numero) {
+    mostrarAlerta("Atención","SELECCIONA CALLE Y NÚMERO","error");
+    return;
+  }
+
+  if (!tipoVisita) {
+    mostrarAlerta("Atención","SELECCIONA TIPO DE VISITA","error");
+    return;
+  }
+
+  if (!tipoAcceso) {
+    mostrarAlerta("Atención","SELECCIONA TIPO DE ACCESO","error");
+    return;
+  }
+
+  /*
+   * La foto se conserva SIEMPRE para el registro real.
+   * Captura manual solo evita mandar esa imagen a Vision.
+   */
+  if (!fotoIdentificacionBase64) {
+    mostrarAlerta("Atención","ERROR EN FOTO DE IDENTIFICACIÓN","error");
+    return;
+  }
+
+  if (tipoAcceso === "VEHICULAR" && !fotoPlacasBase64) {
+    mostrarAlerta("Atención","ERROR EN FOTO DE PLACAS","error");
+    return;
+  }
+
+  if (
+    requiereConfirmacionTelefonica &&
+    !confirmacionTelefonicaCompleta
+  ) {
+    document.getElementById("modalTelefono").classList.add("visible");
+    return;
+  }
+
+  if (
+    requiereConfirmacionNip &&
+    !nipAutorizadoEntradaManual &&
+    !autorizacionCasetaId
+  ) {
+    document.getElementById("modalNip").classList.add("visible");
+    document.getElementById("nipManual").focus();
+    return;
+  }
+
+  const boton = document.getElementById("btnDarAcceso");
+  boton.disabled = true;
+  boton.textContent = "LEYENDO DATOS...";
+  mostrarEstado("Leyendo identificación y placas...");
+
+  /*
+   * ETAPA 1: OCR.
+   * Si el guardia escribió manualmente un dato,
+   * esa imagen NO viaja a Google Vision.
+   */
+  apiPost(
+    "ocrIngresoPrueba",
+    {
+      calle:calle,
+      numero:numero,
+      tipoVisita:tipoVisita,
+      tipoAcceso:tipoAcceso,
+      nombreManual:nombreManual,
+      placaManual:placaManual,
+      imagenIdentificacionBase64:
+        nombreManual ? "" : fotoIdentificacionBase64,
+      imagenPlacaBase64:
+        (tipoAcceso === "VEHICULAR" && !placaManual)
+          ? fotoPlacasBase64
+          : ""
+    },
+    function(resultadoOCR){
+      if (!resultadoOCR || !resultadoOCR.ok) {
+        restaurarBoton();
+        ocultarEstado();
+
+        const etapa = resultadoOCR && resultadoOCR.etapaError
+          ? String(resultadoOCR.etapaError)
+          : "";
+
+        if (etapa.indexOf("IDENTIFICACION") !== -1 || etapa.indexOf("NOMBRE") !== -1) {
+          mostrarAlerta("Atención","ERROR EN FOTO DE IDENTIFICACIÓN","error");
+        } else if (etapa.indexOf("PLACA") !== -1) {
+          mostrarAlerta("Atención","ERROR EN FOTO DE PLACAS","error");
+        } else {
+          mostrarAlerta("Atención","ERROR EN EL ESCANEO","error");
         }
-        else if (
-          etapa.indexOf(
-            "PLACA"
-          ) !== -1
-        ) {
-
-          mensajeCorto =
-            "ERROR EN FOTO DE PLACAS";
-
-        }
-
-
-        mostrarAlerta(
-          "Atención",
-          mensajeCorto,
-          "error"
-        );
-
-
-        /*
-         * El detalle técnico sigue guardándose en OCR_PRUEBAS
-         * para nosotros, pero el guardia no lo ve.
-         */
-        document
-          .getElementById(
-            "resultado"
-          )
-          .style.display =
-            "none";
-
-
         return;
-
       }
 
-
-      const r =
-        resultado;
-
-
-      document
-        .getElementById(
-          "resultado"
-        )
-        .innerHTML =
-          "<strong>PRUEBA GUARDADA</strong>" +
-          "\nCalle: " +
-          escaparTexto(
-            r.calle
-          ) +
-          " " +
-          escaparTexto(
-            r.numero
-          ) +
-          "\nNombre: " +
-          escaparTexto(
-            r.nombre
-          ) +
-          "\nTipo de visita: " +
-          escaparTexto(
-            r.tipoVisita
-          ) +
-          "\nTipo de acceso: " +
-          escaparTexto(
-            r.tipoAcceso
-          ) +
-          (
-            r.placa
-              ? "\nPlacas: " +
-                escaparTexto(
-                  r.placa
-                )
-              : ""
-          ) +
-          (
-            r.observacionesFinales
-              ? "\nObservaciones: " +
-                escaparTexto(
-                  r.observacionesFinales
-                )
-              : ""
-          ) +
-          "\nRegla de nombre: " +
-          escaparTexto(
-            r.reglaNombre ||
-            "-"
-          ) +
-          "\nConfianza: " +
-          escaparTexto(
-            r.confianzaNombre ||
-            "-"
-          ) +
-          "\nHoja: " +
-          escaparTexto(
-            r.hojaPrueba
-          ) +
-          " · Fila " +
-          escaparTexto(
-            r.filaGuardada
-          );
-
-
-      document
-        .getElementById(
-          "resultado"
-        )
-        .style.display =
-          "block";
-
-
-      mostrarMensaje(
-        "Ingreso de prueba guardado correctamente.",
-        "ok"
+      registrarAccesoReal(
+        {
+          calle:calle,
+          numero:numero,
+          tipoVisita:tipoVisita,
+          tipoAcceso:tipoAcceso,
+          nombreVisitante:resultadoOCR.nombre,
+          placas:resultadoOCR.placa || "",
+          observacionesManual:observacionesManual,
+          extraPlacas:resultadoOCR.extraPlacas || "",
+          extraIdentificacion:resultadoOCR.extraIdentificacion || ""
+        }
       );
-
     },
     false
   );
-
 }
 
+function registrarAccesoReal(datosOCR) {
+  const boton = document.getElementById("btnDarAcceso");
+  boton.textContent = "REGISTRANDO...";
+  mostrarEstado("Guardando acceso y enviando notificación...");
 
-/***************************************
- * API POST + JSONP
- ***************************************/
+  const partesObservaciones = [];
 
-function apiPost(
-  accion,
-  parametros,
-  exito,
-  usarClaveGuardias
-) {
-
-  if (
-    operacionActual
-  ) {
-
-    return;
-
+  if (datosOCR.observacionesManual) {
+    partesObservaciones.push(datosOCR.observacionesManual);
   }
 
-
-  const requestId =
-    generarRequestId();
-
-
-  operacionActual = {
-    requestId:
-      requestId,
-
-    intentos:
-      0
-  };
-
-
-  const form =
-    document.getElementById(
-      "formApi"
+  if (datosOCR.extraPlacas) {
+    partesObservaciones.push(
+      "OCR PLACAS: " + datosOCR.extraPlacas
     );
-
-
-  form.innerHTML =
-    "";
-
-
-  const datos =
-    Object.assign(
-      {},
-      parametros || {},
-      {
-        accion:
-          accion,
-
-        requestId:
-          requestId
-      }
-    );
-
-
-  if (
-    usarClaveGuardias
-  ) {
-
-    datos.claveGuardias =
-      claveGuardias;
-
   }
 
+  if (datosOCR.extraIdentificacion) {
+    partesObservaciones.push(
+      "OCR IDENTIFICACIÓN: " + datosOCR.extraIdentificacion
+    );
+  }
 
-  Object.keys(
-    datos
-  )
-    .forEach(
-      function(nombre) {
+  const observacionesFinales =
+    partesObservaciones.join(" | ").slice(0,1500);
 
-        const input =
-          document.createElement(
-            "input"
-          );
+  /*
+   * ETAPA 2: usamos la MISMA acción real de guardias.
+   * registrarEntradaManual() guarda en ACCESOS, almacena
+   * las fotos en Drive y después envía la notificación push.
+   */
+  apiPost(
+    "guardiasEntrada",
+    {
+      calle:datosOCR.calle,
+      numero:datosOCR.numero,
+      nombreVisitante:datosOCR.nombreVisitante,
+      tipoVisita:datosOCR.tipoVisita,
+      tipoAcceso:datosOCR.tipoAcceso,
+      placas:datosOCR.placas,
+      observaciones:observacionesFinales,
 
+      fotoPlacasBase64:
+        datosOCR.tipoAcceso === "VEHICULAR"
+          ? fotoPlacasBase64
+          : "",
 
-        input.type =
-          "hidden";
+      fotoPlacasMime:
+        datosOCR.tipoAcceso === "VEHICULAR"
+          ? fotoPlacasMime
+          : "",
 
+      fotoIdentificacionBase64:
+        fotoIdentificacionBase64,
 
-        input.name =
-          nombre;
+      fotoIdentificacionMime:
+        fotoIdentificacionMime,
 
+      nipAutorizacion:
+        nipAutorizadoEntradaManual,
 
-        input.value =
-          datos[nombre] == null
-            ? ""
-            : String(
-                datos[nombre]
-              );
+      autorizacionCasetaId:
+        autorizacionCasetaId
+    },
+    function(resultado){
+      restaurarBoton();
+      ocultarEstado();
 
-
-        form.appendChild(
-          input
+      if (!resultado || !resultado.ok) {
+        mostrarAlerta(
+          "No se pudo dar acceso",
+          resultado && resultado.mensaje
+            ? resultado.mensaje
+            : "ERROR AL REGISTRAR ACCESO",
+          "error"
         );
-
+        return;
       }
-    );
 
+      mostrarAlerta(
+        "Acceso registrado",
+        "El acceso se guardó correctamente y se procesó la notificación al residente.",
+        "ok"
+      );
+
+      limpiarFormulario();
+    },
+    true
+  );
+}
+
+function cargarContactoSiHaceFalta() {
+  cargarContactoEntradaManual();
+}
+
+function llamarResidente() {
+  if (!telefonoEntradaManual) {
+    mostrarAlerta("Atención","NO FUE POSIBLE CARGAR EL TELÉFONO DEL RESIDENTE","error");
+    return;
+  }
+
+  document.getElementById("btnContinuarTelefono").disabled = false;
+
+  const a = document.createElement("a");
+  a.href = "tel:" + telefonoEntradaManual;
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function continuarTelefono() {
+  confirmacionTelefonicaCompleta = true;
+  document.getElementById("modalTelefono").classList.remove("visible");
+}
+
+function validarNipManual() {
+  const nip = document.getElementById("nipManual").value.trim();
+  const calle = document.getElementById("calle").value;
+  const numero = document.getElementById("numero").value;
+
+  if (!nip) return;
+
+  apiPost(
+    "guardiasValidarNip",
+    {calle:calle,numero:numero,nip:nip},
+    function(resultado){
+      if (!resultado || !resultado.ok) {
+        mostrarAlerta("Atención","NIP NO VÁLIDO","error");
+        return;
+      }
+
+      nipAutorizadoEntradaManual = nip;
+      requiereConfirmacionNip = false;
+      cerrarModalNip();
+      mostrarMensaje("NIP validado. Ya puedes continuar.");
+    },
+    true
+  );
+}
+
+function cerrarModalNip() {
+  document.getElementById("modalNip").classList.remove("visible");
+}
+
+function limpiarFormulario() {
+  document.getElementById("numero").innerHTML = '<option value="">Selecciona número</option>';
+  document.getElementById("tipoVisita").value = "";
+  document.getElementById("observaciones").value = "";
+  document.getElementById("nombreManual").value = "";
+  document.getElementById("placaManual").value = "";
+  document.getElementById("fotoIdentificacion").value = "";
+  document.getElementById("fotoPlacas").value = "";
+  document.getElementById("previewIdentificacion").style.display = "none";
+  document.getElementById("previewPlacas").style.display = "none";
+  document.getElementById("btnFotoIdentificacion").classList.remove("lista");
+  document.getElementById("btnFotoIdentificacion").textContent = "📷 TOMAR FOTO DE IDENTIFICACIÓN";
+  document.getElementById("btnFotoPlacas").classList.remove("lista");
+  document.getElementById("btnFotoPlacas").textContent = "📷 TOMAR FOTO DE PLACAS";
+  document.getElementById("manualNombre").classList.remove("activo");
+  document.getElementById("manualPlacas").classList.remove("activo");
+  fotoIdentificacionBase64 = "";
+  fotoIdentificacionMime = "";
+  fotoPlacasBase64 = "";
+  fotoPlacasMime = "";
+  tipoAcceso = "";
+  document.getElementById("btnPeatonal").classList.remove("activo");
+  document.getElementById("btnVehicular").classList.remove("activo");
+  document.getElementById("bloqueVehicular").style.display = "none";
+  reiniciarConfirmacion();
+}
+
+function mostrarEstado(texto) {
+  const e = document.getElementById("estadoProceso");
+  e.textContent = texto;
+  e.style.display = "block";
+}
+
+function ocultarEstado() {
+  document.getElementById("estadoProceso").style.display = "none";
+}
+
+function restaurarBoton() {
+  const b = document.getElementById("btnDarAcceso");
+  b.disabled = false;
+  b.textContent = "DAR ACCESO";
+}
+
+function mostrarMensaje(texto) {
+  const m = document.getElementById("mensaje");
+  m.textContent = texto || "";
+  m.className = texto ? "mensaje ok" : "mensaje";
+}
+
+function mostrarAlerta(titulo,texto,tipo) {
+  const overlay = document.getElementById("alertaOverlay");
+  const icono = document.getElementById("alertaIcono");
+  document.getElementById("alertaTitulo").textContent = titulo || "Atención";
+  document.getElementById("alertaTexto").textContent = texto || "";
+  icono.className = "icono" + (tipo === "ok" ? " ok" : "");
+  icono.textContent = tipo === "ok" ? "✓" : "!";
+  overlay.classList.add("visible");
+}
+
+function cerrarAlerta() {
+  document.getElementById("alertaOverlay").classList.remove("visible");
+}
+
+function apiPost(accion,parametros,exito,usarClaveGuardias) {
+  if (operacionActual) return;
+
+  const requestId = generarRequestId();
+  operacionActual = {requestId:requestId,intentos:0};
+
+  const form = document.getElementById("formApi");
+  form.innerHTML = "";
+
+  const datos = Object.assign({},parametros || {},{
+    accion:accion,
+    requestId:requestId
+  });
+
+  if (usarClaveGuardias) datos.claveGuardias = claveGuardias;
+
+  Object.keys(datos).forEach(function(nombre){
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = nombre;
+    input.value = datos[nombre] == null ? "" : String(datos[nombre]);
+    form.appendChild(input);
+  });
 
   form.submit();
 
-
-  setTimeout(
-    function() {
-
-      consultarResultado(
-        exito
-      );
-
-    },
-    650
-  );
-
+  setTimeout(function(){consultarResultado(exito);},650);
 }
 
-
-function consultarResultado(
-  exito
-) {
-
-  if (
-    !operacionActual
-  ) {
-
-    return;
-
-  }
-
+function consultarResultado(exito) {
+  if (!operacionActual) return;
 
   operacionActual.intentos++;
 
-
-  if (
-    operacionActual.intentos >
-      90
-  ) {
-
-    operacionActual =
-      null;
-
-
-    mostrarMensaje(
-      "La solicitud tardó demasiado. Intenta nuevamente.",
-      "error"
-    );
-
-
-    const boton =
-      document.getElementById(
-        "btnDarAcceso"
-      );
-
-
-    if (
-      boton
-    ) {
-
-      boton.disabled =
-        false;
-
-
-      boton.textContent =
-        "DAR ACCESO";
-
-    }
-
-
+  if (operacionActual.intentos > 100) {
+    operacionActual = null;
+    restaurarBoton();
+    ocultarEstado();
+    mostrarAlerta("Atención","EL SERVIDOR ESTÁ TARDANDO DEMASIADO","error");
     return;
-
   }
 
-
+  const requestId = operacionActual.requestId;
   const callback =
-    "ocrPruebaCallback_" +
-    Date.now() +
-    "_" +
-    Math.random()
-      .toString(36)
-      .slice(2);
+    "ocrRealCallback_" + Date.now() + "_" + Math.random().toString(36).slice(2);
 
+  const script = document.createElement("script");
 
-  const script =
-    document.createElement(
-      "script"
-    );
+  window[callback] = function(resultado){
+    try{script.remove();}catch(error){}
+    try{delete window[callback];}catch(error){}
 
+    if (!resultado || !resultado.ok) {
+      operacionActual = null;
+      exito(resultado);
+      return;
+    }
 
-  window[
-    callback
-  ] =
-    function(resultado) {
+    const datos = resultado.datos || {};
 
-      try {
-        script.remove();
-      }
-      catch (error) {}
+    if (datos.estado === "PENDIENTE") {
+      setTimeout(function(){consultarResultado(exito);},600);
+      return;
+    }
 
+    operacionActual = null;
 
-      try {
-        delete window[
-          callback
-        ];
-      }
-      catch (error) {}
+    if (datos.estado === "LISTO") {
+      exito(datos.resultado);
+    } else {
+      exito({ok:false,mensaje:"No fue posible recuperar el resultado."});
+    }
+  };
 
-
-      if (
-        !resultado ||
-        !resultado.ok
-      ) {
-
-        const final =
-          resultado;
-
-
-        operacionActual =
-          null;
-
-
-        exito(
-          final
-        );
-
-
-        return;
-
-      }
-
-
-      const datos =
-        resultado.datos ||
-        {};
-
-
-      if (
-        datos.estado ===
-          "PENDIENTE"
-      ) {
-
-        setTimeout(
-          function() {
-
-            consultarResultado(
-              exito
-            );
-
-          },
-          600
-        );
-
-        return;
-
-      }
-
-
-      operacionActual =
-        null;
-
-
-      if (
-        datos.estado ===
-          "LISTO"
-      ) {
-
-        exito(
-          datos.resultado
-        );
-
-      }
-      else {
-
-        exito({
-          ok:
-            false,
-
-          mensaje:
-            "No fue posible recuperar el resultado."
-        });
-
-      }
-
-    };
-
-
-  script.onerror =
-    function() {
-
-      try {
-        script.remove();
-      }
-      catch (error) {}
-
-
-      try {
-        delete window[
-          callback
-        ];
-      }
-      catch (error) {}
-
-
-      setTimeout(
-        function() {
-
-          consultarResultado(
-            exito
-          );
-
-        },
-        800
-      );
-
-    };
-
+  script.onerror = function(){
+    try{script.remove();}catch(error){}
+    try{delete window[callback];}catch(error){}
+    setTimeout(function(){consultarResultado(exito);},800);
+  };
 
   script.src =
     URL_BACKEND +
     "?api=operacionEstado" +
-    "&requestId=" +
-    encodeURIComponent(
-      operacionActual.requestId
-    ) +
-    "&callback=" +
-    encodeURIComponent(
-      callback
-    ) +
-    "&t=" +
-    Date.now();
+    "&requestId=" + encodeURIComponent(requestId) +
+    "&callback=" + encodeURIComponent(callback) +
+    "&t=" + Date.now();
 
-
-  document.body.appendChild(
-    script
-  );
-
+  document.body.appendChild(script);
 }
-
 
 function generarRequestId() {
-
-  if (
-    window.crypto &&
-    typeof crypto.randomUUID ===
-      "function"
-  ) {
-
-    return crypto
-      .randomUUID()
-      .replace(
-        /-/g,
-        ""
-      );
-
+  if (window.crypto && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID().replace(/-/g,"");
   }
-
 
   return (
-    Date.now()
-      .toString(36) +
-    Math.random()
-      .toString(36)
-      .slice(2) +
-    Math.random()
-      .toString(36)
-      .slice(2)
+    Date.now().toString(36) +
+    Math.random().toString(36).slice(2) +
+    Math.random().toString(36).slice(2)
   );
-
 }
-
-
-function mostrarMensaje(
-  texto,
-  tipo
-) {
-
-  const mensaje =
-    document.getElementById(
-      "mensaje"
-    );
-
-
-  /*
-   * Los errores ya no se dejan abajo del formulario.
-   * Se muestran como alerta visible para el guardia.
-   */
-  if (
-    tipo === "error" &&
-    String(
-      texto || ""
-    ).trim() !== ""
-  ) {
-
-    mensaje.className =
-      "mensaje";
-
-
-    mensaje.textContent =
-      "";
-
-
-    mostrarAlerta(
-      "Atención",
-      texto,
-      "error"
-    );
-
-
-    return;
-
-  }
-
-
-  mensaje.className =
-    texto
-      ? "mensaje " +
-        tipo
-      : "mensaje";
-
-
-  mensaje.textContent =
-    texto || "";
-
-}
-
-
-function escaparTexto(
-  valor
-) {
-
-  return String(
-    valor == null
-      ? ""
-      : valor
-  )
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    );
-
-}
-
-function mostrarAlerta(
-  titulo,
-  texto,
-  tipo
-) {
-
-  const overlay =
-    document.getElementById(
-      "alertaOverlay"
-    );
-
-
-  const icono =
-    document.getElementById(
-      "alertaIcono"
-    );
-
-
-  document
-    .getElementById(
-      "alertaTitulo"
-    )
-    .textContent =
-      titulo ||
-      "Atención";
-
-
-  document
-    .getElementById(
-      "alertaTexto"
-    )
-    .textContent =
-      texto ||
-      "";
-
-
-  icono.className =
-    "alerta-icono " +
-    (
-      tipo === "ok"
-        ? "ok"
-        : "error"
-    );
-
-
-  icono.textContent =
-    tipo === "ok"
-      ? "✓"
-      : "!";
-
-
-  overlay.classList.add(
-    "visible"
-  );
-
-
-  setTimeout(
-    function() {
-
-      document
-        .getElementById(
-          "alertaBoton"
-        )
-        .focus();
-
-    },
-    20
-  );
-
-}
-
-
-function cerrarAlerta() {
-
-  document
-    .getElementById(
-      "alertaOverlay"
-    )
-    .classList.remove(
-      "visible"
-    );
-
-}
-
 </script>
-
-<div
-  id="alertaOverlay"
-  class="alerta-overlay"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="alertaTitulo"
-  aria-describedby="alertaTexto"
->
-  <div class="alerta-caja">
-    <div id="alertaIcono" class="alerta-icono error">!</div>
-    <h2 id="alertaTitulo" class="alerta-titulo">Atención</h2>
-    <p id="alertaTexto" class="alerta-texto"></p>
-    <button
-      id="alertaBoton"
-      class="alerta-boton"
-      type="button"
-      onclick="cerrarAlerta()"
-    >
-      ENTENDIDO
-    </button>
-  </div>
-</div>
 
 </body>
 </html>
