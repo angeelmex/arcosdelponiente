@@ -197,9 +197,11 @@
 
 
       <p class="sub">
-        <strong>MODO PRUEBA:</strong> el botón REGISTRAR INGRESO lee
-        automáticamente placas e identificación. No guarda accesos,
-        no manda notificaciones y no modifica la base de datos.
+        <strong>MODO PRUEBA:</strong> toma la foto de placas y la foto de la
+        identificación. Al presionar REGISTRAR INGRESO se leen ambos datos
+        automáticamente y se guarda una fila de prueba en Google Sheets.
+        Si el guardia escribe placas o nombre manualmente, esa imagen no se
+        manda a Google Vision.
       </p>
 
 
@@ -237,6 +239,25 @@
       </div>
 
       <div class="acciones">
+
+        <button
+          id="btnEscribir"
+          class="secundario"
+          type="button"
+          onclick="mostrarCapturaManual()"
+        >
+          ESCRIBIR PLACAS
+        </button>
+
+        <button
+          id="btnEscribirNombre"
+          class="secundario"
+          type="button"
+          onclick="mostrarNombreManual()"
+        >
+          ESCRIBIR NOMBRE
+        </button>
+
         <button
           id="btnRegistrar"
           class="principal"
@@ -274,16 +295,15 @@
       </div>
 
 
-      <div id="capturaNombreManual" class="bloque">
+      <div id="capturaNombreManual" class="bloque" style="display:none;">
         <label class="etiqueta" for="nombreManual">Nombre del visitante</label>
         <input id="nombreManual" type="text" autocomplete="off" placeholder="Nombre completo">
       </div>
 
       <div id="resultadoNombre" class="resultado">
-        <div class="resultado-titulo">Nombre sugerido</div>
+        <div class="resultado-titulo">Nombre detectado</div>
         <div id="nombreDetectado" class="placa" style="font-size:22px;letter-spacing:0;">—</div>
-        <div class="resultado-titulo" style="margin-top:14px;">Texto completo leído por Google Vision</div>
-        <div id="textoIdentificacion" class="detalle">—</div>
+        
       </div>
 
       <div
@@ -292,7 +312,7 @@
       >
 
         <div class="resultado-titulo">
-          Placa sugerida
+          Placas detectadas
         </div>
 
 
@@ -321,6 +341,11 @@
 
       </div>
 
+
+      <div id="resultadoGuardado" class="resultado">
+        <div class="resultado-titulo">Registro de prueba guardado</div>
+        <div id="resumenGuardado" class="detalle">—</div>
+      </div>
 
       <div
         id="mensaje"
@@ -353,7 +378,7 @@
     id="ocrAccion"
     name="accion"
     type="hidden"
-    value="ocrIngresoPrueba"
+    value="ocrIngresoPruebaGuardar"
   >
 
   <input
@@ -746,12 +771,13 @@ function analizarPlaca() {
           );
 
 
-    document
-      .getElementById(
-        "textoDetectado"
-      )
-      .textContent =
+    const detallePlacaManual =
+      document.getElementById("textoDetectado");
+
+    if (detallePlacaManual) {
+      detallePlacaManual.textContent =
         "Captura manual. No se realizó consulta OCR.";
+    }
 
 
     document
@@ -899,12 +925,13 @@ function analizarIdentificacion() {
         nombreManual;
 
 
-    document
-      .getElementById(
-        "textoIdentificacion"
-      )
-      .textContent =
+    const detalleNombreManual =
+      document.getElementById("textoIdentificacion");
+
+    if (detalleNombreManual) {
+      detalleNombreManual.textContent =
         "Captura manual. No se realizó consulta OCR.";
+    }
 
 
     document
@@ -1257,13 +1284,14 @@ function procesarEstadoOCR(
         "NO RECONOCIDO";
 
 
-    document
-      .getElementById(
-        "textoIdentificacion"
-      )
-      .textContent =
+    const detalleIdentificacion =
+      document.getElementById("textoIdentificacion");
+
+    if (detalleIdentificacion) {
+      detalleIdentificacion.textContent =
         respuesta.texto ||
         "Sin texto detectado.";
+    }
 
 
     document
@@ -1298,13 +1326,14 @@ function procesarEstadoOCR(
       "NO RECONOCIDA";
 
 
-  document
-    .getElementById(
-      "textoDetectado"
-    )
-    .textContent =
+  const detallePlaca =
+    document.getElementById("textoDetectado");
+
+  if (detallePlaca) {
+    detallePlaca.textContent =
       respuesta.texto ||
       "Sin texto detectado.";
+  }
 
 
   document
@@ -1581,45 +1610,33 @@ procesarEstadoOCR =
     document.getElementById("placaDetectada").textContent =
       respuesta.placa || "NO RECONOCIDA";
 
-    document.getElementById("textoDetectado").textContent =
-      respuesta.textoPlaca ||
-      (respuesta.placaManual
-        ? "Captura manual. No se realizó consulta OCR."
-        : "Sin texto detectado.");
-
     document.getElementById("resultado").style.display =
       "block";
 
     document.getElementById("nombreDetectado").textContent =
       respuesta.nombre || "NO RECONOCIDO";
 
-    document.getElementById("textoIdentificacion").textContent =
-      respuesta.textoIdentificacion ||
-      (respuesta.nombreManual
-        ? "Captura manual. No se realizó consulta OCR."
-        : "Sin texto detectado.");
-
     document.getElementById("resultadoNombre").style.display =
       "block";
 
-    let textoFinal =
-      "Prueba terminada. ";
+    document.getElementById("resumenGuardado").textContent =
+      "Nombre: " +
+      respuesta.nombre +
+      "\nPlacas: " +
+      respuesta.placa +
+      (respuesta.observacionesOCR
+        ? "\nObservaciones OCR: " + respuesta.observacionesOCR
+        : "") +
+      "\nHoja: " +
+      (respuesta.hojaPrueba || "OCR_PRUEBAS") +
+      "\nFila: " +
+      (respuesta.filaGuardada || "-");
 
-    if (respuesta.consultasVision === 0) {
-      textoFinal +=
-        "No se utilizó Google Vision.";
-    }
-    else if (respuesta.consultasVision === 1) {
-      textoFinal +=
-        "Se utilizó 1 consulta de Google Vision.";
-    }
-    else {
-      textoFinal +=
-        "Se utilizaron 2 consultas de Google Vision.";
-    }
+    document.getElementById("resultadoGuardado").style.display =
+      "block";
 
     mostrarMensaje(
-      textoFinal,
+      "Ingreso de prueba guardado correctamente.",
       "ok"
     );
   };
