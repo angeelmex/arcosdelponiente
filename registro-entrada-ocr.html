@@ -197,7 +197,8 @@
 
 
       <p class="sub">
-        Esta página es únicamente para pruebas. No registra accesos,
+        <strong>MODO PRUEBA:</strong> el botón REGISTRAR INGRESO lee
+        automáticamente placas e identificación. No guarda accesos,
         no manda notificaciones y no modifica la base de datos.
       </p>
 
@@ -236,44 +237,14 @@
       </div>
 
       <div class="acciones">
-
         <button
-          id="btnAnalizar"
+          id="btnRegistrar"
           class="principal"
           type="button"
-          onclick="analizarPlaca()"
+          onclick="registrarIngresoPrueba()"
         >
-          ANALIZAR PLACA
+          REGISTRAR INGRESO
         </button>
-
-
-        <button
-          id="btnEscribir"
-          class="secundario"
-          type="button"
-          onclick="mostrarCapturaManual()"
-        >
-          ESCRIBIR PLACAS
-        </button>
-
-        <button
-          id="btnAnalizarNombre"
-          class="principal"
-          type="button"
-          onclick="analizarIdentificacion()"
-        >
-          LEER NOMBRE DE IDENTIFICACIÓN
-        </button>
-
-        <button
-          id="btnEscribirNombre"
-          class="secundario"
-          type="button"
-          onclick="mostrarNombreManual()"
-        >
-          ESCRIBIR NOMBRE
-        </button>
-
       </div>
 
 
@@ -303,7 +274,7 @@
       </div>
 
 
-      <div id="capturaNombreManual" class="bloque" style="display:none;">
+      <div id="capturaNombreManual" class="bloque">
         <label class="etiqueta" for="nombreManual">Nombre del visitante</label>
         <input id="nombreManual" type="text" autocomplete="off" placeholder="Nombre completo">
       </div>
@@ -382,7 +353,7 @@
     id="ocrAccion"
     name="accion"
     type="hidden"
-    value="ocrPlacaPrueba"
+    value="ocrIngresoPrueba"
   >
 
   <input
@@ -398,6 +369,9 @@
   >
 
   <input id="ocrTipo" name="tipo" type="hidden">
+  <input id="ocrImagenIdentificacionBase64" name="imagenIdentificacionBase64" type="hidden">
+  <input id="ocrPlacaManual" name="placaManual" type="hidden">
+  <input id="ocrNombreManual" name="nombreManual" type="hidden">
 
 </form>
 
@@ -1469,6 +1443,203 @@ function ocultarMensaje() {
   mensaje.textContent =
     "";
 
+}
+
+
+function registrarIngresoPrueba() {
+
+  if (OCR_OPERACION) {
+    return;
+  }
+
+  const placaManual =
+    document.getElementById("placaManual").value.trim();
+
+  const nombreManual =
+    document.getElementById("nombreManual").value.trim();
+
+  if (!placaManual && !FOTO_BASE64) {
+    mostrarMensaje(
+      "Falta la placa: toma una foto o escribe las placas.",
+      "error"
+    );
+    return;
+  }
+
+  if (!nombreManual && !FOTO_IDENTIFICACION_BASE64) {
+    mostrarMensaje(
+      "Falta el nombre: toma una foto de la identificación o escribe el nombre.",
+      "error"
+    );
+    return;
+  }
+
+  const boton =
+    document.getElementById("btnRegistrar");
+
+  boton.disabled = true;
+  boton.textContent = "LEYENDO DATOS...";
+
+  ocultarMensaje();
+
+  const requestId =
+    generarRequestIdOCR();
+
+  OCR_OPERACION = {
+    requestId: requestId,
+    consultas: 0,
+    tipo: "INGRESO_COMBINADO"
+  };
+
+  document.getElementById("ocrRequestId").value =
+    requestId;
+
+  document.getElementById("ocrTipo").value =
+    "INGRESO_COMBINADO";
+
+  document.getElementById("ocrImagenBase64").value =
+    FOTO_BASE64 || "";
+
+  document.getElementById("ocrImagenIdentificacionBase64").value =
+    FOTO_IDENTIFICACION_BASE64 || "";
+
+  document.getElementById("ocrPlacaManual").value =
+    placaManual;
+
+  document.getElementById("ocrNombreManual").value =
+    nombreManual;
+
+  document.getElementById("formOCR").submit();
+
+  setTimeout(
+    consultarEstadoOCR,
+    800
+  );
+}
+
+const procesarEstadoOCRBase =
+  procesarEstadoOCR;
+
+procesarEstadoOCR =
+  function(resultado) {
+
+    if (
+      !OCR_OPERACION ||
+      OCR_OPERACION.tipo !== "INGRESO_COMBINADO"
+    ) {
+      return procesarEstadoOCRBase(resultado);
+    }
+
+    if (!resultado || !resultado.ok) {
+      terminarIngresoPruebaError(
+        "No fue posible consultar el resultado."
+      );
+      return;
+    }
+
+    const datos =
+      resultado.datos || {};
+
+    if (datos.estado === "PENDIENTE") {
+      setTimeout(
+        consultarEstadoOCR,
+        700
+      );
+      return;
+    }
+
+    if (
+      datos.estado !== "LISTO" ||
+      !datos.resultado
+    ) {
+      terminarIngresoPruebaError(
+        "No fue posible completar el análisis."
+      );
+      return;
+    }
+
+    const respuesta =
+      datos.resultado;
+
+    OCR_OPERACION = null;
+
+    const boton =
+      document.getElementById("btnRegistrar");
+
+    boton.disabled = false;
+    boton.textContent = "REGISTRAR INGRESO";
+
+    if (!respuesta.ok) {
+      mostrarMensaje(
+        respuesta.mensaje ||
+        "No fue posible analizar los datos.",
+        "error"
+      );
+      return;
+    }
+
+    document.getElementById("placaDetectada").textContent =
+      respuesta.placa || "NO RECONOCIDA";
+
+    document.getElementById("textoDetectado").textContent =
+      respuesta.textoPlaca ||
+      (respuesta.placaManual
+        ? "Captura manual. No se realizó consulta OCR."
+        : "Sin texto detectado.");
+
+    document.getElementById("resultado").style.display =
+      "block";
+
+    document.getElementById("nombreDetectado").textContent =
+      respuesta.nombre || "NO RECONOCIDO";
+
+    document.getElementById("textoIdentificacion").textContent =
+      respuesta.textoIdentificacion ||
+      (respuesta.nombreManual
+        ? "Captura manual. No se realizó consulta OCR."
+        : "Sin texto detectado.");
+
+    document.getElementById("resultadoNombre").style.display =
+      "block";
+
+    let textoFinal =
+      "Prueba terminada. ";
+
+    if (respuesta.consultasVision === 0) {
+      textoFinal +=
+        "No se utilizó Google Vision.";
+    }
+    else if (respuesta.consultasVision === 1) {
+      textoFinal +=
+        "Se utilizó 1 consulta de Google Vision.";
+    }
+    else {
+      textoFinal +=
+        "Se utilizaron 2 consultas de Google Vision.";
+    }
+
+    mostrarMensaje(
+      textoFinal,
+      "ok"
+    );
+  };
+
+function terminarIngresoPruebaError(
+  mensaje
+) {
+
+  OCR_OPERACION = null;
+
+  const boton =
+    document.getElementById("btnRegistrar");
+
+  boton.disabled = false;
+  boton.textContent = "REGISTRAR INGRESO";
+
+  mostrarMensaje(
+    mensaje,
+    "error"
+  );
 }
 
 </script>
