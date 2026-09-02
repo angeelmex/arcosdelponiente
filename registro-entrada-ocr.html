@@ -229,6 +229,12 @@
       </div>
 
 
+      <div class="bloque">
+        <label class="etiqueta" for="fotoIdentificacion">Tomar foto de la identificación</label>
+        <input id="fotoIdentificacion" type="file" accept="image/*" capture="environment">
+        <img id="previewIdentificacion" class="preview" alt="Vista previa de la identificación">
+      </div>
+
       <div class="acciones">
 
         <button
@@ -248,6 +254,24 @@
           onclick="mostrarCapturaManual()"
         >
           ESCRIBIR PLACAS
+        </button>
+
+        <button
+          id="btnAnalizarNombre"
+          class="principal"
+          type="button"
+          onclick="analizarIdentificacion()"
+        >
+          LEER NOMBRE DE IDENTIFICACIÓN
+        </button>
+
+        <button
+          id="btnEscribirNombre"
+          class="secundario"
+          type="button"
+          onclick="mostrarNombreManual()"
+        >
+          ESCRIBIR NOMBRE
         </button>
 
       </div>
@@ -278,6 +302,18 @@
 
       </div>
 
+
+      <div id="capturaNombreManual" class="bloque" style="display:none;">
+        <label class="etiqueta" for="nombreManual">Nombre del visitante</label>
+        <input id="nombreManual" type="text" autocomplete="off" placeholder="Nombre completo">
+      </div>
+
+      <div id="resultadoNombre" class="resultado">
+        <div class="resultado-titulo">Nombre sugerido</div>
+        <div id="nombreDetectado" class="placa" style="font-size:22px;letter-spacing:0;">—</div>
+        <div class="resultado-titulo" style="margin-top:14px;">Texto completo leído por Google Vision</div>
+        <div id="textoIdentificacion" class="detalle">—</div>
+      </div>
 
       <div
         id="resultado"
@@ -361,6 +397,8 @@
     type="hidden"
   >
 
+  <input id="ocrTipo" name="tipo" type="hidden">
+
 </form>
 
 
@@ -381,6 +419,8 @@ const URL_BACKEND =
 let FOTO_BASE64 =
   "";
 
+let FOTO_IDENTIFICACION_BASE64 = "";
+
 
 let OCR_OPERACION =
   null;
@@ -393,6 +433,15 @@ document
   .addEventListener(
     "change",
     prepararFoto
+  );
+
+document
+  .getElementById(
+    "fotoIdentificacion"
+  )
+  .addEventListener(
+    "change",
+    prepararIdentificacion
   );
 
 
@@ -461,6 +510,73 @@ async function prepararFoto(
     );
 
   }
+
+}
+
+
+async function prepararIdentificacion(evento) {
+
+  const archivo =
+    evento.target.files &&
+    evento.target.files[0];
+
+  if (!archivo) {
+    FOTO_IDENTIFICACION_BASE64 = "";
+    return;
+  }
+
+  try {
+    const procesada =
+      await comprimirImagen(
+        archivo,
+        1600,
+        0.82
+      );
+
+    FOTO_IDENTIFICACION_BASE64 =
+      procesada.base64;
+
+    const preview =
+      document.getElementById(
+        "previewIdentificacion"
+      );
+
+    preview.src =
+      "data:image/jpeg;base64," +
+      FOTO_IDENTIFICACION_BASE64;
+
+    preview.style.display =
+      "block";
+
+    ocultarMensaje();
+  }
+  catch (error) {
+    FOTO_IDENTIFICACION_BASE64 = "";
+
+    mostrarMensaje(
+      "No fue posible preparar la fotografía de identificación.",
+      "error"
+    );
+  }
+
+}
+
+
+function mostrarNombreManual() {
+
+  const bloque =
+    document.getElementById(
+      "capturaNombreManual"
+    );
+
+  bloque.style.display =
+    "block";
+
+  document
+    .getElementById(
+      "nombreManual"
+    )
+    .focus();
 
 }
 
@@ -630,6 +746,59 @@ function analizarPlaca() {
   }
 
 
+  const placaManual =
+    document
+      .getElementById(
+        "placaManual"
+      )
+      .value
+      .trim();
+
+
+  if (
+    placaManual
+  ) {
+
+    document
+      .getElementById(
+        "placaDetectada"
+      )
+      .textContent =
+        placaManual
+          .toUpperCase()
+          .replace(
+            /[^A-Z0-9]/g,
+            ""
+          );
+
+
+    document
+      .getElementById(
+        "textoDetectado"
+      )
+      .textContent =
+        "Captura manual. No se realizó consulta OCR.";
+
+
+    document
+      .getElementById(
+        "resultado"
+      )
+      .style.display =
+        "block";
+
+
+    mostrarMensaje(
+      "Placas capturadas manualmente.",
+      "ok"
+    );
+
+
+    return;
+
+  }
+
+
   if (
     !FOTO_BASE64
   ) {
@@ -678,7 +847,10 @@ function analizarPlaca() {
       requestId,
 
     consultas:
-      0
+      0,
+
+    tipo:
+      "PLACA"
   };
 
 
@@ -696,6 +868,167 @@ function analizarPlaca() {
     )
     .value =
       FOTO_BASE64;
+
+
+  document
+    .getElementById(
+      "ocrTipo"
+    )
+    .value =
+      "PLACA";
+
+
+  document
+    .getElementById(
+      "formOCR"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarEstadoOCR,
+    800
+  );
+
+}
+
+
+function analizarIdentificacion() {
+
+  if (
+    OCR_OPERACION
+  ) {
+
+    return;
+
+  }
+
+
+  const nombreManual =
+    document
+      .getElementById(
+        "nombreManual"
+      )
+      .value
+      .trim();
+
+
+  if (
+    nombreManual
+  ) {
+
+    document
+      .getElementById(
+        "nombreDetectado"
+      )
+      .textContent =
+        nombreManual;
+
+
+    document
+      .getElementById(
+        "textoIdentificacion"
+      )
+      .textContent =
+        "Captura manual. No se realizó consulta OCR.";
+
+
+    document
+      .getElementById(
+        "resultadoNombre"
+      )
+      .style.display =
+        "block";
+
+
+    mostrarMensaje(
+      "Nombre capturado manualmente.",
+      "ok"
+    );
+
+
+    return;
+
+  }
+
+
+  if (
+    !FOTO_IDENTIFICACION_BASE64
+  ) {
+
+    mostrarMensaje(
+      "Primero toma una fotografía de la identificación o escribe el nombre manualmente.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  ocultarMensaje();
+
+
+  document
+    .getElementById(
+      "resultadoNombre"
+    )
+    .style.display =
+      "none";
+
+
+  const boton =
+    document.getElementById(
+      "btnAnalizarNombre"
+    );
+
+
+  boton.disabled =
+    true;
+
+
+  boton.textContent =
+    "LEYENDO IDENTIFICACIÓN...";
+
+
+  const requestId =
+    generarRequestIdOCR();
+
+
+  OCR_OPERACION = {
+    requestId:
+      requestId,
+
+    consultas:
+      0,
+
+    tipo:
+      "IDENTIFICACION"
+  };
+
+
+  document
+    .getElementById(
+      "ocrRequestId"
+    )
+    .value =
+      requestId;
+
+
+  document
+    .getElementById(
+      "ocrImagenBase64"
+    )
+    .value =
+      FOTO_IDENTIFICACION_BASE64;
+
+
+  document
+    .getElementById(
+      "ocrTipo"
+    )
+    .value =
+      "IDENTIFICACION";
 
 
   document
@@ -909,6 +1242,11 @@ function procesarEstadoOCR(
     datos.resultado;
 
 
+  const tipoOperacion =
+    OCR_OPERACION.tipo ||
+    "PLACA";
+
+
   OCR_OPERACION =
     null;
 
@@ -925,6 +1263,52 @@ function procesarEstadoOCR(
       "No fue posible analizar la fotografía.",
       "error"
     );
+
+    return;
+
+  }
+
+
+  if (
+    tipoOperacion ===
+      "IDENTIFICACION"
+  ) {
+
+    document
+      .getElementById(
+        "nombreDetectado"
+      )
+      .textContent =
+        respuesta.nombre ||
+        "NO RECONOCIDO";
+
+
+    document
+      .getElementById(
+        "textoIdentificacion"
+      )
+      .textContent =
+        respuesta.texto ||
+        "Sin texto detectado.";
+
+
+    document
+      .getElementById(
+        "resultadoNombre"
+      )
+      .style.display =
+        "block";
+
+
+    mostrarMensaje(
+      respuesta.nombre
+        ? "Nombre leído correctamente."
+        : "Google Vision leyó la identificación, pero no encontró un nombre claro.",
+      respuesta.nombre
+        ? "ok"
+        : "error"
+    );
+
 
     return;
 
@@ -996,12 +1380,26 @@ function restaurarBotonOCR() {
     );
 
 
+  const botonNombre =
+    document.getElementById(
+      "btnAnalizarNombre"
+    );
+
+
   boton.disabled =
     false;
 
 
   boton.textContent =
     "ANALIZAR PLACA";
+
+
+  botonNombre.disabled =
+    false;
+
+
+  botonNombre.textContent =
+    "LEER NOMBRE DE IDENTIFICACIÓN";
 
 }
 
