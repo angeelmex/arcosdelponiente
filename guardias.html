@@ -54,188 +54,6 @@
       background:#5f6f7a;
       color:white
     }
-    .menu button.mensajes-menu{
-      grid-column:1 / -1;
-      background:#ffffff;
-      color:#204d5d;
-      border:2px solid #204d5d
-    }
-
-    .menu button.mensajes-menu{
-      position:relative
-    }
-
-    .badge-menu-guardias{
-      display:none;
-      position:absolute;
-      top:9px;
-      right:11px;
-      min-width:24px;
-      height:24px;
-      padding:0 7px;
-      border-radius:999px;
-      background:#d84444;
-      color:white;
-      align-items:center;
-      justify-content:center;
-      font-size:11px;
-      font-weight:900
-    }
-
-    .badge-menu-guardias.activo{
-      display:flex
-    }
-
-    .menu button.notificaciones-menu{
-      grid-column:1 / -1;
-      min-height:58px;
-      background:#edf3f6;
-      color:#204d5d;
-      border:1px solid #d4e0e6;
-      font-size:14px
-    }
-
-    .menu button.notificaciones-menu.activo{
-      background:#e9f7ee;
-      color:#267245;
-      border-color:#c8e7d1
-    }
-
-
-    .chat-lista{
-      display:grid;
-      gap:9px
-    }
-
-    .chat-item{
-      width:100%;
-      border:2px solid #e3e9ee;
-      border-radius:17px;
-      background:white;
-      padding:13px;
-      text-align:left;
-      color:#20384f
-    }
-
-    .chat-item-arriba{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:flex-start
-    }
-
-    .chat-dom{
-      font-weight:900;
-      color:#204d5d
-    }
-
-    .chat-fecha{
-      color:#84909c;
-      font-size:11px
-    }
-
-    .chat-ultimo{
-      margin-top:5px;
-      color:#718198;
-      font-size:13px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis
-    }
-
-    .badge-chat{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width:24px;
-      height:24px;
-      border-radius:999px;
-      background:#238c45;
-      color:white;
-      font-size:11px;
-      font-weight:900;
-      padding:0 7px
-    }
-
-    .chat-conversacion{
-      min-height:45vh;
-      max-height:57vh;
-      overflow:auto;
-      display:flex;
-      flex-direction:column;
-      gap:9px;
-      margin:10px 0 12px;
-      padding:4px
-    }
-
-    .chat-burbuja{
-      max-width:84%;
-      border-radius:17px;
-      padding:10px 12px;
-      font-size:14px;
-      line-height:1.4
-    }
-
-    .chat-burbuja.residente{
-      align-self:flex-start;
-      background:#edf3f6;
-      color:#20384f;
-      border-bottom-left-radius:6px
-    }
-
-    .chat-burbuja.guardia{
-      align-self:flex-end;
-      background:#204d5d;
-      color:white;
-      border-bottom-right-radius:6px
-    }
-
-    .chat-burbuja.sistema{
-      align-self:center;
-      max-width:95%;
-      background:#e9f7ee;
-      color:#267245;
-      border:1px solid #c8e7d1;
-      text-align:center;
-      font-size:13px
-    }
-
-    .chat-hora{
-      margin-top:4px;
-      font-size:10px;
-      opacity:.7
-    }
-
-    .chat-escribir{
-      display:grid;
-      grid-template-columns:1fr auto;
-      gap:8px
-    }
-
-    .chat-escribir textarea{
-      min-height:54px;
-      max-height:100px
-    }
-
-    .chat-enviar{
-      border:none;
-      border-radius:16px;
-      background:#238c45;
-      color:white;
-      font-weight:900;
-      padding:0 15px
-    }
-
-    .chat-enviar:disabled{
-      opacity:.55;
-      cursor:wait
-    }
-
-    .chat-escribir textarea:disabled{
-      opacity:.65;
-      background:#f2f4f6
-    }
-
     .panel{
       display:none;
       background:white;
@@ -504,23 +322,6 @@
       padding: 24px 20px;
       box-shadow: 0 14px 40px rgba(0,0,0,.24);
       text-align: center;
-      position: relative;
-    }
-
-    .cerrar-confirmacion-domicilio {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 40px;
-      height: 40px;
-      border: none;
-      border-radius: 50%;
-      background: #eef2f5;
-      color: #5c6b78;
-      font-size: 24px;
-      line-height: 1;
-      font-weight: 800;
-      cursor: pointer;
     }
 
     .confirmacion-telefono-icono {
@@ -611,7 +412,6 @@
   padding: 24px 20px;
   box-shadow: 0 14px 40px rgba(0,0,0,.24);
   text-align: center;
-  position: relative;
 }
 
 .confirmacion-nip-icono {
@@ -744,100 +544,6 @@
       font-size: 14px;
     }
 
-    .modal-autorizacion-caseta {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 6200;
-      background: rgba(14,35,48,.72);
-      padding: 18px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-autorizacion-caseta.activo {
-      display: flex;
-    }
-
-    .autorizacion-caseta-card {
-      width: 100%;
-      max-width: 470px;
-      background: white;
-      border-radius: 24px;
-      padding: 24px 20px;
-      box-shadow: 0 14px 40px rgba(0,0,0,.24);
-      text-align: center;
-      position: relative;
-    }
-
-    .autorizacion-caseta-icono {
-      width: 78px;
-      height: 78px;
-      margin: 0 auto 15px;
-      border-radius: 50%;
-      background: #e9f7ee;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 38px;
-    }
-
-    .autorizacion-caseta-card h2 {
-      margin: 0 0 10px;
-      color: #204d5d;
-      font-size: 23px;
-    }
-
-    .autorizacion-caseta-card p {
-      margin: 0 0 18px;
-      color: #64788b;
-      font-size: 15px;
-      line-height: 1.5;
-    }
-
-    .btn-usar-autorizacion {
-      width: 100%;
-      min-height: 64px;
-      border: none;
-      border-radius: 18px;
-      background: #238c45;
-      color: white;
-      font-size: 18px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .btn-escribir-nip {
-      width: 100%;
-      min-height: 54px;
-      margin-top: 10px;
-      border: 2px solid #dce5ec;
-      border-radius: 18px;
-      background: white;
-      color: #204d5d;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .autorizacion-expira {
-      margin-top: 10px !important;
-      color: #8795a4 !important;
-      font-size: 12px !important;
-    }
-
-
-    .version-guardias {
-      position: fixed;
-      left: 8px;
-      bottom: 6px;
-      z-index: 2;
-      font-size: 9px;
-      color: rgba(90,108,120,.48);
-      pointer-events: none;
-      user-select: none;
-    }
-
 </style>
 
   <meta name="theme-color" content="#204d5d">
@@ -853,14 +559,6 @@
 
 </head>
 <body>
-
-<div
-  class="version-guardias"
-  id="versionGuardias"
->
-  v 2026.08.26-1328
-</div>
-
 
 <div
   id="bloqueoGuardias"
@@ -908,22 +606,6 @@
     <button onclick="abrirEntrada()">REGISTRAR ENTRADA</button>
     <button class="sec" onclick="abrirSalida()">REGISTRAR SALIDA</button>
     <button class="proveedor-menu" onclick="abrirProveedor()">REGISTRAR PROVEEDOR</button>
-    <button class="mensajes-menu" onclick="abrirMensajesGuardias()">
-      💬 MENSAJES CON RESIDENTES
-      <span
-        id="badgeMensajesGuardias"
-        class="badge-menu-guardias"
-      ></span>
-    </button>
-
-    <button
-      id="btnNotificacionesGuardias"
-      class="notificaciones-menu"
-      type="button"
-      onclick="activarNotificacionesGuardias()"
-    >
-      🔔 ACTIVAR NOTIFICACIONES
-    </button>
   </div>
 
   <section
@@ -1065,77 +747,6 @@
   </section>
 
 
-  <section id="panelMensajesGuardias" class="panel">
-    <button class="volver" onclick="volverMenu()">← VOLVER</button>
-
-    <h2 style="margin:0 0 6px;">
-      💬 Mensajes
-    </h2>
-
-    <div class="mini" style="margin-bottom:14px;">
-      Conversaciones recientes con residentes
-    </div>
-
-    <div
-      id="indicadorActualizarChatsGuardias"
-      class="mini"
-      style="
-        text-align:center;
-        height:0;
-        overflow:hidden;
-        opacity:0;
-        transition:height .18s ease, opacity .18s ease;
-      "
-    >
-      ↓ Jala para actualizar
-    </div>
-
-    <div
-      id="listaChatsGuardias"
-      class="chat-lista"
-    ></div>
-  </section>
-
-
-  <section id="panelChatGuardia" class="panel">
-    <button class="volver" onclick="volverAListaChatsGuardias()">← CHATS</button>
-
-    <h2
-      id="tituloChatGuardia"
-      style="margin:0 0 4px;"
-    >
-      Conversación
-    </h2>
-
-    <div
-      id="subChatGuardia"
-      class="mini"
-    ></div>
-
-    <div
-      id="mensajesChatGuardia"
-      class="chat-conversacion"
-    ></div>
-
-    <div class="chat-escribir">
-      <textarea
-        id="inputChatGuardia"
-        maxlength="500"
-        placeholder="Escribe una respuesta..."
-      ></textarea>
-
-      <button
-        id="btnEnviarChatGuardia"
-        class="chat-enviar"
-        type="button"
-        onclick="enviarMensajeGuardia()"
-      >
-        ENVIAR
-      </button>
-    </div>
-  </section>
-
-
   <section id="panelEntrada" class="panel">
     <button class="volver" onclick="volverMenu()">← VOLVER</button>
 
@@ -1249,15 +860,6 @@
 >
   <div class="confirmacion-telefono-card">
 
-    <button
-      type="button"
-      class="cerrar-confirmacion-domicilio"
-      aria-label="Cancelar"
-      onclick="cancelarSeleccionDomicilioManual()"
-    >
-      ×
-    </button>
-
     <div class="confirmacion-telefono-icono">
       📞
     </div>
@@ -1300,73 +902,11 @@
 </div>
 
 <div
-  id="modalAutorizacionCaseta"
-  class="modal-autorizacion-caseta"
->
-  <div class="autorizacion-caseta-card">
-
-    <button
-      type="button"
-      class="cerrar-confirmacion-domicilio"
-      aria-label="Cancelar"
-      onclick="cancelarSeleccionDomicilioManual()"
-    >
-      ×
-    </button>
-
-    <div class="autorizacion-caseta-icono">
-      ✓
-    </div>
-
-    <h2>
-      Autorización del residente
-    </h2>
-
-    <p>
-      El residente compartió una autorización directamente con caseta.
-      Puedes usarla sin ver ni escribir el NIP.
-    </p>
-
-    <button
-      type="button"
-      class="btn-usar-autorizacion"
-      onclick="usarAutorizacionCaseta()"
-    >
-      USAR AUTORIZACIÓN
-    </button>
-
-    <button
-      type="button"
-      class="btn-escribir-nip"
-      onclick="usarNipManualEnLugarDeCaseta()"
-    >
-      ESCRIBIR NIP MANUALMENTE
-    </button>
-
-    <p
-      id="expiraAutorizacionCaseta"
-      class="autorizacion-expira"
-    ></p>
-
-  </div>
-</div>
-
-
-<div
   id="modalConfirmacionNip"
   class="modal-confirmacion-nip"
 >
 
   <div class="confirmacion-nip-card">
-
-    <button
-      type="button"
-      class="cerrar-confirmacion-domicilio"
-      aria-label="Cancelar"
-      onclick="cancelarSeleccionDomicilioManual()"
-    >
-      ×
-    </button>
 
     <div class="confirmacion-nip-icono">
       🔐
@@ -1435,52 +975,6 @@
 
 const URL_BACKEND =
   "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
-
-
-const VERSION_GUARDIAS =
-  "2026.08.27-chat-cache-envio-recuperable";
-
-
-function asegurarVersionGuardias() {
-
-  try {
-
-    const url =
-      new URL(
-        window.location.href
-      );
-
-
-    if (
-      url.searchParams.get(
-        "appv"
-      ) !==
-        VERSION_GUARDIAS
-    ) {
-
-      url.searchParams.set(
-        "appv",
-        VERSION_GUARDIAS
-      );
-
-
-      window.location.replace(
-        url.toString()
-      );
-
-
-      return false;
-
-    }
-
-  }
-  catch (error) {}
-
-
-  return true;
-
-}
-
 
 
 const CLAVE_LOCAL_GUARDIAS =
@@ -1628,7 +1122,7 @@ function apiGuardias(
 
 
     if (
-      intentos > 120
+      intentos > 36
     ) {
 
       if (
@@ -1637,7 +1131,7 @@ function apiGuardias(
       ) {
 
         error(
-          "La operación sigue procesándose. No repitas el registro de inmediato; verifica primero si ya aparece en accesos."
+          "El servidor está tardando más de lo normal."
         );
 
       }
@@ -2077,41 +1571,11 @@ let fotoIdentificacionBase64 = "";
 let fotoIdentificacionMime = "";
 let temporizadorBusqueda = null;
 let telefonoEntradaManual = "";
+let telefonoLlamadaEntradaManual = "";
 let requiereConfirmacionTelefonica = false;
 let llamadaConfirmacionIniciada = false;
 let requiereConfirmacionNip = false;
 let nipAutorizadoEntradaManual = "";
-let autorizacionCasetaId = "";
-let autorizacionCasetaDisponible = false;
-let autorizacionCasetaExpiracion = 0;
-let chatGuardiaActivoId = "";
-let temporizadorChatGuardia = null;
-let chatGuardiaCargando = false;
-let intentosCargaChatGuardia = 0;
-let watchdogChatGuardia = null;
-
-/*
- * Cache local de chats de caseta.
- * Sirve solo para pintar inmediatamente lo ya conocido.
- * La información nueva sigue viniendo del servidor.
- */
-const CACHE_LISTA_CHATS_GUARDIAS_V3 =
-  "arcos_guardias_lista_chats_v3";
-
-const CACHE_CHAT_GUARDIA_PREFIJO_V3 =
-  "arcos_guardias_chat_v3_";
-
-let inicioJalonChatsGuardias =
-  0;
-
-let jalandoChatsGuardias =
-  false;
-
-let actualizandoChatsGuardias =
-  false;
-
-const CLAVE_ENVIO_CHAT_GUARDIA_PENDIENTE_V3 =
-  "arcos_guardias_envio_chat_pendiente_v3";
 let fotoPlacasProveedorBase64 = "";
 let fotoPlacasProveedorMime = "";
 let fotoIdentificacionProveedorBase64 = "";
@@ -2121,40 +1585,9 @@ const CLAVE_ESTADO_ENTRADA_MANUAL =
   "estadoEntradaManualGuardia";
 
 
-const CACHE_GUARDIAS_DATOS_V3 =
-  "arcos_guardias_datos_v3";
-
-const CACHE_GUARDIAS_NUMEROS_PREFIJO_V3 =
-  "arcos_guardias_numeros_v3_";
-
-const MILISEGUNDOS_CACHE_GUARDIAS_V3 =
-  24 * 60 * 60 * 1000;
-
-const CACHE_GUARDIAS_CONTACTO_PREFIJO_V3 =
-  "arcos_guardias_contacto_v3_";
-
-const MILISEGUNDOS_CACHE_CONTACTO_GUARDIAS_V3 =
-  15 * 60 * 1000;
-
-let solicitudNumerosGuardiasV3 =
-  0;
-
-let solicitudContactoGuardiasV3 =
-  0;
-
-
 document.addEventListener(
   "DOMContentLoaded",
   function() {
-
-    if (
-      !asegurarVersionGuardias()
-    ) {
-
-      return;
-
-    }
-
 
     registrarServiceWorkerGuardias();
 
@@ -2177,338 +1610,7 @@ document.addEventListener(
 
 
 
-function obtenerChatPendienteDesdeUrlGuardias() {
-
-  try {
-
-    const parametros =
-      new URLSearchParams(
-        window.location.search
-      );
-
-
-    return String(
-      parametros.get(
-        "chat"
-      ) || ""
-    ).trim();
-
-  }
-  catch (error) {
-
-    return "";
-
-  }
-
-}
-
-
-
-function limpiarChatPendienteDeUrlGuardias() {
-
-  try {
-
-    const url =
-      new URL(
-        window.location.href
-      );
-
-
-    url.searchParams.delete(
-      "chat"
-    );
-
-
-    window.history.replaceState(
-      {},
-      "",
-      url.pathname +
-      (
-        url.search
-          ? url.search
-          : ""
-      ) +
-      (
-        url.hash
-          ? url.hash
-          : ""
-      )
-    );
-
-  }
-  catch (error) {}
-
-}
-
-
-
-function abrirChatPendienteDesdeUrlGuardias() {
-
-  const idResidente =
-    obtenerChatPendienteDesdeUrlGuardias();
-
-
-  if (
-    !idResidente
-  ) {
-
-    return;
-
-  }
-
-
-  /*
-   * Limpiamos la URL antes de abrirlo para que al recargar
-   * la app no vuelva a forzar la misma conversación.
-   */
-  limpiarChatPendienteDeUrlGuardias();
-
-
-  setTimeout(
-    function() {
-
-      abrirChatGuardia(
-        idResidente
-      );
-
-    },
-    250
-  );
-
-}
-
-
-
-function pintarDatosInicialesGuardiasV3_(
-  datos
-) {
-
-  datos =
-    datos || {};
-
-
-  const calle =
-    document.getElementById(
-      "calle"
-    );
-
-
-  calle.innerHTML =
-    '<option value="">Selecciona calle</option>';
-
-
-  (
-    datos.calles ||
-    []
-  )
-    .forEach(
-      function(valor) {
-
-        const op =
-          document.createElement(
-            "option"
-          );
-
-
-        op.value =
-          valor;
-
-
-        op.textContent =
-          valor;
-
-
-        calle.appendChild(
-          op
-        );
-
-      }
-    );
-
-
-  const tipo =
-    document.getElementById(
-      "tipoVisita"
-    );
-
-
-  tipo.innerHTML =
-    '<option value="">Selecciona tipo</option>';
-
-
-  (
-    datos.tiposVisita ||
-    []
-  )
-    .forEach(
-      function(valor) {
-
-        const op =
-          document.createElement(
-            "option"
-          );
-
-
-        op.value =
-          valor;
-
-
-        op.textContent =
-          valor;
-
-
-        tipo.appendChild(
-          op
-        );
-
-      }
-    );
-
-}
-
-
-
-function leerCacheDatosGuardiasV3_() {
-
-  try {
-
-    const textoCache =
-      localStorage.getItem(
-        CACHE_GUARDIAS_DATOS_V3
-      );
-
-
-    if (
-      !textoCache
-    ) {
-
-      return null;
-
-    }
-
-
-    const cache =
-      JSON.parse(
-        textoCache
-      );
-
-
-    if (
-      !cache ||
-      !cache.fecha ||
-      !cache.datos ||
-      !Array.isArray(
-        cache.datos.calles
-      ) ||
-      !Array.isArray(
-        cache.datos.tiposVisita
-      )
-    ) {
-
-      return null;
-
-    }
-
-
-    return cache;
-
-  }
-  catch (error) {
-
-    return null;
-
-  }
-
-}
-
-
-
-function guardarCacheDatosGuardiasV3_(
-  datos
-) {
-
-  try {
-
-    localStorage.setItem(
-      CACHE_GUARDIAS_DATOS_V3,
-      JSON.stringify(
-        {
-          fecha:
-            Date.now(),
-
-          datos:
-            datos || {}
-        }
-      )
-    );
-
-  }
-  catch (error) {
-
-    /*
-     * El caché local es solamente una optimización.
-     */
-
-  }
-
-}
-
-
-
-function continuarInicioGuardiasV3_() {
-
-  setTimeout(
-    revisarPendientesGuardias,
-    500
-  );
-
-
-  abrirChatPendienteDesdeUrlGuardias();
-
-}
-
-
-
 function cargarDatosInicialesGuardias() {
-
-  const cache =
-    leerCacheDatosGuardiasV3_();
-
-
-  if (
-    cache &&
-    cache.datos
-  ) {
-
-    /*
-     * Las calles aparecen inmediatamente desde el teléfono.
-     */
-    pintarDatosInicialesGuardiasV3_(
-      cache.datos
-    );
-
-
-    continuarInicioGuardiasV3_();
-
-
-    /*
-     * Mientras el caché tenga menos de 24 horas,
-     * no hace falta consultar nuevamente.
-     */
-    if (
-      Date.now() -
-        Number(
-          cache.fecha
-        ) <
-        MILISEGUNDOS_CACHE_GUARDIAS_V3
-    ) {
-
-      return;
-
-    }
-
-  }
-
 
   apiGuardias(
     "guardiasDatos",
@@ -2520,23 +1622,13 @@ function cargarDatosInicialesGuardias() {
         !resultado.ok
       ) {
 
-        /*
-         * Si ya pintamos una copia local, una falla
-         * temporal de red no debe borrar las calles.
-         */
-        if (
-          !cache
-        ) {
-
-          mensaje(
-            resultado &&
-            resultado.mensaje
-              ? resultado.mensaje
-              : "No fue posible cargar.",
-            "error"
-          );
-
-        }
+        mensaje(
+          resultado &&
+          resultado.mensaje
+            ? resultado.mensaje
+            : "No fue posible cargar.",
+          "error"
+        );
 
 
         return;
@@ -2544,46 +1636,85 @@ function cargarDatosInicialesGuardias() {
       }
 
 
-      const datos =
-        resultado.datos ||
-        {
-          calles: [],
-          tiposVisita: []
-        };
+      const calle =
+        document.getElementById(
+          "calle"
+        );
 
 
-      guardarCacheDatosGuardiasV3_(
-        datos
-      );
+      calle.innerHTML =
+        '<option value="">Selecciona calle</option>';
 
 
-      pintarDatosInicialesGuardiasV3_(
-        datos
-      );
+      (resultado.datos.calles || [])
+        .forEach(
+          function(valor) {
+
+            const op =
+              document.createElement(
+                "option"
+              );
 
 
-      if (
-        !cache
-      ) {
+            op.value =
+              valor;
 
-        continuarInicioGuardiasV3_();
 
-      }
+            op.textContent =
+              valor;
+
+
+            calle.appendChild(
+              op
+            );
+
+          }
+        );
+
+
+      const tipo =
+        document.getElementById(
+          "tipoVisita"
+        );
+
+
+      tipo.innerHTML =
+        '<option value="">Selecciona tipo</option>';
+
+
+      (resultado.datos.tiposVisita || [])
+        .forEach(
+          function(valor) {
+
+            const op =
+              document.createElement(
+                "option"
+              );
+
+
+            op.value =
+              valor;
+
+
+            op.textContent =
+              valor;
+
+
+            tipo.appendChild(
+              op
+            );
+
+          }
+        );
 
     },
     function(textoError) {
 
-      if (
-        !cache
-      ) {
-
-        mensaje(
-          textoError ||
-          "No fue posible cargar.",
-          "error"
-        );
-
-      }
+      mensaje(
+        textoError ||
+        "No fue posible cargar.",
+        "error"
+      );
 
     }
   );
@@ -3040,8 +2171,6 @@ function abrirEntrada() {
   document.getElementById("menu").style.display = "none";
   document.getElementById("panelSalida").classList.remove("activo");
   document.getElementById("panelProveedor").classList.remove("activo");
-  document.getElementById("panelMensajesGuardias").classList.remove("activo");
-  document.getElementById("panelChatGuardia").classList.remove("activo");
   document.getElementById("panelEntrada").classList.add("activo");
 }
 
@@ -3051,8 +2180,6 @@ function abrirSalida() {
   document.getElementById("estadoRegistroProveedor").style.display = "none";
   document.getElementById("panelEntrada").classList.remove("activo");
   document.getElementById("panelProveedor").classList.remove("activo");
-  document.getElementById("panelMensajesGuardias").classList.remove("activo");
-  document.getElementById("panelChatGuardia").classList.remove("activo");
   document.getElementById("panelSalida").classList.add("activo");
   document.getElementById("buscarPlacas").focus();
 }
@@ -3065,8 +2192,6 @@ function abrirProveedor() {
   document.getElementById("estadoRegistroProveedor").style.display = "none";
   document.getElementById("panelEntrada").classList.remove("activo");
   document.getElementById("panelSalida").classList.remove("activo");
-  document.getElementById("panelMensajesGuardias").classList.remove("activo");
-  document.getElementById("panelChatGuardia").classList.remove("activo");
   document.getElementById("panelProveedor").classList.add("activo");
 
   setTimeout(
@@ -3079,309 +2204,34 @@ function abrirProveedor() {
 
 
 function volverMenu() {
-
-  detenerActualizacionChatGuardia();
   document.getElementById("panelEntrada").classList.remove("activo");
   document.getElementById("panelSalida").classList.remove("activo");
   document.getElementById("panelProveedor").classList.remove("activo");
-  document.getElementById("panelMensajesGuardias").classList.remove("activo");
-  document.getElementById("panelChatGuardia").classList.remove("activo");
   document.getElementById("estadoRegistroProveedor").style.display = "none";
   document.getElementById("menu").style.display = "grid";
 }
 
 
-function claveCacheNumerosGuardiasV3_(
-  calle
-) {
-
-  return (
-    CACHE_GUARDIAS_NUMEROS_PREFIJO_V3 +
-    encodeURIComponent(
-      String(
-        calle || ""
-      )
-      .trim()
-      .toUpperCase()
-    )
-  );
-
-}
-
-
-
-function leerCacheNumerosGuardiasV3_(
-  calle
-) {
-
-  try {
-
-    const textoCache =
-      localStorage.getItem(
-        claveCacheNumerosGuardiasV3_(
-          calle
-        )
-      );
-
-
-    if (
-      !textoCache
-    ) {
-
-      return null;
-
-    }
-
-
-    const cache =
-      JSON.parse(
-        textoCache
-      );
-
-
-    if (
-      !cache ||
-      !cache.fecha ||
-      !Array.isArray(
-        cache.numeros
-      )
-    ) {
-
-      return null;
-
-    }
-
-
-    return cache;
-
-  }
-  catch (error) {
-
-    return null;
-
-  }
-
-}
-
-
-
-function guardarCacheNumerosGuardiasV3_(
-  calle,
-  numeros
-) {
-
-  try {
-
-    localStorage.setItem(
-      claveCacheNumerosGuardiasV3_(
-        calle
-      ),
-      JSON.stringify(
-        {
-          fecha:
-            Date.now(),
-
-          numeros:
-            Array.isArray(
-              numeros
-            )
-              ? numeros
-              : []
-        }
-      )
-    );
-
-  }
-  catch (error) {
-
-    /*
-     * Si falla localStorage, la consulta normal sigue funcionando.
-     */
-
-  }
-
-}
-
-
-
-function pintarNumerosGuardiasV3_(
-  calleEsperada,
-  numeros
-) {
-
-  const calleActual =
-    document
-      .getElementById(
-        "calle"
-      )
-      .value;
-
-
-  /*
-   * Protección contra respuestas atrasadas:
-   * si el guardia ya cambió de calle, ignoramos esta respuesta.
-   */
-  if (
-    String(
-      calleActual
-    ) !==
-    String(
-      calleEsperada
-    )
-  ) {
-
-    return;
-
-  }
-
-
-  const numero =
-    document.getElementById(
-      "numero"
-    );
-
-
-  numero.innerHTML =
-    '<option value="">Selecciona número</option>';
-
-
-  (
-    numeros ||
-    []
-  )
-    .forEach(
-      function(valor) {
-
-        const op =
-          document.createElement(
-            "option"
-          );
-
-
-        op.value =
-          valor;
-
-
-        op.textContent =
-          valor;
-
-
-        numero.appendChild(
-          op
-        );
-
-      }
-    );
-
-}
-
-
-
 function cargarNumeros() {
 
-  telefonoEntradaManual =
-    "";
-
-  requiereConfirmacionTelefonica =
-    false;
-
-  llamadaConfirmacionIniciada =
-    false;
-
+  telefonoEntradaManual = "";
+  telefonoLlamadaEntradaManual = "";
+  requiereConfirmacionTelefonica = false;
+  llamadaConfirmacionIniciada = false;
   cerrarModalConfirmacionTelefono();
-
-  requiereConfirmacionNip =
-    false;
-
-  nipAutorizadoEntradaManual =
-    "";
-
+  requiereConfirmacionNip = false;
+  nipAutorizadoEntradaManual = "";
   cerrarModalConfirmacionNip();
 
-  autorizacionCasetaId =
-    "";
+  const calle = document.getElementById("calle").value;
+  const numero = document.getElementById("numero");
 
-  autorizacionCasetaDisponible =
-    false;
+  numero.innerHTML = '<option value="">Cargando...</option>';
 
-  autorizacionCasetaExpiracion =
-    0;
-
-  cerrarModalAutorizacionCaseta();
-
-
-  const calle =
-    document
-      .getElementById(
-        "calle"
-      )
-      .value;
-
-
-  const numero =
-    document.getElementById(
-      "numero"
-    );
-
-
-  /*
-   * Cada cambio de calle invalida cualquier respuesta anterior.
-   */
-  solicitudNumerosGuardiasV3++;
-
-
-  const solicitudActual =
-    solicitudNumerosGuardiasV3;
-
-
-  if (
-    !calle
-  ) {
-
-    numero.innerHTML =
-      '<option value="">Selecciona número</option>';
-
+  if (!calle) {
+    numero.innerHTML = '<option value="">Selecciona número</option>';
     return;
-
   }
-
-
-  const cache =
-    leerCacheNumerosGuardiasV3_(
-      calle
-    );
-
-
-  if (
-    cache &&
-    Date.now() -
-      Number(
-        cache.fecha
-      ) <
-      MILISEGUNDOS_CACHE_GUARDIAS_V3
-  ) {
-
-    /*
-     * Si esta calle ya fue consultada en las últimas 24 h,
-     * sus números aparecen sin esperar al servidor.
-     */
-    pintarNumerosGuardiasV3_(
-      calle,
-      cache.numeros
-    );
-
-    return;
-
-  }
-
-
-  /*
-   * Solo mostramos "Cargando..." la primera vez que esta calle
-   * no existe todavía en este teléfono.
-   */
-  numero.innerHTML =
-    '<option value="">Cargando...</option>';
-
 
   apiGuardias(
     "guardiasNumeros",
@@ -3390,41 +2240,6 @@ function cargarNumeros() {
         calle
     },
     function(resultado) {
-
-      /*
-       * Si ya hubo otro cambio de calle, ignoramos esta respuesta.
-       */
-      if (
-        solicitudActual !==
-          solicitudNumerosGuardiasV3
-      ) {
-
-        return;
-
-      }
-
-
-      const calleActual =
-        document
-          .getElementById(
-            "calle"
-          )
-          .value;
-
-
-      if (
-        String(
-          calleActual
-        ) !==
-        String(
-          calle
-        )
-      ) {
-
-        return;
-
-      }
-
 
       const numeros =
         resultado &&
@@ -3437,51 +2252,20 @@ function cargarNumeros() {
           : [];
 
 
-      guardarCacheNumerosGuardiasV3_(
-        calle,
-        numeros
-      );
 
+        numero.innerHTML = '<option value="">Selecciona número</option>';
 
-      pintarNumerosGuardiasV3_(
-        calle,
-        numeros
-      );
-
+        (numeros || []).forEach(
+          function(valor) {
+            const op = document.createElement("option");
+            op.value = valor;
+            op.textContent = valor;
+            numero.appendChild(op);
+          }
+        );
+      
     },
     function() {
-
-      if (
-        solicitudActual !==
-          solicitudNumerosGuardiasV3
-      ) {
-
-        return;
-
-      }
-
-
-      const calleActual =
-        document
-          .getElementById(
-            "calle"
-          )
-          .value;
-
-
-      if (
-        String(
-          calleActual
-        ) !==
-        String(
-          calle
-        )
-      ) {
-
-        return;
-
-      }
-
 
       numero.innerHTML =
         '<option value="">Selecciona número</option>';
@@ -3494,409 +2278,7 @@ function cargarNumeros() {
 
     }
   );
-
 }
-
-
-function claveCacheContactoGuardiasV3_(
-  calle,
-  numero
-) {
-
-  return (
-    CACHE_GUARDIAS_CONTACTO_PREFIJO_V3 +
-    encodeURIComponent(
-      String(
-        calle || ""
-      )
-      .trim()
-      .toUpperCase()
-    ) +
-    "_" +
-    encodeURIComponent(
-      String(
-        numero || ""
-      )
-      .trim()
-      .toUpperCase()
-    )
-  );
-
-}
-
-
-
-function leerCacheContactoGuardiasV3_(
-  calle,
-  numero
-) {
-
-  try {
-
-    const textoCache =
-      localStorage.getItem(
-        claveCacheContactoGuardiasV3_(
-          calle,
-          numero
-        )
-      );
-
-
-    if (
-      !textoCache
-    ) {
-
-      return null;
-
-    }
-
-
-    const cache =
-      JSON.parse(
-        textoCache
-      );
-
-
-    if (
-      !cache ||
-      !cache.fecha ||
-      !cache.datos
-    ) {
-
-      return null;
-
-    }
-
-
-    return cache;
-
-  }
-  catch (error) {
-
-    return null;
-
-  }
-
-}
-
-
-
-function guardarCacheContactoGuardiasV3_(
-  calle,
-  numero,
-  datos
-) {
-
-  try {
-
-    /*
-     * Guardamos SOLO datos relativamente estables.
-     * La autorización compartida con caseta NO se cachea.
-     */
-    localStorage.setItem(
-      claveCacheContactoGuardiasV3_(
-        calle,
-        numero
-      ),
-      JSON.stringify(
-        {
-          fecha:
-            Date.now(),
-
-          datos: {
-            telefono:
-              datos.telefono || "",
-
-            requiereConfirmacionTelefonica:
-              datos.requiereConfirmacionTelefonica ===
-              true,
-
-            requiereConfirmacionNip:
-              datos.requiereConfirmacionNip ===
-              true
-          }
-        }
-      )
-    );
-
-  }
-  catch (error) {
-
-    /*
-     * El caché es únicamente una optimización.
-     */
-
-  }
-
-}
-
-
-
-function aplicarConfiguracionContactoGuardiasV3_(
-  datos
-) {
-
-  datos =
-    datos || {};
-
-
-  telefonoEntradaManual =
-    limpiarTelefonoWhatsappGuardia(
-      datos.telefono
-    );
-
-
-  requiereConfirmacionTelefonica =
-    datos.requiereConfirmacionTelefonica ===
-    true;
-
-
-  requiereConfirmacionNip =
-    datos.requiereConfirmacionNip ===
-    true;
-
-}
-
-
-
-function consultarAutorizacionCasetaTiempoRealV3_(
-  calle,
-  numero,
-  solicitudActual
-) {
-
-  /*
-   * Este dato NO usa caché.
-   * Si el residente acaba de compartir el NIP con caseta,
-   * queremos verlo en ese mismo momento.
-   */
-  apiGuardias(
-    "guardiasAutorizacionCaseta",
-    {
-      calle:
-        calle,
-
-      numero:
-        numero
-    },
-    function(resultado) {
-
-      if (
-        solicitudActual !==
-          solicitudContactoGuardiasV3
-      ) {
-
-        return;
-
-      }
-
-
-      const calleActual =
-        document
-          .getElementById(
-            "calle"
-          )
-          .value;
-
-
-      const numeroActual =
-        document
-          .getElementById(
-            "numero"
-          )
-          .value;
-
-
-      if (
-        String(
-          calleActual
-        ) !==
-          String(
-            calle
-          ) ||
-        String(
-          numeroActual
-        ) !==
-          String(
-            numero
-          )
-      ) {
-
-        return;
-
-      }
-
-
-      if (
-        !resultado ||
-        !resultado.ok ||
-        !resultado.datos
-      ) {
-
-        return;
-
-      }
-
-
-      autorizacionCasetaDisponible =
-        resultado.datos
-          .autorizacionCasetaDisponible ===
-          true;
-
-
-      autorizacionCasetaId =
-        resultado.datos
-          .autorizacionCasetaId ||
-        "";
-
-
-      autorizacionCasetaExpiracion =
-        Number(
-          resultado.datos
-            .autorizacionCasetaExpiracion ||
-          0
-        );
-
-
-      if (
-        requiereConfirmacionNip &&
-        autorizacionCasetaDisponible &&
-        autorizacionCasetaId
-      ) {
-
-        cerrarModalConfirmacionNip();
-
-        mostrarModalAutorizacionCaseta();
-
-      }
-
-    },
-    function() {
-
-      /*
-       * Si esta consulta falla, NO desbloqueamos el domicilio.
-       * El guardia conserva el flujo normal de NIP manual.
-       */
-
-    }
-  );
-
-}
-
-
-
-function mostrarConfirmacionSegunConfiguracionV3_(
-  calle,
-  numero,
-  solicitudActual
-) {
-
-  if (
-    requiereConfirmacionNip
-  ) {
-
-    /*
-     * Primero mostramos el requisito inmediatamente.
-     */
-    mostrarModalConfirmacionNip();
-
-
-    /*
-     * Y en paralelo comprobamos si el residente compartió
-     * una autorización con caseta hace unos segundos.
-     */
-    consultarAutorizacionCasetaTiempoRealV3_(
-      calle,
-      numero,
-      solicitudActual
-    );
-
-  }
-  else if (
-    requiereConfirmacionTelefonica
-  ) {
-
-    mostrarModalConfirmacionTelefono();
-
-  }
-
-}
-
-
-
-function cancelarSeleccionDomicilioManual() {
-
-  /*
-   * Invalida cualquier respuesta de servidor que siga viajando.
-   * Así una consulta atrasada no puede volver a abrir el modal.
-   */
-  solicitudContactoGuardiasV3++;
-
-
-  cerrarModalConfirmacionTelefono();
-
-  cerrarModalConfirmacionNip();
-
-  cerrarModalAutorizacionCaseta();
-
-
-  telefonoEntradaManual =
-    "";
-
-  requiereConfirmacionTelefonica =
-    false;
-
-  llamadaConfirmacionIniciada =
-    false;
-
-  requiereConfirmacionNip =
-    false;
-
-  nipAutorizadoEntradaManual =
-    "";
-
-  autorizacionCasetaId =
-    "";
-
-  autorizacionCasetaDisponible =
-    false;
-
-  autorizacionCasetaExpiracion =
-    0;
-
-
-  const calle =
-    document.getElementById(
-      "calle"
-    );
-
-
-  const numero =
-    document.getElementById(
-      "numero"
-    );
-
-
-  /*
-   * MUY IMPORTANTE:
-   * cancelar no permite continuar usando ese domicilio.
-   * Borra calle y número por completo.
-   */
-  calle.value =
-    "";
-
-
-  numero.innerHTML =
-    '<option value="">Selecciona número</option>';
-
-
-  window.scrollTo(
-    0,
-    0
-  );
-
-}
-
 
 
 function cargarContactoEntradaManual() {
@@ -3904,6 +2286,9 @@ function cargarContactoEntradaManual() {
   telefonoEntradaManual =
     "";
 
+  telefonoLlamadaEntradaManual =
+    "";
+
 
   requiereConfirmacionTelefonica =
     false;
@@ -3915,7 +2300,6 @@ function cargarContactoEntradaManual() {
 
   cerrarModalConfirmacionTelefono();
 
-
   requiereConfirmacionNip =
     false;
 
@@ -3925,21 +2309,6 @@ function cargarContactoEntradaManual() {
 
 
   cerrarModalConfirmacionNip();
-
-
-  autorizacionCasetaId =
-    "";
-
-
-  autorizacionCasetaDisponible =
-    false;
-
-
-  autorizacionCasetaExpiracion =
-    0;
-
-
-  cerrarModalAutorizacionCaseta();
 
 
   const calle =
@@ -3958,59 +2327,11 @@ function cargarContactoEntradaManual() {
       .value;
 
 
-  solicitudContactoGuardiasV3++;
-
-
-  const solicitudActual =
-    solicitudContactoGuardiasV3;
-
-
   if (
     !calle ||
     !numero
   ) {
 
-    return;
-
-  }
-
-
-  const cache =
-    leerCacheContactoGuardiasV3_(
-      calle,
-      numero
-    );
-
-
-  if (
-    cache &&
-    Date.now() -
-      Number(
-        cache.fecha
-      ) <
-      MILISEGUNDOS_CACHE_CONTACTO_GUARDIAS_V3
-  ) {
-
-    /*
-     * Teléfono + reglas del domicilio salen inmediatamente.
-     */
-    aplicarConfiguracionContactoGuardiasV3_(
-      cache.datos
-    );
-
-
-    mostrarConfirmacionSegunConfiguracionV3_(
-      calle,
-      numero,
-      solicitudActual
-    );
-
-
-    /*
-     * No volvemos a consultar RESIDENTES durante 15 minutos.
-     * Si usa NIP, la autorización compartida SÍ se consulta
-     * en tiempo real mediante la ruta ligera.
-     */
     return;
 
   }
@@ -4027,148 +2348,84 @@ function cargarContactoEntradaManual() {
     },
     function(resultado) {
 
-      if (
-        solicitudActual !==
-          solicitudContactoGuardiasV3
-      ) {
-
-        return;
-
-      }
-
-
-      const calleActual =
-        document
-          .getElementById(
-            "calle"
-          )
-          .value;
-
-
-      const numeroActual =
-        document
-          .getElementById(
-            "numero"
-          )
-          .value;
-
-
-      if (
-        String(
-          calleActual
-        ) !==
-          String(
-            calle
-          ) ||
-        String(
-          numeroActual
-        ) !==
-          String(
-            numero
-          )
-      ) {
-
-        return;
-
-      }
-
-
-      if (
-        resultado &&
-        resultado.ok &&
-        resultado.datos
-      ) {
-
-        guardarCacheContactoGuardiasV3_(
-          calle,
-          numero,
-          resultado.datos
-        );
-
-
-        aplicarConfiguracionContactoGuardiasV3_(
-          resultado.datos
-        );
-
-
-        autorizacionCasetaDisponible =
-          resultado.datos
-            .autorizacionCasetaDisponible ===
-            true;
-
-
-        autorizacionCasetaId =
-          resultado.datos
-            .autorizacionCasetaId ||
-          "";
-
-
-        autorizacionCasetaExpiracion =
-          Number(
-            resultado.datos
-              .autorizacionCasetaExpiracion ||
-            0
-          );
-
 
         if (
-          requiereConfirmacionNip &&
-          autorizacionCasetaDisponible &&
-          autorizacionCasetaId
+          resultado &&
+          resultado.ok &&
+          resultado.datos
         ) {
 
-          mostrarModalAutorizacionCaseta();
+          telefonoLlamadaEntradaManual =
+            limpiarTelefonoLlamadaGuardia(
+              resultado.datos.telefono
+            );
+
+
+          telefonoEntradaManual =
+            limpiarTelefonoWhatsappGuardia(
+              resultado.datos.telefono
+            );
+
+
+          requiereConfirmacionTelefonica =
+            resultado.datos
+              .requiereConfirmacionTelefonica ===
+              true;
+          requiereConfirmacionNip =
+            resultado.datos
+              .requiereConfirmacionNip ===
+              true;
+
+
+          /*
+           * Si este domicilio requiere llamada,
+           * bloqueamos visualmente el flujo hasta que
+           * el guardia toque LLAMAR y luego CONTINUAR.
+           */
+                   if (
+            requiereConfirmacionNip
+          ) {
+
+            mostrarModalConfirmacionNip();
+
+          }
+          else if (
+            requiereConfirmacionTelefonica
+          ) {
+
+            mostrarModalConfirmacionTelefono();
+
+          }
 
         }
-        else if (
-          requiereConfirmacionNip
-        ) {
 
-          mostrarModalConfirmacionNip();
-
-        }
-        else if (
-          requiereConfirmacionTelefonica
-        ) {
-
-          mostrarModalConfirmacionTelefono();
-
-        }
-
-      }
-
+      
     },
     function() {
 
-      if (
-        solicitudActual !==
-          solicitudContactoGuardiasV3
-      ) {
 
-        return;
+        telefonoEntradaManual =
+          "";
 
-      }
+        telefonoLlamadaEntradaManual =
+          "";
 
 
-      telefonoEntradaManual =
-        "";
+        requiereConfirmacionTelefonica =
+          false;
 
 
-      requiereConfirmacionTelefonica =
-        false;
+        llamadaConfirmacionIniciada =
+          false;
+
+        requiereConfirmacionNip =
+          false;
 
 
-      llamadaConfirmacionIniciada =
-        false;
+        nipAutorizadoEntradaManual =
+          "";
 
-
-      requiereConfirmacionNip =
-        false;
-
-
-      nipAutorizadoEntradaManual =
-        "";
-
+      
     }
   );
 
@@ -4240,7 +2497,7 @@ function cerrarModalConfirmacionTelefono() {
 function llamarResidenteConfirmacion() {
 
   if (
-    !telefonoEntradaManual
+    !telefonoLlamadaEntradaManual
   ) {
 
     mensaje(
@@ -4286,7 +2543,7 @@ function llamarResidenteConfirmacion() {
 
   enlace.href =
     "tel:" +
-    telefonoEntradaManual;
+    telefonoLlamadaEntradaManual;
 
 
   enlace.style.display =
@@ -4329,147 +2586,6 @@ function continuarDespuesDeLlamada() {
     false;
 
 }
-
-/*************************************************
- * AUTORIZACIÓN NIP COMPARTIDA CON CASETA
- *************************************************/
-
-function mostrarModalAutorizacionCaseta() {
-
-  const expira =
-    document.getElementById(
-      "expiraAutorizacionCaseta"
-    );
-
-
-  if (
-    autorizacionCasetaExpiracion
-  ) {
-
-    const fecha =
-      new Date(
-        autorizacionCasetaExpiracion
-      );
-
-
-    expira.textContent =
-      "Disponible hasta " +
-      fecha.toLocaleTimeString(
-        "es-MX",
-        {
-          hour:
-            "2-digit",
-
-          minute:
-            "2-digit"
-        }
-      );
-
-  }
-  else {
-
-    expira.textContent =
-      "";
-
-  }
-
-
-  document
-    .getElementById(
-      "modalAutorizacionCaseta"
-    )
-    .classList
-    .add(
-      "activo"
-    );
-
-}
-
-
-
-function cerrarModalAutorizacionCaseta() {
-
-  const modal =
-    document.getElementById(
-      "modalAutorizacionCaseta"
-    );
-
-
-  if (
-    modal
-  ) {
-
-    modal.classList.remove(
-      "activo"
-    );
-
-  }
-
-}
-
-
-
-function usarAutorizacionCaseta() {
-
-  if (
-    !autorizacionCasetaId
-  ) {
-
-    cerrarModalAutorizacionCaseta();
-
-
-    mensaje(
-      "La autorización ya no está disponible.",
-      "error"
-    );
-
-
-    return;
-
-  }
-
-
-  requiereConfirmacionNip =
-    false;
-
-
-  nipAutorizadoEntradaManual =
-    "";
-
-
-  cerrarModalAutorizacionCaseta();
-
-
-  mensaje(
-    "Autorización de caseta seleccionada. Continúa con el registro.",
-    "ok"
-  );
-
-}
-
-
-
-function usarNipManualEnLugarDeCaseta() {
-
-  autorizacionCasetaId =
-    "";
-
-
-  autorizacionCasetaDisponible =
-    false;
-
-
-  autorizacionCasetaExpiracion =
-    0;
-
-
-  cerrarModalAutorizacionCaseta();
-
-
-  mostrarModalConfirmacionNip();
-
-}
-
 
 /*************************************************
  * MODAL NIP
@@ -4738,6 +2854,26 @@ function validarNipGuardia() {
 
 }
 
+function limpiarTelefonoLlamadaGuardia(
+  telefono
+) {
+
+  /*
+   * Para una llamada normal NO agregamos 52.
+   * Se usan únicamente los dígitos que vienen de la hoja RESIDENTES.
+   */
+  return String(
+    telefono || ""
+  )
+    .replace(
+      /\D/g,
+      ""
+    );
+
+}
+
+
+
 function limpiarTelefonoWhatsappGuardia(
   telefono
 ) {
@@ -4937,1850 +3073,6 @@ function seleccionarAcceso(tipo) {
 }
 
 
-
-function pintarBadgeMensajesGuardias(
-  total
-) {
-
-  const badge =
-    document.getElementById(
-      "badgeMensajesGuardias"
-    );
-
-
-  if (
-    !badge
-  ) {
-
-    return;
-
-  }
-
-
-  total =
-    Number(
-      total || 0
-    );
-
-
-  if (
-    total <= 0
-  ) {
-
-    badge.textContent =
-      "";
-
-
-    badge.classList.remove(
-      "activo"
-    );
-
-
-    return;
-
-  }
-
-
-  badge.textContent =
-    total > 99
-      ? "99+"
-      : String(
-          total
-        );
-
-
-  badge.classList.add(
-    "activo"
-  );
-
-}
-
-
-
-function guardarEnvioChatGuardiaPendienteV3_(
-  idResidente,
-  mensajeTexto
-) {
-
-  try {
-
-    localStorage.setItem(
-      CLAVE_ENVIO_CHAT_GUARDIA_PENDIENTE_V3,
-      JSON.stringify(
-        {
-          idResidente:
-            String(
-              idResidente || ""
-            ),
-
-          mensaje:
-            String(
-              mensajeTexto || ""
-            ),
-
-          fecha:
-            Date.now()
-        }
-      )
-    );
-
-  }
-  catch (error) {}
-
-}
-
-
-
-function leerEnvioChatGuardiaPendienteV3_() {
-
-  try {
-
-    const textoEstado =
-      localStorage.getItem(
-        CLAVE_ENVIO_CHAT_GUARDIA_PENDIENTE_V3
-      );
-
-
-    if (
-      !textoEstado
-    ) {
-
-      return null;
-
-    }
-
-
-    const estado =
-      JSON.parse(
-        textoEstado
-      );
-
-
-    if (
-      !estado ||
-      !estado.idResidente ||
-      !estado.mensaje ||
-      !estado.fecha
-    ) {
-
-      return null;
-
-    }
-
-
-    /*
-     * Un envío viejo no debe dejar la interfaz bloqueada.
-     */
-    if (
-      Date.now() -
-        Number(
-          estado.fecha
-        ) >
-        5 * 60 * 1000
-    ) {
-
-      localStorage.removeItem(
-        CLAVE_ENVIO_CHAT_GUARDIA_PENDIENTE_V3
-      );
-
-
-      return null;
-
-    }
-
-
-    return estado;
-
-  }
-  catch (error) {
-
-    return null;
-
-  }
-
-}
-
-
-
-function limpiarEnvioChatGuardiaPendienteV3_() {
-
-  try {
-
-    localStorage.removeItem(
-      CLAVE_ENVIO_CHAT_GUARDIA_PENDIENTE_V3
-    );
-
-  }
-  catch (error) {}
-
-}
-
-
-
-function restaurarBotonEnviarChatGuardiaV3_() {
-
-  const input =
-    document.getElementById(
-      "inputChatGuardia"
-    );
-
-
-  const boton =
-    document.getElementById(
-      "btnEnviarChatGuardia"
-    );
-
-
-  if (
-    !input ||
-    !boton
-  ) {
-
-    return;
-
-  }
-
-
-  input.disabled =
-    false;
-
-
-  boton.disabled =
-    false;
-
-
-  boton.textContent =
-    "ENVIAR";
-
-}
-
-
-
-function resolverEnvioPendienteConChatV3_(
-  datos
-) {
-
-  const pendiente =
-    leerEnvioChatGuardiaPendienteV3_();
-
-
-  if (
-    !pendiente ||
-    String(
-      pendiente.idResidente || ""
-    ) !==
-      String(
-        chatGuardiaActivoId || ""
-      )
-  ) {
-
-    restaurarBotonEnviarChatGuardiaV3_();
-
-    return;
-
-  }
-
-
-  const mensajes =
-    datos &&
-    Array.isArray(
-      datos.mensajes
-    )
-      ? datos.mensajes
-      : [];
-
-
-  const encontrado =
-    mensajes.some(
-      function(item) {
-
-        return (
-          String(
-            item &&
-            item.origen || ""
-          ).toUpperCase() ===
-            "GUARDIA" &&
-          String(
-            item &&
-            item.mensaje || ""
-          ).trim() ===
-            String(
-              pendiente.mensaje || ""
-            ).trim()
-        );
-
-      }
-    );
-
-
-  const input =
-    document.getElementById(
-      "inputChatGuardia"
-    );
-
-
-  if (
-    encontrado
-  ) {
-
-    /*
-     * El servidor sí recibió el mensaje aunque la app haya
-     * sido minimizada antes de alcanzar a recibir la respuesta.
-     * No lo volvemos a preparar para evitar un duplicado.
-     */
-    limpiarEnvioChatGuardiaPendienteV3_();
-
-
-    if (
-      input
-    ) {
-
-      input.value =
-        "";
-
-    }
-
-
-    restaurarBotonEnviarChatGuardiaV3_();
-
-    return;
-
-  }
-
-
-  /*
-   * El servidor respondió y el mensaje no aparece.
-   * Dejamos el texto listo para que el guardia decida reenviarlo,
-   * pero nunca lo reenviamos automáticamente.
-   */
-  if (
-    input &&
-    !String(
-      input.value || ""
-    ).trim()
-  ) {
-
-    input.value =
-      String(
-        pendiente.mensaje || ""
-      );
-
-  }
-
-
-  limpiarEnvioChatGuardiaPendienteV3_();
-
-
-  restaurarBotonEnviarChatGuardiaV3_();
-
-}
-
-
-
-function revisarPendientesGuardias() {
-
-  if (
-    !claveGuardias
-  ) {
-
-    return;
-
-  }
-
-
-  apiGuardias(
-    "guardiasChatsListar",
-    {},
-    function(resultado) {
-
-      if (
-        resultado &&
-        resultado.ok
-      ) {
-
-        /*
-         * Esta misma consulta ya se hacía al iniciar la app.
-         * Ahora también guardamos la lista completa para que,
-         * al tocar MENSAJES, los chats conocidos aparezcan
-         * inmediatamente sin una segunda espera.
-         */
-        const datosChats =
-          resultado.datos || {};
-
-
-        guardarCacheListaChatsGuardiasV3_(
-          datosChats
-        );
-
-
-        pintarBadgeMensajesGuardias(
-          Number(
-            datosChats.totalNoLeidos || 0
-          )
-        );
-
-      }
-
-    },
-    function() {}
-  );
-
-}
-
-
-
-function guardarCacheListaChatsGuardiasV3_(
-  datos
-) {
-
-  try {
-
-    localStorage.setItem(
-      CACHE_LISTA_CHATS_GUARDIAS_V3,
-      JSON.stringify(
-        {
-          fecha:
-            Date.now(),
-
-          datos:
-            datos || {}
-        }
-      )
-    );
-
-  }
-  catch (error) {}
-
-}
-
-
-
-function leerCacheListaChatsGuardiasV3_() {
-
-  try {
-
-    const textoCache =
-      localStorage.getItem(
-        CACHE_LISTA_CHATS_GUARDIAS_V3
-      );
-
-
-    if (
-      !textoCache
-    ) {
-
-      return null;
-
-    }
-
-
-    const cache =
-      JSON.parse(
-        textoCache
-      );
-
-
-    return cache &&
-      cache.datos
-        ? cache.datos
-        : null;
-
-  }
-  catch (error) {
-
-    return null;
-
-  }
-
-}
-
-
-
-function pintarListaChatsGuardiasV3_(
-  datos
-) {
-
-  datos =
-    datos || {};
-
-
-  const contenedor =
-    document.getElementById(
-      "listaChatsGuardias"
-    );
-
-
-  const chats =
-    Array.isArray(
-      datos.chats
-    )
-      ? datos.chats.slice()
-      : [];
-
-
-  pintarBadgeMensajesGuardias(
-    Number(
-      datos.totalNoLeidos || 0
-    )
-  );
-
-
-  if (
-    !chats.length
-  ) {
-
-    contenedor.innerHTML =
-      '<div class="mini">Todavía no hay conversaciones.</div>';
-
-
-    return;
-
-  }
-
-
-  /*
-   * Conservamos el orden que entrega el servidor:
-   * la conversación con actividad más reciente queda arriba.
-   * Una conversación solo cambia de posición cuando el servidor
-   * informa un mensaje nuevo.
-   */
-  contenedor.innerHTML =
-    "";
-
-
-  chats.forEach(
-    function(chat) {
-
-      const boton =
-        document.createElement(
-          "button"
-        );
-
-
-      boton.type =
-        "button";
-
-
-      boton.className =
-        "chat-item";
-
-
-      boton.innerHTML =
-        '<div class="chat-item-arriba">' +
-          '<div>' +
-            '<div class="chat-dom">' +
-              escapar(
-                chat.calle
-              ) +
-              ' #' +
-              escapar(
-                chat.numero
-              ) +
-            '</div>' +
-            '<div class="chat-fecha">' +
-              escapar(
-                chat.fecha
-              ) +
-            '</div>' +
-          '</div>' +
-          (
-            Number(
-              chat.noLeidos || 0
-            ) > 0
-              ? (
-                  '<span class="badge-chat">' +
-                    escapar(
-                      chat.noLeidos
-                    ) +
-                  '</span>'
-                )
-              : ''
-          ) +
-        '</div>' +
-        '<div class="chat-ultimo">' +
-          escapar(
-            chat.ultimoMensaje
-          ) +
-        '</div>';
-
-
-      boton.onclick =
-        function() {
-
-          abrirChatGuardia(
-            chat.idResidente
-          );
-
-        };
-
-
-      contenedor.appendChild(
-        boton
-      );
-
-    }
-  );
-
-}
-
-
-
-function mostrarIndicadorActualizarChatsGuardiasV3_(
-  texto,
-  visible
-) {
-
-  const indicador =
-    document.getElementById(
-      "indicadorActualizarChatsGuardias"
-    );
-
-
-  if (
-    !indicador
-  ) {
-
-    return;
-
-  }
-
-
-  indicador.textContent =
-    texto || "";
-
-
-  indicador.style.height =
-    visible
-      ? "28px"
-      : "0";
-
-
-  indicador.style.opacity =
-    visible
-      ? "1"
-      : "0";
-
-}
-
-
-
-function configurarJalonActualizarChatsGuardiasV3_() {
-
-  const panel =
-    document.getElementById(
-      "panelMensajesGuardias"
-    );
-
-
-  if (
-    !panel ||
-    panel.dataset.pullChatsConfigurado ===
-      "SI"
-  ) {
-
-    return;
-
-  }
-
-
-  panel.dataset.pullChatsConfigurado =
-    "SI";
-
-
-  panel.addEventListener(
-    "touchstart",
-    function(evento) {
-
-      if (
-        actualizandoChatsGuardias ||
-        window.scrollY > 4 ||
-        !evento.touches ||
-        !evento.touches.length
-      ) {
-
-        return;
-
-      }
-
-
-      inicioJalonChatsGuardias =
-        evento.touches[0].clientY;
-
-
-      jalandoChatsGuardias =
-        true;
-
-    },
-    {
-      passive:
-        true
-    }
-  );
-
-
-  panel.addEventListener(
-    "touchmove",
-    function(evento) {
-
-      if (
-        !jalandoChatsGuardias ||
-        !evento.touches ||
-        !evento.touches.length
-      ) {
-
-        return;
-
-      }
-
-
-      const distancia =
-        evento.touches[0].clientY -
-        inicioJalonChatsGuardias;
-
-
-      if (
-        distancia <= 0
-      ) {
-
-        mostrarIndicadorActualizarChatsGuardiasV3_(
-          "",
-          false
-        );
-
-
-        return;
-
-      }
-
-
-      if (
-        distancia >= 70
-      ) {
-
-        mostrarIndicadorActualizarChatsGuardiasV3_(
-          "↻ Suelta para actualizar",
-          true
-        );
-
-      }
-      else {
-
-        mostrarIndicadorActualizarChatsGuardiasV3_(
-          "↓ Jala para actualizar",
-          true
-        );
-
-      }
-
-    },
-    {
-      passive:
-        true
-    }
-  );
-
-
-  panel.addEventListener(
-    "touchend",
-    function(evento) {
-
-      if (
-        !jalandoChatsGuardias
-      ) {
-
-        return;
-
-      }
-
-
-      jalandoChatsGuardias =
-        false;
-
-
-      const fin =
-        evento.changedTouches &&
-        evento.changedTouches.length
-          ? evento.changedTouches[0].clientY
-          : inicioJalonChatsGuardias;
-
-
-      const distancia =
-        fin -
-        inicioJalonChatsGuardias;
-
-
-      if (
-        distancia >= 70
-      ) {
-
-        cargarListaChatsGuardias(
-          {
-            forzar:
-              true,
-
-            mostrarEstado:
-              true
-          }
-        );
-
-      }
-      else {
-
-        mostrarIndicadorActualizarChatsGuardiasV3_(
-          "",
-          false
-        );
-
-      }
-
-    },
-    {
-      passive:
-        true
-    }
-  );
-
-}
-
-
-
-function abrirMensajesGuardias() {
-
-  document
-    .getElementById(
-      "menu"
-    )
-    .style.display =
-      "none";
-
-
-  [
-    "panelEntrada",
-    "panelSalida",
-    "panelProveedor",
-    "panelChatGuardia"
-  ]
-  .forEach(
-    function(id) {
-
-      document
-        .getElementById(
-          id
-        )
-        .classList
-        .remove(
-          "activo"
-        );
-
-    }
-  );
-
-
-  document
-    .getElementById(
-      "panelMensajesGuardias"
-    )
-    .classList
-    .add(
-      "activo"
-    );
-
-
-  configurarJalonActualizarChatsGuardiasV3_();
-
-
-  /*
-   * Primero pintamos inmediatamente lo ya guardado en el teléfono.
-   * Después actualizamos silenciosamente desde Apps Script.
-   */
-  const cache =
-    leerCacheListaChatsGuardiasV3_();
-
-
-  if (
-    cache
-  ) {
-
-    pintarListaChatsGuardiasV3_(
-      cache
-    );
-
-  }
-
-
-  cargarListaChatsGuardias({
-    mostrarCargando:
-      !cache
-  });
-
-}
-
-
-
-function cargarListaChatsGuardias(
-  opciones
-) {
-
-  opciones =
-    opciones || {};
-
-
-  const contenedor =
-    document.getElementById(
-      "listaChatsGuardias"
-    );
-
-
-  const cache =
-    leerCacheListaChatsGuardiasV3_();
-
-
-  if (
-    opciones.mostrarCargando ===
-      true &&
-    !cache
-  ) {
-
-    contenedor.innerHTML =
-      '<div class="mini">Cargando conversaciones...</div>';
-
-  }
-
-
-  if (
-    opciones.mostrarEstado ===
-      true
-  ) {
-
-    actualizandoChatsGuardias =
-      true;
-
-
-    mostrarIndicadorActualizarChatsGuardiasV3_(
-      "↻ Actualizando…",
-      true
-    );
-
-  }
-
-
-  apiGuardias(
-    "guardiasChatsListar",
-    {},
-    function(resultado) {
-
-      actualizandoChatsGuardias =
-        false;
-
-
-      mostrarIndicadorActualizarChatsGuardiasV3_(
-        "",
-        false
-      );
-
-
-      if (
-        !resultado ||
-        !resultado.ok
-      ) {
-
-        /*
-         * Si ya existe una lista local, la conservamos.
-         * No la borramos solo porque esta actualización falló.
-         */
-        if (
-          !leerCacheListaChatsGuardiasV3_()
-        ) {
-
-          contenedor.innerHTML =
-            '<div class="mini">No fue posible cargar los mensajes.</div>';
-
-        }
-
-
-        return;
-
-      }
-
-
-      const datos =
-        resultado.datos || {};
-
-
-      guardarCacheListaChatsGuardiasV3_(
-        datos
-      );
-
-
-      pintarListaChatsGuardiasV3_(
-        datos
-      );
-
-    },
-    function() {
-
-      actualizandoChatsGuardias =
-        false;
-
-
-      mostrarIndicadorActualizarChatsGuardiasV3_(
-        "",
-        false
-      );
-
-
-      if (
-        !leerCacheListaChatsGuardiasV3_()
-      ) {
-
-        contenedor.innerHTML =
-          '<div class="mini">No fue posible cargar los mensajes.</div>';
-
-      }
-
-    }
-  );
-
-}
-
-
-function claveCacheChatGuardiaV3_(
-  idResidente
-) {
-
-  return (
-    CACHE_CHAT_GUARDIA_PREFIJO_V3 +
-    String(
-      idResidente || ""
-    )
-  );
-
-}
-
-
-
-function leerCacheChatGuardiaV3_(
-  idResidente
-) {
-
-  try {
-
-    const textoCache =
-      localStorage.getItem(
-        claveCacheChatGuardiaV3_(
-          idResidente
-        )
-      );
-
-
-    if (
-      !textoCache
-    ) {
-
-      return null;
-
-    }
-
-
-    const cache =
-      JSON.parse(
-        textoCache
-      );
-
-
-    return cache &&
-      cache.datos
-        ? cache.datos
-        : null;
-
-  }
-  catch (error) {
-
-    return null;
-
-  }
-
-}
-
-
-
-function guardarCacheChatGuardiaV3_(
-  idResidente,
-  datos
-) {
-
-  try {
-
-    localStorage.setItem(
-      claveCacheChatGuardiaV3_(
-        idResidente
-      ),
-      JSON.stringify(
-        {
-          fecha:
-            Date.now(),
-
-          datos:
-            datos || {}
-        }
-      )
-    );
-
-  }
-  catch (error) {}
-
-}
-
-
-
-function abrirChatGuardia(
-  idResidente
-) {
-
-  chatGuardiaActivoId =
-    idResidente;
-
-
-  document
-    .getElementById(
-      "panelMensajesGuardias"
-    )
-    .classList
-    .remove(
-      "activo"
-    );
-
-
-  document
-    .getElementById(
-      "panelChatGuardia"
-    )
-    .classList
-    .add(
-      "activo"
-    );
-
-
-  const cache =
-    leerCacheChatGuardiaV3_(
-      idResidente
-    );
-
-
-  const envioPendiente =
-    leerEnvioChatGuardiaPendienteV3_();
-
-
-  const inputChat =
-    document.getElementById(
-      "inputChatGuardia"
-    );
-
-
-  const botonChat =
-    document.getElementById(
-      "btnEnviarChatGuardia"
-    );
-
-
-  if (
-    envioPendiente &&
-    String(
-      envioPendiente.idResidente || ""
-    ) ===
-      String(
-        idResidente || ""
-      )
-  ) {
-
-    if (
-      inputChat
-    ) {
-
-      inputChat.disabled =
-        true;
-
-    }
-
-
-    if (
-      botonChat
-    ) {
-
-      botonChat.disabled =
-        true;
-
-
-      botonChat.textContent =
-        "VERIFICANDO...";
-
-    }
-
-  }
-  else {
-
-    restaurarBotonEnviarChatGuardiaV3_();
-
-  }
-
-
-  if (
-    cache
-  ) {
-
-    /*
-     * Conversaciones ya visitadas aparecen inmediatamente.
-     */
-    pintarChatGuardia(
-      cache
-    );
-
-  }
-  else {
-
-    document
-      .getElementById(
-        "mensajesChatGuardia"
-      )
-      .innerHTML =
-        '<div class="mini">Cargando conversación...</div>';
-
-  }
-
-
-  cargarChatGuardiaActivo(
-    !cache
-  );
-
-
-  iniciarActualizacionChatGuardia();
-
-}
-
-
-function cargarChatGuardiaActivo(
-  mostrarCargando
-) {
-
-  if (
-    !chatGuardiaActivoId ||
-    chatGuardiaCargando
-  ) {
-
-    return;
-
-  }
-
-
-  chatGuardiaCargando =
-    true;
-
-
-  if (
-    watchdogChatGuardia
-  ) {
-
-    clearTimeout(
-      watchdogChatGuardia
-    );
-
-  }
-
-
-  watchdogChatGuardia =
-    setTimeout(
-      function() {
-
-        chatGuardiaCargando =
-          false;
-
-
-        watchdogChatGuardia =
-          null;
-
-      },
-      12000
-    );
-
-
-  if (
-    mostrarCargando ===
-      true
-  ) {
-
-    document
-      .getElementById(
-        "mensajesChatGuardia"
-      )
-      .innerHTML =
-        '<div class="mini">Cargando conversación...</div>';
-
-  }
-
-
-  apiGuardias(
-    "guardiasChatAbrir",
-    {
-      idResidente:
-        chatGuardiaActivoId
-    },
-    function(resultado) {
-
-      chatGuardiaCargando =
-        false;
-
-
-      if (
-        watchdogChatGuardia
-      ) {
-
-        clearTimeout(
-          watchdogChatGuardia
-        );
-
-
-        watchdogChatGuardia =
-          null;
-
-      }
-
-
-      intentosCargaChatGuardia =
-        0;
-
-
-      if (
-        !resultado ||
-        !resultado.ok
-      ) {
-
-        programarReintentoChatGuardia();
-
-        return;
-
-      }
-
-
-      guardarCacheChatGuardiaV3_(
-        chatGuardiaActivoId,
-        resultado.datos || {}
-      );
-
-
-      pintarChatGuardia(
-        resultado.datos || {}
-      );
-
-
-      resolverEnvioPendienteConChatV3_(
-        resultado.datos || {}
-      );
-
-    },
-    function() {
-
-      chatGuardiaCargando =
-        false;
-
-
-      if (
-        watchdogChatGuardia
-      ) {
-
-        clearTimeout(
-          watchdogChatGuardia
-        );
-
-
-        watchdogChatGuardia =
-          null;
-
-      }
-
-
-      programarReintentoChatGuardia();
-
-    }
-  );
-
-}
-
-
-
-function programarReintentoChatGuardia() {
-
-  intentosCargaChatGuardia++;
-
-
-  if (
-    intentosCargaChatGuardia > 3
-  ) {
-
-    return;
-
-  }
-
-
-  setTimeout(
-    function() {
-
-      cargarChatGuardiaActivo(
-        false
-      );
-
-    },
-    intentosCargaChatGuardia *
-      900
-  );
-
-}
-
-
-
-function iniciarActualizacionChatGuardia() {
-
-  detenerActualizacionChatGuardia();
-
-
-  temporizadorChatGuardia =
-    setInterval(
-      function() {
-
-        if (
-          document.visibilityState ===
-            "visible" &&
-          chatGuardiaActivoId
-        ) {
-
-          cargarChatGuardiaActivo(
-            false
-          );
-
-        }
-
-      },
-      4000
-    );
-
-}
-
-
-
-function detenerActualizacionChatGuardia() {
-
-  if (
-    temporizadorChatGuardia
-  ) {
-
-    clearInterval(
-      temporizadorChatGuardia
-    );
-
-
-    temporizadorChatGuardia =
-      null;
-
-  }
-
-}
-
-
-
-function pintarChatGuardia(
-  datos
-) {
-
-  document
-    .getElementById(
-      "tituloChatGuardia"
-    )
-    .textContent =
-      (
-        datos.calle ||
-        "Domicilio"
-      ) +
-      (
-        datos.numero
-          ? " #" +
-            datos.numero
-          : ""
-      );
-
-
-  document
-    .getElementById(
-      "subChatGuardia"
-    )
-    .textContent =
-      datos.idResidente ||
-      "";
-
-
-  const contenedor =
-    document.getElementById(
-      "mensajesChatGuardia"
-    );
-
-
-  const mensajes =
-    datos.mensajes ||
-    [];
-
-
-  if (
-    !mensajes.length
-  ) {
-
-    contenedor.innerHTML =
-      '<div class="mini">Todavía no hay mensajes.</div>';
-
-
-    return;
-
-  }
-
-
-  contenedor.innerHTML =
-    mensajes
-      .map(
-        function(m) {
-
-          let clase =
-            "sistema";
-
-
-          if (
-            m.origen ===
-              "RESIDENTE"
-          ) {
-
-            clase =
-              "residente";
-
-          }
-          else if (
-            m.origen ===
-              "GUARDIA"
-          ) {
-
-            clase =
-              "guardia";
-
-          }
-
-
-          return (
-            '<div class="chat-burbuja ' +
-              clase +
-            '">' +
-              escapar(
-                m.mensaje
-              ) +
-              '<div class="chat-hora">' +
-                escapar(
-                  m.fecha
-                ) +
-              '</div>' +
-            '</div>'
-          );
-
-        }
-      )
-      .join(
-        ""
-      );
-
-
-  contenedor.scrollTop =
-    contenedor.scrollHeight;
-
-}
-
-
-
-function enviarMensajeGuardia() {
-
-  if (
-    !chatGuardiaActivoId
-  ) {
-
-    return;
-
-  }
-
-
-  const input =
-    document.getElementById(
-      "inputChatGuardia"
-    );
-
-
-  const boton =
-    document.getElementById(
-      "btnEnviarChatGuardia"
-    );
-
-
-  const mensajeTexto =
-    String(
-      input.value || ""
-    )
-    .trim();
-
-
-  if (
-    !mensajeTexto
-  ) {
-
-    return;
-
-  }
-
-
-  boton.disabled =
-    true;
-
-
-  input.disabled =
-    true;
-
-
-  boton.textContent =
-    "ENVIANDO...";
-
-
-  /*
-   * Si Android pausa la página mientras Apps Script trabaja,
-   * recordamos qué mensaje estaba en curso. Al volver, primero
-   * comprobamos el chat antes de permitir un reenvío.
-   */
-  guardarEnvioChatGuardiaPendienteV3_(
-    chatGuardiaActivoId,
-    mensajeTexto
-  );
-
-
-  /*
-   * Permitimos que el navegador pinte ENVIANDO...
-   * antes de comenzar la operación de red.
-   */
-  requestAnimationFrame(
-    function() {
-
-      setTimeout(
-        function() {
-
-          apiGuardias(
-    "guardiasChatEnviar",
-    {
-      idResidente:
-        chatGuardiaActivoId,
-
-      mensaje:
-        mensajeTexto
-    },
-    function(resultado) {
-
-      boton.disabled =
-        false;
-
-
-      input.disabled =
-        false;
-
-
-      boton.textContent =
-        "ENVIAR";
-
-
-      if (
-        !resultado ||
-        !resultado.ok
-      ) {
-
-        mensaje(
-          resultado &&
-          resultado.mensaje
-            ? resultado.mensaje
-            : "No fue posible enviar.",
-          "error"
-        );
-
-
-        return;
-
-      }
-
-
-      limpiarEnvioChatGuardiaPendienteV3_();
-
-
-      input.value =
-        "";
-
-
-      guardarCacheChatGuardiaV3_(
-        chatGuardiaActivoId,
-        resultado.datos || {}
-      );
-
-
-      pintarChatGuardia(
-        resultado.datos || {}
-      );
-
-
-      /*
-       * Refrescamos la lista en segundo plano para que esta
-       * conversación suba si acaba de tener actividad nueva.
-       */
-      cargarListaChatsGuardias({});
-
-
-      const estadoPush =
-        resultado.datos &&
-        resultado.datos.notificacionPush
-          ? resultado.datos.notificacionPush
-          : null;
-
-
-      if (
-        estadoPush
-      ) {
-
-        if (
-          Number(
-            estadoPush.enviados || 0
-          ) > 0
-        ) {
-
-          mensaje(
-            "Mensaje enviado · notificación enviada al residente.",
-            "ok"
-          );
-
-        }
-        else if (
-          Number(
-            estadoPush.tokensEncontrados || 0
-          ) === 0
-        ) {
-
-          mensaje(
-            "Mensaje enviado · el residente no tiene dispositivo de notificaciones registrado.",
-            "error"
-          );
-
-        }
-        else {
-
-          mensaje(
-            "Mensaje enviado · Firebase no pudo entregar la notificación.",
-            "error"
-          );
-
-        }
-
-      }
-
-    },
-    function() {
-
-      boton.disabled =
-        false;
-
-
-      input.disabled =
-        false;
-
-
-      boton.textContent =
-        "ENVIAR";
-
-
-      limpiarEnvioChatGuardiaPendienteV3_();
-
-
-      mensaje(
-        "No fue posible enviar el mensaje.",
-        "error"
-      );
-
-    }
-          );
-
-        },
-        40
-      );
-
-    }
-  );
-
-}
-
-
-
-function volverAListaChatsGuardias() {
-
-  detenerActualizacionChatGuardia();
-
-
-  /*
-   * La vista no debe quedarse visualmente atorada en ENVIANDO
-   * al navegar. El estado pendiente se conserva por separado
-   * para verificarlo contra el servidor al volver a abrir.
-   */
-  restaurarBotonEnviarChatGuardiaV3_();
-
-
-  chatGuardiaActivoId =
-    "";
-
-
-  document
-    .getElementById(
-      "panelChatGuardia"
-    )
-    .classList
-    .remove(
-      "activo"
-    );
-
-
-  document
-    .getElementById(
-      "panelMensajesGuardias"
-    )
-    .classList
-    .add(
-      "activo"
-    );
-
-
-  const cache =
-    leerCacheListaChatsGuardiasV3_();
-
-
-  if (
-    cache
-  ) {
-
-    pintarListaChatsGuardiasV3_(
-      cache
-    );
-
-  }
-
-
-  cargarListaChatsGuardias({
-    mostrarCargando:
-      !cache
-  });
-
-}
-
-
-
 function normalizarPlacasInput(input) {
   input.value = input.value
     .toUpperCase()
@@ -6788,70 +3080,536 @@ function normalizarPlacasInput(input) {
 }
 
 
-function procesarFoto(input, destino) {
+function procesarImagenGuardiaLigera(
+  archivo,
+  maximo,
+  calidad,
+  alTerminar,
+  alFallar
+) {
 
-  const archivo = input.files && input.files[0];
+  function generarSalida(
+    fuente,
+    anchoFuente,
+    altoFuente,
+    liberarFuente
+  ) {
 
-  if (!archivo) {
-    return;
+    let ancho =
+      anchoFuente;
+
+    let alto =
+      altoFuente;
+
+
+    if (
+      ancho > maximo ||
+      alto > maximo
+    ) {
+
+      const escala =
+        Math.min(
+          maximo / ancho,
+          maximo / alto
+        );
+
+
+      ancho =
+        Math.round(
+          ancho *
+          escala
+        );
+
+
+      alto =
+        Math.round(
+          alto *
+          escala
+        );
+
+    }
+
+
+    const canvas =
+      document.createElement(
+        "canvas"
+      );
+
+
+    canvas.width =
+      ancho;
+
+    canvas.height =
+      alto;
+
+
+    const contexto =
+      canvas.getContext(
+        "2d",
+        {
+          alpha:
+            false
+        }
+      );
+
+
+    contexto.drawImage(
+      fuente,
+      0,
+      0,
+      ancho,
+      alto
+    );
+
+
+    if (
+      liberarFuente
+    ) {
+
+      liberarFuente();
+
+    }
+
+
+    canvas.toBlob(
+      function(blob) {
+
+        /*
+         * Liberamos inmediatamente el buffer grande del canvas.
+         * El archivo que queda se convierte a Base64 YA reducido.
+         */
+        canvas.width =
+          1;
+
+        canvas.height =
+          1;
+
+
+        if (
+          !blob
+        ) {
+
+          alFallar();
+
+          return;
+
+        }
+
+
+        const lectorReducido =
+          new FileReader();
+
+
+        lectorReducido.onload =
+          function(evento) {
+
+            const dataUrl =
+              evento.target.result;
+
+
+            alTerminar(
+              dataUrl,
+              dataUrl
+                .split(
+                  ","
+                )[1],
+              "image/jpeg"
+            );
+
+          };
+
+
+        lectorReducido.onerror =
+          alFallar;
+
+
+        lectorReducido.readAsDataURL(
+          blob
+        );
+
+      },
+      "image/jpeg",
+      calidad
+    );
+
   }
 
-  const lector = new FileReader();
 
-  lector.onload = function(evento) {
+  /*
+   * En Android/Chrome createImageBitmap permite que el navegador
+   * reduzca la fotografía durante la decodificación. Esto evita
+   * mantener en memoria una foto de 50 MP completa en Base64.
+   */
+  if (
+    typeof createImageBitmap ===
+      "function"
+  ) {
 
-    const imagen = new Image();
+    createImageBitmap(
+      archivo,
+      {
+        resizeWidth:
+          maximo,
 
-    imagen.onload = function() {
+        resizeQuality:
+          "high",
 
-      const canvas = document.createElement("canvas");
+        imageOrientation:
+          "from-image"
+      }
+    )
+      .then(
+        function(bitmap) {
 
-      /*
-       * Optimización de fotos para caseta:
-       * 1280 px en el lado más largo conserva suficiente detalle
-       * para placas e identificación, pero reduce bastante el peso
-       * enviado a Apps Script/Drive.
-       */
-      const max = 1280;
-      let ancho = imagen.width;
-      let alto = imagen.height;
+          generarSalida(
+            bitmap,
+            bitmap.width,
+            bitmap.height,
+            function() {
 
-      if (ancho > max || alto > max) {
-        const escala = Math.min(max / ancho, max / alto);
-        ancho = Math.round(ancho * escala);
-        alto = Math.round(alto * escala);
+              if (
+                bitmap.close
+              ) {
+
+                bitmap.close();
+
+              }
+
+            }
+          );
+
+        }
+      )
+      .catch(
+        function() {
+
+          procesarImagenGuardiaFallback_(
+            archivo,
+            maximo,
+            calidad,
+            alTerminar,
+            alFallar
+          );
+
+        }
+      );
+
+
+    return;
+
+  }
+
+
+  procesarImagenGuardiaFallback_(
+    archivo,
+    maximo,
+    calidad,
+    alTerminar,
+    alFallar
+  );
+
+}
+
+
+
+function procesarImagenGuardiaFallback_(
+  archivo,
+  maximo,
+  calidad,
+  alTerminar,
+  alFallar
+) {
+
+  /*
+   * Fallback para navegadores sin createImageBitmap.
+   * Usamos una URL temporal del archivo en vez de convertir
+   * primero la foto original completa a Base64.
+   */
+  const urlTemporal =
+    URL.createObjectURL(
+      archivo
+    );
+
+
+  const imagen =
+    new Image();
+
+
+  imagen.onload =
+    function() {
+
+      let ancho =
+        imagen.naturalWidth ||
+        imagen.width;
+
+      let alto =
+        imagen.naturalHeight ||
+        imagen.height;
+
+
+      if (
+        ancho > maximo ||
+        alto > maximo
+      ) {
+
+        const escala =
+          Math.min(
+            maximo / ancho,
+            maximo / alto
+          );
+
+
+        ancho =
+          Math.round(
+            ancho *
+            escala
+          );
+
+
+        alto =
+          Math.round(
+            alto *
+            escala
+          );
+
       }
 
-      canvas.width = ancho;
-      canvas.height = alto;
 
-      canvas.getContext("2d").drawImage(imagen, 0, 0, ancho, alto);
+      const canvas =
+        document.createElement(
+          "canvas"
+        );
 
-      /*
-       * 0.75 ofrece una reducción importante de tamaño sin que
-       * el texto o las placas pierdan legibilidad en uso normal.
-       */
-      const dataUrl = canvas.toDataURL("image/jpeg", .75);
-      const base64 = dataUrl.split(",")[1];
 
-      if (destino === "placas") {
-        fotoPlacasBase64 = base64;
-        fotoPlacasMime = "image/jpeg";
-        document.getElementById("imgPlacas").src = dataUrl;
-        document.getElementById("previewPlacas").style.display = "block";
-      }
-      else {
-        fotoIdentificacionBase64 = base64;
-        fotoIdentificacionMime = "image/jpeg";
-        document.getElementById("imgIdentificacion").src = dataUrl;
-        document.getElementById("previewIdentificacion").style.display = "block";
-      }
+      canvas.width =
+        ancho;
+
+      canvas.height =
+        alto;
+
+
+      canvas
+        .getContext(
+          "2d",
+          {
+            alpha:
+              false
+          }
+        )
+        .drawImage(
+          imagen,
+          0,
+          0,
+          ancho,
+          alto
+        );
+
+
+      URL.revokeObjectURL(
+        urlTemporal
+      );
+
+
+      imagen.onload =
+        null;
+
+      imagen.onerror =
+        null;
+
+      imagen.src =
+        "";
+
+
+      canvas.toBlob(
+        function(blob) {
+
+          canvas.width =
+            1;
+
+          canvas.height =
+            1;
+
+
+          if (
+            !blob
+          ) {
+
+            alFallar();
+
+            return;
+
+          }
+
+
+          const lectorReducido =
+            new FileReader();
+
+
+          lectorReducido.onload =
+            function(evento) {
+
+              const dataUrl =
+                evento.target.result;
+
+
+              alTerminar(
+                dataUrl,
+                dataUrl
+                  .split(
+                    ","
+                  )[1],
+                "image/jpeg"
+              );
+
+            };
+
+
+          lectorReducido.onerror =
+            alFallar;
+
+
+          lectorReducido.readAsDataURL(
+            blob
+          );
+
+        },
+        "image/jpeg",
+        calidad
+      );
+
     };
 
-    imagen.src = evento.target.result;
-  };
 
-  lector.readAsDataURL(archivo);
+  imagen.onerror =
+    function() {
+
+      URL.revokeObjectURL(
+        urlTemporal
+      );
+
+
+      alFallar();
+
+    };
+
+
+  imagen.src =
+    urlTemporal;
+
+}
+
+
+
+function procesarFoto(input, destino) {
+
+  const archivo =
+    input.files &&
+    input.files[0];
+
+
+  if (
+    !archivo
+  ) {
+
+    return;
+
+  }
+
+
+  procesarImagenGuardiaLigera(
+    archivo,
+    1600,
+    .82,
+    function(
+      dataUrl,
+      base64,
+      mime
+    ) {
+
+      if (
+        destino ===
+          "placas"
+      ) {
+
+        fotoPlacasBase64 =
+          base64;
+
+        fotoPlacasMime =
+          mime;
+
+
+        const imagenPreview =
+          document.getElementById(
+            "imgPlacas"
+          );
+
+
+        imagenPreview.src =
+          "";
+
+        imagenPreview.src =
+          dataUrl;
+
+
+        document
+          .getElementById(
+            "previewPlacas"
+          )
+          .style.display =
+            "block";
+
+      }
+      else {
+
+        fotoIdentificacionBase64 =
+          base64;
+
+        fotoIdentificacionMime =
+          mime;
+
+
+        const imagenPreview =
+          document.getElementById(
+            "imgIdentificacion"
+          );
+
+
+        imagenPreview.src =
+          "";
+
+        imagenPreview.src =
+          dataUrl;
+
+
+        document
+          .getElementById(
+            "previewIdentificacion"
+          )
+          .style.display =
+            "block";
+
+      }
+
+
+      /*
+       * Ya tenemos la copia reducida. Quitamos la referencia
+       * al archivo original de cámara para que Android pueda
+       * recuperar esa memoria antes de tomar la segunda foto.
+       */
+      input.value =
+        "";
+
+    },
+    function() {
+
+      mensaje(
+        "No fue posible procesar la foto. Intenta tomarla nuevamente.",
+        "error"
+      );
+
+    }
+  );
+
 }
 
 
@@ -6968,10 +3726,7 @@ function registrarEntrada() {
       fotoIdentificacionMime,
 
     nipAutorizacion:
-      nipAutorizadoEntradaManual,
-
-    autorizacionCasetaId:
-      autorizacionCasetaId
+      nipAutorizadoEntradaManual
 
   };
 
@@ -7178,18 +3933,6 @@ function registrarEntrada() {
          * El aviso al residente ya se procesa por push.
          * No dependemos de ninguna función antigua de WhatsApp.
          */
-        autorizacionCasetaId =
-          "";
-
-
-        autorizacionCasetaDisponible =
-          false;
-
-
-        autorizacionCasetaExpiracion =
-          0;
-
-
         guardarEstadoEntradaManual(
           "COMPLETADO"
         );
@@ -7201,7 +3944,7 @@ function registrarEntrada() {
 
       
     },
-    function(textoError) {
+    function() {
 
 
 
@@ -7242,7 +3985,6 @@ function registrarEntrada() {
 
 
         mensaje(
-          textoError ||
           "No fue posible registrar la entrada.",
           "error"
         );
@@ -7274,169 +4016,96 @@ function procesarFotoProveedor(
   }
 
 
-  const lector =
-    new FileReader();
+  procesarImagenGuardiaLigera(
+    archivo,
+    1600,
+    .82,
+    function(
+      dataUrl,
+      base64,
+      mime
+    ) {
+
+      if (
+        destino ===
+          "placas"
+      ) {
+
+        fotoPlacasProveedorBase64 =
+          base64;
+
+        fotoPlacasProveedorMime =
+          mime;
 
 
-  lector.onload =
-    function(evento) {
-
-      const imagen =
-        new Image();
-
-
-      imagen.onload =
-        function() {
-
-          const canvas =
-            document.createElement(
-              "canvas"
-            );
+        const imagenPreview =
+          document.getElementById(
+            "imgPlacasProveedor"
+          );
 
 
-          const max =
-            1600;
+        imagenPreview.src =
+          "";
+
+        imagenPreview.src =
+          dataUrl;
 
 
-          let ancho =
-            imagen.width;
+        document
+          .getElementById(
+            "previewPlacasProveedor"
+          )
+          .style.display =
+            "block";
+
+      }
+      else {
+
+        fotoIdentificacionProveedorBase64 =
+          base64;
+
+        fotoIdentificacionProveedorMime =
+          mime;
 
 
-          let alto =
-            imagen.height;
+        const imagenPreview =
+          document.getElementById(
+            "imgIdentificacionProveedor"
+          );
 
 
-          if (
-            ancho > max ||
-            alto > max
-          ) {
+        imagenPreview.src =
+          "";
 
-            const escala =
-              Math.min(
-                max / ancho,
-                max / alto
-              );
+        imagenPreview.src =
+          dataUrl;
 
 
-            ancho =
-              Math.round(
-                ancho * escala
-              );
+        document
+          .getElementById(
+            "previewIdentificacionProveedor"
+          )
+          .style.display =
+            "block";
+
+      }
 
 
-            alto =
-              Math.round(
-                alto * escala
-              );
+      input.value =
+        "";
 
-          }
+    },
+    function() {
 
+      mensaje(
+        "No fue posible procesar la foto. Intenta tomarla nuevamente.",
+        "error"
+      );
 
-          canvas.width =
-            ancho;
-
-
-          canvas.height =
-            alto;
-
-
-          canvas
-            .getContext(
-              "2d"
-            )
-            .drawImage(
-              imagen,
-              0,
-              0,
-              ancho,
-              alto
-            );
-
-
-          const dataUrl =
-            canvas.toDataURL(
-              "image/jpeg",
-              .82
-            );
-
-
-          const base64 =
-            dataUrl.split(
-              ","
-            )[1];
-
-
-          if (
-            destino ===
-              "placas"
-          ) {
-
-            fotoPlacasProveedorBase64 =
-              base64;
-
-
-            fotoPlacasProveedorMime =
-              "image/jpeg";
-
-
-            document
-              .getElementById(
-                "imgPlacasProveedor"
-              )
-              .src =
-                dataUrl;
-
-
-            document
-              .getElementById(
-                "previewPlacasProveedor"
-              )
-              .style.display =
-                "block";
-
-          }
-          else {
-
-            fotoIdentificacionProveedorBase64 =
-              base64;
-
-
-            fotoIdentificacionProveedorMime =
-              "image/jpeg";
-
-
-            document
-              .getElementById(
-                "imgIdentificacionProveedor"
-              )
-              .src =
-                dataUrl;
-
-
-            document
-              .getElementById(
-                "previewIdentificacionProveedor"
-              )
-              .style.display =
-                "block";
-
-          }
-
-        };
-
-
-      imagen.src =
-        evento.target.result;
-
-    };
-
-
-  lector.readAsDataURL(
-    archivo
+    }
   );
 
 }
-
 
 
 function registrarProveedor() {
@@ -7735,14 +4404,6 @@ function volverMenuPrincipalDespuesProveedor() {
 
 function limpiarEntrada() {
 
-  /*
-   * Un registro nuevo siempre inicia sin conservar
-   * la calle del acceso anterior.
-   */
-  document.getElementById("calle").value = "";
-
-  solicitudNumerosGuardiasV3++;
-
   document.getElementById("numero").innerHTML = '<option value="">Selecciona número</option>';
   document.getElementById("nombreVisitante").value = "";
   document.getElementById("tipoVisita").value = "";
@@ -7757,16 +4418,13 @@ function limpiarEntrada() {
   fotoIdentificacionBase64 = "";
   fotoIdentificacionMime = "";
   telefonoEntradaManual = "";
+  telefonoLlamadaEntradaManual = "";
   requiereConfirmacionTelefonica = false;
   llamadaConfirmacionIniciada = false;
   cerrarModalConfirmacionTelefono();
   requiereConfirmacionNip = false;
   nipAutorizadoEntradaManual = "";
   cerrarModalConfirmacionNip();
-  autorizacionCasetaId = "";
-  autorizacionCasetaDisponible = false;
-  autorizacionCasetaExpiracion = 0;
-  cerrarModalAutorizacionCaseta();
   tipoAcceso = "";
   document.getElementById("btnPeatonal").classList.remove("sel");
   document.getElementById("btnVehicular").classList.remove("sel");
@@ -8185,572 +4843,6 @@ function mensaje(texto, tipo) {
     3500
   );
 }
-
-</script>
-
-
-<script type="module">
-
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
-
-
-import {
-  getMessaging,
-  getToken,
-  isSupported
-} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-messaging.js";
-
-
-const FIREBASE_CONFIG_GUARDIAS = {
-  apiKey:
-    "AIzaSyDse3UCwboAneei4QM0KG468IkB8UeyG50",
-
-  authDomain:
-    "arcos-residentes.firebaseapp.com",
-
-  projectId:
-    "arcos-residentes",
-
-  storageBucket:
-    "arcos-residentes.firebasestorage.app",
-
-  messagingSenderId:
-    "359067671558",
-
-  appId:
-    "1:359067671558:web:f0395d4220d5b5f40d7787",
-
-  measurementId:
-    "G-LXQ2EWZLS0"
-};
-
-
-const VAPID_GUARDIAS =
-  "BNdhd8uJxRm7NgTovRjqUOvNkXQczHSaDHhDDnq1BtywcBNVLtby-_OdY5CCLCN7ElzNIaf_eqtYKAeaSdiqNnQ";
-
-
-const CLAVE_TOKEN_GUARDIAS =
-  "tokenNotificacionesGuardiasArcos";
-
-
-const CLAVE_DEVICE_GUARDIAS =
-  "deviceIdNotificacionesGuardiasArcos";
-
-
-function obtenerDeviceIdGuardias() {
-
-  let id =
-    localStorage.getItem(
-      CLAVE_DEVICE_GUARDIAS
-    ) || "";
-
-
-  if (
-    id
-  ) {
-
-    return id;
-
-  }
-
-
-  id =
-    (
-      window.crypto &&
-      crypto.randomUUID
-    )
-      ? crypto.randomUUID()
-      : (
-          "guardias_" +
-          Date.now() +
-          "_" +
-          Math.random()
-            .toString(36)
-            .slice(2)
-        );
-
-
-  localStorage.setItem(
-    CLAVE_DEVICE_GUARDIAS,
-    id
-  );
-
-
-  return id;
-
-}
-
-
-
-function detectarGuardiaDispositivo() {
-
-  const ua =
-    navigator.userAgent ||
-    "";
-
-
-  if (
-    /iPhone/i.test(
-      ua
-    )
-  ) {
-
-    return {
-      dispositivo:
-        "iPhone",
-
-      plataforma:
-        "iOS"
-    };
-
-  }
-
-
-  if (
-    /iPad/i.test(
-      ua
-    )
-  ) {
-
-    return {
-      dispositivo:
-        "iPad",
-
-      plataforma:
-        "iPadOS"
-    };
-
-  }
-
-
-  if (
-    /Android/i.test(
-      ua
-    )
-  ) {
-
-    return {
-      dispositivo:
-        "Android",
-
-      plataforma:
-        "Android"
-    };
-
-  }
-
-
-  return {
-    dispositivo:
-      "Navegador",
-
-    plataforma:
-      navigator.platform ||
-      ""
-  };
-
-}
-
-
-
-function pintarEstadoNotificacionesGuardias(
-  activo
-) {
-
-  const boton =
-    document.getElementById(
-      "btnNotificacionesGuardias"
-    );
-
-
-  if (
-    !boton
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    activo
-  ) {
-
-    boton.textContent =
-      "🔔 NOTIFICACIONES ACTIVADAS";
-
-
-    boton.classList.add(
-      "activo"
-    );
-
-  }
-  else {
-
-    boton.textContent =
-      "🔔 ACTIVAR NOTIFICACIONES";
-
-
-    boton.classList.remove(
-      "activo"
-    );
-
-  }
-
-}
-
-
-
-async function activarNotificacionesGuardiasInterno() {
-
-  const boton =
-    document.getElementById(
-      "btnNotificacionesGuardias"
-    );
-
-
-  try {
-
-    if (
-      !("Notification" in window) ||
-      !("serviceWorker" in navigator) ||
-      !(await isSupported())
-    ) {
-
-      mensaje(
-        "Este dispositivo no permite notificaciones web.",
-        "error"
-      );
-
-
-      return;
-
-    }
-
-
-    boton.disabled =
-      true;
-
-
-    boton.textContent =
-      "ACTIVANDO...";
-
-
-    const permiso =
-      await Notification.requestPermission();
-
-
-    if (
-      permiso !==
-        "granted"
-    ) {
-
-      boton.disabled =
-        false;
-
-
-      pintarEstadoNotificacionesGuardias(
-        false
-      );
-
-
-      return;
-
-    }
-
-
-    const registro =
-      await navigator.serviceWorker.register(
-        "./service-worker.js",
-        {
-          scope:
-            "./"
-        }
-      );
-
-
-    await navigator.serviceWorker.ready;
-
-
-    const app =
-      initializeApp(
-        FIREBASE_CONFIG_GUARDIAS,
-        "guardiasApp"
-      );
-
-
-    const messaging =
-      getMessaging(
-        app
-      );
-
-
-    const tokenFcm =
-      await getToken(
-        messaging,
-        {
-          vapidKey:
-            VAPID_GUARDIAS,
-
-          serviceWorkerRegistration:
-            registro
-        }
-      );
-
-
-    if (
-      !tokenFcm
-    ) {
-
-      throw new Error(
-        "No se generó el token."
-      );
-
-    }
-
-
-    const dispositivo =
-      detectarGuardiaDispositivo();
-
-
-    apiGuardias(
-      "guardiasNotificacionesRegistrar",
-      {
-        fcmToken:
-          tokenFcm,
-
-        deviceId:
-          obtenerDeviceIdGuardias(),
-
-        dispositivo:
-          dispositivo.dispositivo,
-
-        plataforma:
-          dispositivo.plataforma
-      },
-      function(resultado) {
-
-        boton.disabled =
-          false;
-
-
-        if (
-          !resultado ||
-          !resultado.ok
-        ) {
-
-          pintarEstadoNotificacionesGuardias(
-            false
-          );
-
-
-          mensaje(
-            resultado &&
-            resultado.mensaje
-              ? resultado.mensaje
-              : "No fue posible activar las notificaciones.",
-            "error"
-          );
-
-
-          return;
-
-        }
-
-
-        localStorage.setItem(
-          CLAVE_TOKEN_GUARDIAS,
-          tokenFcm
-        );
-
-
-        pintarEstadoNotificacionesGuardias(
-          true
-        );
-
-
-        mensaje(
-          "Notificaciones de caseta activadas.",
-          "ok"
-        );
-
-      },
-      function() {
-
-        boton.disabled =
-          false;
-
-
-        pintarEstadoNotificacionesGuardias(
-          false
-        );
-
-
-        mensaje(
-          "No fue posible activar las notificaciones.",
-          "error"
-        );
-
-      }
-    );
-
-  }
-  catch (error) {
-
-    console.error(
-      error
-    );
-
-
-    boton.disabled =
-      false;
-
-
-    pintarEstadoNotificacionesGuardias(
-      false
-    );
-
-
-    mensaje(
-      "No fue posible activar las notificaciones.",
-      "error"
-    );
-
-  }
-
-}
-
-
-
-window.activarNotificacionesGuardias =
-  activarNotificacionesGuardiasInterno;
-
-
-document.addEventListener(
-  "DOMContentLoaded",
-  function() {
-
-    setTimeout(
-      function() {
-
-        const token =
-          localStorage.getItem(
-            CLAVE_TOKEN_GUARDIAS
-          ) || "";
-
-
-        pintarEstadoNotificacionesGuardias(
-          Notification.permission ===
-            "granted" &&
-          !!token
-        );
-
-      },
-      500
-    );
-
-  }
-);
-
-
-
-document.addEventListener(
-  "visibilitychange",
-  function() {
-
-    if (
-      document.visibilityState ===
-        "visible" &&
-      chatGuardiaActivoId
-    ) {
-
-      const pendiente =
-        leerEnvioChatGuardiaPendienteV3_();
-
-
-      if (
-        pendiente &&
-        String(
-          pendiente.idResidente || ""
-        ) ===
-          String(
-            chatGuardiaActivoId || ""
-          )
-      ) {
-
-        const boton =
-          document.getElementById(
-            "btnEnviarChatGuardia"
-          );
-
-
-        const input =
-          document.getElementById(
-            "inputChatGuardia"
-          );
-
-
-        if (
-          boton
-        ) {
-
-          boton.disabled =
-            true;
-
-
-          boton.textContent =
-            "VERIFICANDO...";
-
-        }
-
-
-        if (
-          input
-        ) {
-
-          input.disabled =
-            true;
-
-        }
-
-      }
-      else {
-
-        restaurarBotonEnviarChatGuardiaV3_();
-
-      }
-
-
-      /*
-       * Verificamos el historial real. Si el mensaje sí llegó
-       * mientras la app estaba minimizada, se detecta y no se
-       * ofrece reenviarlo.
-       */
-      chatGuardiaCargando =
-        false;
-
-
-      cargarChatGuardiaActivo(
-        false
-      );
-
-
-      iniciarActualizacionChatGuardia();
-
-    }
-    else if (
-      document.visibilityState !==
-        "visible"
-    ) {
-
-      detenerActualizacionChatGuardia();
-
-    }
-
-  }
-);
 
 </script>
 
