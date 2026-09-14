@@ -410,34 +410,6 @@
 
 
 
-      <div
-        id="grupoPlacas"
-        class="grupo"
-      >
-
-        <label class="etiqueta">
-          Placas del vehículo
-        </label>
-
-        <input
-          id="placas"
-          type="text"
-          maxlength="12"
-          placeholder="Ej. ABC123A"
-          autocomplete="off"
-          autocapitalize="characters"
-          oninput="normalizarPlacasCampo(this)"
-        >
-
-        <div class="ayuda">
-          Solo letras y números.
-          Sin espacios ni guiones.
-        </div>
-
-      </div>
-
-
-
       <button
         id="btnCrear"
         type="button"
@@ -754,12 +726,6 @@ function seleccionarAcceso(
     );
 
 
-  const grupoPlacas =
-    document.getElementById(
-      "grupoPlacas"
-    );
-
-
   if (
     tipo ===
     "VEHICULAR"
@@ -778,10 +744,6 @@ function seleccionarAcceso(
         "activo"
       );
 
-
-    grupoPlacas.style.display =
-      "block";
-
   }
   else {
 
@@ -798,39 +760,7 @@ function seleccionarAcceso(
         "activo"
       );
 
-
-    grupoPlacas.style.display =
-      "none";
-
-
-    document
-      .getElementById(
-        "placas"
-      )
-      .value =
-        "";
-
   }
-
-}
-
-
-
-/*************************************************
- * PLACAS
- *************************************************/
-
-function normalizarPlacasCampo(
-  campo
-) {
-
-  campo.value =
-    campo.value
-      .toUpperCase()
-      .replace(
-        /[^A-Z0-9]/g,
-        ""
-      );
 
 }
 
@@ -862,15 +792,6 @@ function crearPaseCliente() {
       .value;
 
 
-  const placas =
-    document
-      .getElementById(
-        "placas"
-      )
-      .value
-      .trim();
-
-
   if (!nombreVisitante) {
 
     mostrarError(
@@ -886,21 +807,6 @@ function crearPaseCliente() {
 
     mostrarError(
       "Selecciona el tipo de visita."
-    );
-
-    return;
-
-  }
-
-
-  if (
-    tipoAcceso ===
-      "VEHICULAR" &&
-    !placas
-  ) {
-
-    mostrarError(
-      "Ingresa las placas del vehículo."
     );
 
     return;
@@ -938,7 +844,7 @@ function crearPaseCliente() {
         tipoVisita,
 
       placas:
-        placas
+        ""
     },
 
     function(resultado) {
