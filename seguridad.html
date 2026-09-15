@@ -106,6 +106,84 @@
     }
 
 
+
+    .calendario {
+      background: white;
+      border-radius: 20px;
+      padding: 14px;
+      margin-bottom: 18px;
+      box-shadow: 0 5px 18px rgba(20,55,95,.08);
+    }
+
+    .calendario-cabecera {
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .calendario-mes {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 800;
+      text-transform: capitalize;
+    }
+
+    .calendario-nav {
+      height: 42px;
+      border: none;
+      border-radius: 13px;
+      background: #edf3f6;
+      color: #204d5d;
+      font-size: 21px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .calendario-semana,
+    .calendario-dias {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+
+    .calendario-semana div {
+      padding: 5px 0;
+      text-align: center;
+      color: #8a97a5;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .dia-calendario {
+      aspect-ratio: 1 / 1;
+      border: none;
+      border-radius: 12px;
+      background: #f3f5f7;
+      color: #b0bac3;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .dia-calendario.disponible {
+      background: #e9f7ee;
+      color: #267245;
+      cursor: pointer;
+    }
+
+    .dia-calendario.seleccionado {
+      background: #204d5d;
+      color: white;
+    }
+
+    .calendario-ayuda {
+      margin-top: 10px;
+      color: #718198;
+      font-size: 11px;
+      text-align: center;
+    }
+
     .cargando {
       background: white;
       border-radius: 20px;
@@ -313,7 +391,7 @@
         </h1>
 
         <div class="subtitulo">
-          Patrullaje del día
+          Patrullajes
         </div>
 
       </div>
@@ -325,7 +403,7 @@
     <div class="resumen">
 
       <div class="resumen-titulo">
-        Registro diario
+        Recorrido seleccionado
       </div>
 
       <div
@@ -335,6 +413,25 @@
         Cargando información...
       </div>
 
+    </div>
+
+
+    <div id="calendario" class="calendario" style="display:none;">
+      <div class="calendario-cabecera">
+        <button type="button" class="calendario-nav" onclick="cambiarMes(-1)">‹</button>
+        <div id="calendarioMes" class="calendario-mes"></div>
+        <button type="button" class="calendario-nav" onclick="cambiarMes(1)">›</button>
+      </div>
+
+      <div class="calendario-semana">
+        <div>D</div><div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div>
+      </div>
+
+      <div id="calendarioDias" class="calendario-dias"></div>
+
+      <div class="calendario-ayuda">
+        Los días en verde tienen patrullajes disponibles.
+      </div>
     </div>
 
 
@@ -405,6 +502,7 @@
   <input type="hidden" id="seguridadAccion" name="accion">
   <input type="hidden" id="seguridadToken" name="token">
   <input type="hidden" id="seguridadRequestId" name="requestId">
+  <input type="hidden" id="seguridadFecha" name="fechaSeleccionada">
 
 </form>
 
@@ -428,6 +526,22 @@ let TOKEN =
   "";
 
 
+let FECHA_SEGURIDAD_SOLICITADA =
+  "";
+
+
+let fechasDisponiblesSeguridad =
+  [];
+
+
+let fechaSeleccionadaSeguridad =
+  "";
+
+
+let mesCalendarioSeguridad =
+  null;
+
+
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -443,7 +557,9 @@ const MILISEGUNDOS_CACHE_LOCAL_SEGURIDAD_V3 =
   45 * 1000;
 
 
-function cargarSeguridad() {
+function cargarSeguridad(
+  fechaIso
+) {
 
   TOKEN =
     sessionStorage.getItem(
@@ -463,12 +579,14 @@ function cargarSeguridad() {
   }
 
 
-  /*
-   * Si ya tenemos una copia reciente en este teléfono,
-   * la mostramos inmediatamente.
-   */
+  FECHA_SEGURIDAD_SOLICITADA =
+    fechaIso || "";
+
+
   const cacheLocal =
-    obtenerCacheLocalSeguridadV3_();
+    !FECHA_SEGURIDAD_SOLICITADA
+      ? obtenerCacheLocalSeguridadV3_()
+      : null;
 
 
   if (
@@ -484,7 +602,10 @@ function cargarSeguridad() {
     if (
       Date.now() -
       cacheLocal.fecha <
-      MILISEGUNDOS_CACHE_LOCAL_SEGURIDAD_V3
+      MILISEGUNDOS_CACHE_LOCAL_SEGURIDAD_V3 &&
+      Array.isArray(
+        cacheLocal.datos.fechasDisponibles
+      )
     ) {
 
       return;
@@ -508,13 +629,7 @@ function cargarSeguridad() {
           !cacheLocal
         ) {
 
-          document
-            .getElementById(
-              "cargando"
-            )
-            .style.display =
-              "none";
-
+          document.getElementById("cargando").style.display = "none";
 
           mostrarError(
             resultado &&
@@ -525,7 +640,6 @@ function cargarSeguridad() {
 
         }
 
-
         return;
 
       }
@@ -535,13 +649,21 @@ function cargarSeguridad() {
         resultado.datos ||
         {
           fecha: "",
+          fechaIso: "",
+          fechasDisponibles: [],
           registros: []
         };
 
 
-      guardarCacheLocalSeguridadV3_(
-        datos
-      );
+      if (
+        !FECHA_SEGURIDAD_SOLICITADA
+      ) {
+
+        guardarCacheLocalSeguridadV3_(
+          datos
+        );
+
+      }
 
 
       pintarSeguridadV3_(
@@ -561,22 +683,14 @@ function cargarSeguridad() {
       }
 
 
-      document
-        .getElementById(
-          "cargando"
-        )
-        .style.display =
-          "none";
-
-
-      mostrarError(
-        "No fue posible cargar seguridad."
-      );
+      document.getElementById("cargando").style.display = "none";
+      mostrarError("No fue posible cargar seguridad.");
 
     }
   );
 
 }
+
 
 
 function pintarSeguridadV3_(
@@ -587,6 +701,8 @@ function pintarSeguridadV3_(
     datos ||
     {
       fecha: "",
+      fechaIso: "",
+      fechasDisponibles: [],
       registros: []
     };
 
@@ -596,6 +712,49 @@ function pintarSeguridadV3_(
     [];
 
 
+  fechasDisponiblesSeguridad =
+    Array.isArray(
+      datos.fechasDisponibles
+    )
+      ? datos.fechasDisponibles
+      : [];
+
+
+  fechaSeleccionadaSeguridad =
+    datos.fechaIso ||
+    "";
+
+
+  if (
+    fechaSeleccionadaSeguridad
+  ) {
+
+    const partes =
+      fechaSeleccionadaSeguridad.split(
+        "-"
+      );
+
+
+    if (
+      partes.length === 3
+    ) {
+
+      mesCalendarioSeguridad =
+        new Date(
+          Number(
+            partes[0]
+          ),
+          Number(
+            partes[1]
+          ) - 1,
+          1
+        );
+
+    }
+
+  }
+
+
   document
     .getElementById(
       "resumenTexto"
@@ -603,11 +762,14 @@ function pintarSeguridadV3_(
     .textContent =
       datos.fecha
         ? (
-            "Registros correspondientes al " +
+            "Patrullaje mostrado: " +
             datos.fecha +
             "."
           )
-        : "Registros del día.";
+        : "Aún no hay patrullajes registrados.";
+
+
+  renderizarCalendario();
 
 
   renderizarRegistros(
@@ -615,22 +777,274 @@ function pintarSeguridadV3_(
   );
 
 
-  document
-    .getElementById(
-      "cargando"
-    )
-    .style.display =
-      "none";
-
-
-  document
-    .getElementById(
-      "contenido"
-    )
-    .style.display =
-      "block";
+  document.getElementById("cargando").style.display = "none";
+  document.getElementById("contenido").style.display = "block";
 
 }
+
+
+
+function cambiarMes(
+  desplazamiento
+) {
+
+  if (
+    !mesCalendarioSeguridad
+  ) {
+
+    return;
+
+  }
+
+
+  mesCalendarioSeguridad =
+    new Date(
+      mesCalendarioSeguridad.getFullYear(),
+      mesCalendarioSeguridad.getMonth() +
+        desplazamiento,
+      1
+    );
+
+
+  renderizarCalendario();
+
+}
+
+
+
+function seleccionarFechaSeguridad(
+  fechaIso
+) {
+
+  if (
+    fechasDisponiblesSeguridad.indexOf(
+      fechaIso
+    ) === -1
+  ) {
+
+    return;
+
+  }
+
+
+  cargarSeguridad(
+    fechaIso
+  );
+
+}
+
+
+
+function renderizarCalendario() {
+
+  const calendario =
+    document.getElementById(
+      "calendario"
+    );
+
+
+  if (
+    !fechasDisponiblesSeguridad.length
+  ) {
+
+    calendario.style.display =
+      "none";
+
+    return;
+
+  }
+
+
+  calendario.style.display =
+    "block";
+
+
+  if (
+    !mesCalendarioSeguridad
+  ) {
+
+    const ultima =
+      fechasDisponiblesSeguridad[
+        fechasDisponiblesSeguridad.length - 1
+      ].split(
+        "-"
+      );
+
+
+    mesCalendarioSeguridad =
+      new Date(
+        Number(
+          ultima[0]
+        ),
+        Number(
+          ultima[1]
+        ) - 1,
+        1
+      );
+
+  }
+
+
+  document
+    .getElementById(
+      "calendarioMes"
+    )
+    .textContent =
+      new Intl.DateTimeFormat(
+        "es-MX",
+        {
+          month:
+            "long",
+          year:
+            "numeric"
+        }
+      ).format(
+        mesCalendarioSeguridad
+      );
+
+
+  const contenedorDias =
+    document.getElementById(
+      "calendarioDias"
+    );
+
+
+  contenedorDias.innerHTML =
+    "";
+
+
+  const anio =
+    mesCalendarioSeguridad.getFullYear();
+
+
+  const mes =
+    mesCalendarioSeguridad.getMonth();
+
+
+  const primerDia =
+    new Date(
+      anio,
+      mes,
+      1
+    ).getDay();
+
+
+  const totalDias =
+    new Date(
+      anio,
+      mes + 1,
+      0
+    ).getDate();
+
+
+  for (
+    let i = 0;
+    i < primerDia;
+    i++
+  ) {
+
+    contenedorDias.appendChild(
+      document.createElement(
+        "div"
+      )
+    );
+
+  }
+
+
+  for (
+    let dia = 1;
+    dia <= totalDias;
+    dia++
+  ) {
+
+    const fechaIso =
+      String(
+        anio
+      ) +
+      "-" +
+      String(
+        mes + 1
+      ).padStart(
+        2,
+        "0"
+      ) +
+      "-" +
+      String(
+        dia
+      ).padStart(
+        2,
+        "0"
+      );
+
+
+    const boton =
+      document.createElement(
+        "button"
+      );
+
+
+    boton.type =
+      "button";
+
+    boton.className =
+      "dia-calendario";
+
+    boton.textContent =
+      String(
+        dia
+      );
+
+
+    if (
+      fechasDisponiblesSeguridad.indexOf(
+        fechaIso
+      ) !== -1
+    ) {
+
+      boton.classList.add(
+        "disponible"
+      );
+
+
+      boton.onclick =
+        function() {
+
+          seleccionarFechaSeguridad(
+            fechaIso
+          );
+
+        };
+
+    }
+    else {
+
+      boton.disabled =
+        true;
+
+    }
+
+
+    if (
+      fechaIso ===
+      fechaSeleccionadaSeguridad
+    ) {
+
+      boton.classList.add(
+        "seleccionado"
+      );
+
+    }
+
+
+    contenedorDias.appendChild(
+      boton
+    );
+
+  }
+
+}
+
 
 
 function obtenerCacheLocalSeguridadV3_() {
@@ -742,7 +1156,7 @@ function renderizarRegistros(
     contenido.innerHTML =
       '<div class="sin-registros">' +
         '<span class="icono">🛡️</span>' +
-        '<strong>Aún no hay registros de patrullaje de hoy.</strong>' +
+        '<strong>Aún no hay registros de patrullaje.</strong>' +
         '<br>Cuando se carguen fotografías aparecerán aquí.' +
       '</div>';
 
@@ -1107,6 +1521,15 @@ function ejecutarOperacionSeguridadV3(
     )
     .value =
       requestId;
+
+
+  document
+    .getElementById(
+      "seguridadFecha"
+    )
+    .value =
+      FECHA_SEGURIDAD_SOLICITADA ||
+      "";
 
 
   document
