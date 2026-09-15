@@ -107,6 +107,20 @@
 
 
 
+
+    .calendario-toggle {
+      width: 100%;
+      min-height: 54px;
+      border: none;
+      border-radius: 16px;
+      background: #edf3f6;
+      color: #204d5d;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
     .calendario {
       background: white;
       border-radius: 20px;
@@ -416,7 +430,22 @@
     </div>
 
 
-    <div id="calendario" class="calendario" style="display:none;">
+    <button
+      id="btnCalendario"
+      type="button"
+      class="calendario-toggle"
+      style="display:none;"
+      onclick="alternarCalendario()"
+    >
+      📅 VER CALENDARIO
+    </button>
+
+
+    <div
+      id="calendario"
+      class="calendario"
+      style="display:none;"
+    >
       <div class="calendario-cabecera">
         <button type="button" class="calendario-nav" onclick="cambiarMes(-1)">‹</button>
         <div id="calendarioMes" class="calendario-mes"></div>
@@ -540,6 +569,10 @@ let fechaSeleccionadaSeguridad =
 
 let mesCalendarioSeguridad =
   null;
+
+
+let calendarioAbiertoSeguridad =
+  false;
 
 
 
@@ -784,6 +817,39 @@ function pintarSeguridadV3_(
 
 
 
+function alternarCalendario() {
+
+  calendarioAbiertoSeguridad =
+    !calendarioAbiertoSeguridad;
+
+
+  const calendario =
+    document.getElementById(
+      "calendario"
+    );
+
+
+  const boton =
+    document.getElementById(
+      "btnCalendario"
+    );
+
+
+  calendario.style.display =
+    calendarioAbiertoSeguridad
+      ? "block"
+      : "none";
+
+
+  boton.textContent =
+    calendarioAbiertoSeguridad
+      ? "📅 OCULTAR CALENDARIO"
+      : "📅 VER CALENDARIO";
+
+}
+
+
+
 function cambiarMes(
   desplazamiento
 ) {
@@ -843,6 +909,12 @@ function renderizarCalendario() {
     );
 
 
+  const botonCalendario =
+    document.getElementById(
+      "btnCalendario"
+    );
+
+
   if (
     !fechasDisponiblesSeguridad.length
   ) {
@@ -850,13 +922,31 @@ function renderizarCalendario() {
     calendario.style.display =
       "none";
 
+    botonCalendario.style.display =
+      "none";
+
+    calendarioAbiertoSeguridad =
+      false;
+
     return;
 
   }
 
 
-  calendario.style.display =
+  botonCalendario.style.display =
     "block";
+
+
+  calendario.style.display =
+    calendarioAbiertoSeguridad
+      ? "block"
+      : "none";
+
+
+  botonCalendario.textContent =
+    calendarioAbiertoSeguridad
+      ? "📅 OCULTAR CALENDARIO"
+      : "📅 VER CALENDARIO";
 
 
   if (
