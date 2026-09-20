@@ -16,18 +16,205 @@
     <button class="aviso" onclick="prepararAviso('BASURA')"><div class="icono">🚛</div><div class="aviso-textos"><div class="aviso-titulo">BASURA</div><div class="aviso-descripcion">Avisar que está entrando el camión recolector de basura.</div></div><div class="flecha">›</div></button>
     <button class="aviso" onclick="prepararAviso('RECORRIDO')"><div class="icono">🛡️</div><div class="aviso-textos"><div class="aviso-titulo">RECORRIDO</div><div class="aviso-descripcion">Avisar que los guardias están realizando recorrido por la colonia.</div></div><div class="flecha">›</div></button>
   </div>
-  <div class="nota">Primera etapa: la página y la confirmación quedan listas. El envío real se conectará después, antes de agregar el botón AVISOS a la pantalla principal de guardias.</div>
+  <div class="nota">Los avisos se envían a todos los residentes con notificaciones activas. Confirma únicamente cuando el evento esté ocurriendo.</div>
 </div></div>
 <div id="modal" class="modal-fondo"><div class="modal"><div id="mIcono" class="modal-icono">🔔</div><h2 id="mTitulo">Confirmar aviso</h2><p id="mTexto"></p><div class="botones"><button class="confirmar" onclick="confirmarAviso()">CONFIRMAR</button><button class="cancelar" onclick="cerrarModal()">CANCELAR</button></div></div></div>
 <div id="mensaje" class="mensaje"></div>
+<form id="formAvisosGuardias" method="post" action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec" target="iframeAvisosGuardias" style="display:none;">
+  <input type="hidden" id="avisoAccion" name="accion">
+  <input type="hidden" id="avisoRequestId" name="requestId">
+  <input type="hidden" id="avisoClaveGuardias" name="claveGuardias">
+  <input type="hidden" id="avisoTipo" name="tipoAviso">
+</form>
+<iframe id="iframeAvisosGuardias" name="iframeAvisosGuardias" style="display:none;width:0;height:0;border:0;" title="Procesando aviso"></iframe>
 <script>
+const URL_BACKEND="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
+const CLAVE_LOCAL_GUARDIAS="claveGuardiasArcosV3";
+
 let avisoSeleccionado="";
-const AVISOS={BASURA:{icono:"🚛",titulo:"BASURA",texto:"Se enviará a los residentes el aviso de que está entrando el camión recolector de basura."},RECORRIDO:{icono:"🛡️",titulo:"RECORRIDO",texto:"Se enviará a los residentes el aviso de que los guardias están realizando recorrido por la colonia."}};
-function prepararAviso(tipo){const a=AVISOS[tipo];if(!a)return;avisoSeleccionado=tipo;mIcono.textContent=a.icono;mTitulo.textContent="Enviar aviso: "+a.titulo;mTexto.textContent=a.texto;modal.style.display="flex"}
-function cerrarModal(){avisoSeleccionado="";modal.style.display="none"}
-function confirmarAviso(){if(!avisoSeleccionado)return;const a=AVISOS[avisoSeleccionado];cerrarModal();mensaje.textContent="Página lista. En el siguiente paso conectaremos el envío real de “"+a.titulo+"”.";mensaje.style.display="block";setTimeout(()=>mensaje.style.display="none",3200)}
-function volverGuardias(){location.href="guardias.html"}
-window.addEventListener("click",e=>{if(e.target===modal)cerrarModal()});
+let avisoEnviando=false;
+let operacionAvisoGuardias=null;
+
+const AVISOS={
+  BASURA:{
+    icono:"🚛",
+    titulo:"BASURA",
+    texto:"Se enviará a todos los residentes: “Se informa que el camión recolector de basura ha ingresado al fraccionamiento.”"
+  },
+  RECORRIDO:{
+    icono:"🛡️",
+    titulo:"RECORRIDO",
+    texto:"Se enviará a todos los residentes: “Se informa que el personal de seguridad se encuentra realizando un recorrido por el fraccionamiento.”"
+  }
+};
+
+function prepararAviso(tipo){
+  if(avisoEnviando)return;
+  const a=AVISOS[tipo];
+  if(!a)return;
+  avisoSeleccionado=tipo;
+  document.getElementById("mIcono").textContent=a.icono;
+  document.getElementById("mTitulo").textContent="Enviar aviso: "+a.titulo;
+  document.getElementById("mTexto").textContent=a.texto;
+  document.getElementById("modal").style.display="flex";
+}
+
+function cerrarModal(){
+  avisoSeleccionado="";
+  document.getElementById("modal").style.display="none";
+}
+
+function confirmarAviso(){
+  if(!avisoSeleccionado||avisoEnviando)return;
+
+  const tipoAviso=avisoSeleccionado;
+  cerrarModal();
+
+  const claveGuardias=localStorage.getItem(CLAVE_LOCAL_GUARDIAS)||"";
+
+  if(!claveGuardias){
+    mostrarError("Este dispositivo no está autorizado como guardia. Abre primero la app principal de guardias.");
+    return;
+  }
+
+  avisoEnviando=true;
+  mostrarMensaje("Enviando aviso...");
+
+  const requestId=generarRequestId();
+  operacionAvisoGuardias={requestId:requestId,intentos:0};
+
+  document.getElementById("avisoAccion").value="guardiasAvisoEnviar";
+  document.getElementById("avisoRequestId").value=requestId;
+  document.getElementById("avisoClaveGuardias").value=claveGuardias;
+  document.getElementById("avisoTipo").value=tipoAviso;
+
+  document.getElementById("formAvisosGuardias").submit();
+
+  setTimeout(consultarResultado,700);
+}
+
+function generarRequestId(){
+  if(window.crypto&&typeof crypto.randomUUID==="function"){
+    return crypto.randomUUID().replace(/-/g,"");
+  }
+
+  return Date.now().toString(36)+
+    Math.random().toString(36).slice(2)+
+    Math.random().toString(36).slice(2);
+}
+
+function consultarResultado(){
+  if(!operacionAvisoGuardias)return;
+
+  operacionAvisoGuardias.intentos++;
+
+  if(operacionAvisoGuardias.intentos>50){
+    avisoEnviando=false;
+    operacionAvisoGuardias=null;
+    mostrarError("El servidor está tardando más de lo normal. No vuelvas a enviar el aviso hasta verificar si ya llegó.");
+    return;
+  }
+
+  const callback="cbAvisoGuardias_"+Date.now()+"_"+Math.floor(Math.random()*100000);
+
+  window[callback]=function(resultado){
+    try{delete window[callback]}catch(e){}
+
+    const anterior=document.getElementById("consultaAvisoGuardias");
+    if(anterior)anterior.remove();
+
+    if(!resultado||!resultado.ok){
+      avisoEnviando=false;
+      operacionAvisoGuardias=null;
+      mostrarError(resultado&&resultado.mensaje?resultado.mensaje:"No fue posible consultar el resultado.");
+      return;
+    }
+
+    const datos=resultado.datos||{};
+
+    if(datos.estado==="PENDIENTE"){
+      setTimeout(consultarResultado,700);
+      return;
+    }
+
+    if(datos.estado!=="LISTO"||!datos.resultado){
+      avisoEnviando=false;
+      operacionAvisoGuardias=null;
+      mostrarError("No fue posible recuperar el resultado del envío.");
+      return;
+    }
+
+    const envio=datos.resultado;
+
+    avisoEnviando=false;
+    operacionAvisoGuardias=null;
+
+    if(!envio.ok){
+      mostrarError(envio.mensaje||"No fue posible enviar el aviso.");
+      return;
+    }
+
+    const detalle=envio.datos||{};
+
+    mostrarMensaje(
+      "✅ Aviso enviado correctamente a "+
+      String(detalle.enviados||0)+
+      " dispositivo(s)."
+    );
+  };
+
+  const anterior=document.getElementById("consultaAvisoGuardias");
+  if(anterior)anterior.remove();
+
+  const script=document.createElement("script");
+  script.id="consultaAvisoGuardias";
+  script.src=URL_BACKEND+
+    "?api=operacionEstado"+
+    "&requestId="+encodeURIComponent(operacionAvisoGuardias.requestId)+
+    "&callback="+encodeURIComponent(callback)+
+    "&t="+Date.now();
+
+  script.onerror=function(){
+    script.remove();
+    if(operacionAvisoGuardias){
+      setTimeout(consultarResultado,700);
+    }
+  };
+
+  document.body.appendChild(script);
+}
+
+function mostrarMensaje(texto){
+  const m=document.getElementById("mensaje");
+  m.textContent=texto;
+  m.style.background="#e9f7ee";
+  m.style.color="#267245";
+  m.style.display="block";
+  setTimeout(()=>m.style.display="none",3500);
+}
+
+function mostrarError(texto){
+  const m=document.getElementById("mensaje");
+  m.textContent=texto;
+  m.style.background="#fdeaea";
+  m.style.color="#9b3333";
+  m.style.display="block";
+  setTimeout(()=>{
+    m.style.display="none";
+    m.style.background="#e9f7ee";
+    m.style.color="#267245";
+  },4500);
+}
+
+function volverGuardias(){
+  location.href="guardias.html";
+}
+
+window.addEventListener("click",e=>{
+  if(e.target===document.getElementById("modal")){
+    cerrarModal();
+  }
+});
 </script>
 </body>
 </html>
