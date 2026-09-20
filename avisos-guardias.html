@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Avisos de Guardias</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:#204d5d}.pagina{min-height:100vh;padding:16px 14px 30px}.contenedor{width:100%;max-width:540px;margin:0 auto}.encabezado{display:flex;align-items:center;gap:12px;margin-bottom:18px}.volver{width:54px;height:54px;border:none;border-radius:16px;background:#fff;color:#204d5d;font-size:27px;font-weight:bold;box-shadow:0 5px 16px rgba(20,55,95,.09)}.titulo{margin:0;font-size:24px;font-weight:800}.subtitulo{margin-top:4px;font-size:13px;color:#718198}.info{background:#fff;border-radius:20px;padding:15px 16px;margin-bottom:18px;box-shadow:0 5px 18px rgba(20,55,95,.08)}.info strong{display:block;margin-bottom:5px}.info span{font-size:13px;color:#718198;line-height:1.45}.lista{display:grid;gap:14px}.aviso{width:100%;min-height:92px;border:none;border-radius:22px;padding:18px;text-align:left;background:#fff;color:#204d5d;box-shadow:0 5px 18px rgba(20,55,95,.09);display:flex;align-items:center;gap:15px}.icono{width:58px;height:58px;border-radius:18px;background:#edf3f6;display:flex;align-items:center;justify-content:center;font-size:30px}.aviso-textos{flex:1}.aviso-titulo{font-size:18px;font-weight:800;margin-bottom:4px}.aviso-descripcion{font-size:13px;color:#718198;line-height:1.4}.flecha{font-size:24px;color:#9aa8b5}.nota{margin-top:18px;padding:13px 14px;border-radius:16px;background:#fff8e7;color:#8a6819;font-size:12px;line-height:1.45}.modal-fondo{display:none;position:fixed;inset:0;background:rgba(8,18,30,.74);align-items:center;justify-content:center;padding:18px}.modal{width:100%;max-width:420px;background:#fff;border-radius:24px;padding:22px}.modal-icono{width:72px;height:72px;margin:0 auto 14px;border-radius:22px;background:#edf3f6;display:flex;align-items:center;justify-content:center;font-size:36px}.modal h2,.modal p{text-align:center}.modal p{color:#718198;line-height:1.5}.botones{display:grid;gap:10px;margin-top:20px}.botones button{min-height:56px;border:none;border-radius:17px;font-size:16px;font-weight:800}.confirmar{background:#204d5d;color:#fff}.cancelar{background:#edf3f6;color:#204d5d}.mensaje{display:none;position:fixed;left:16px;right:16px;bottom:22px;max-width:500px;margin:0 auto;padding:15px;border-radius:15px;text-align:center;font-size:14px;font-weight:800;background:#e9f7ee;color:#267245}
+  </style>
+</head>
+<body>
+<div class="pagina"><div class="contenedor">
+  <div class="encabezado"><button class="volver" onclick="volverGuardias()">←</button><div><h1 class="titulo">Avisos</h1><div class="subtitulo">Notificaciones rápidas para residentes</div></div></div>
+  <div class="info"><strong>Selecciona un aviso</strong><span>Antes de enviarlo aparecerá una confirmación para evitar avisos accidentales.</span></div>
+  <div class="lista">
+    <button class="aviso" onclick="prepararAviso('BASURA')"><div class="icono">🚛</div><div class="aviso-textos"><div class="aviso-titulo">BASURA</div><div class="aviso-descripcion">Avisar que está entrando el camión recolector de basura.</div></div><div class="flecha">›</div></button>
+    <button class="aviso" onclick="prepararAviso('RECORRIDO')"><div class="icono">🛡️</div><div class="aviso-textos"><div class="aviso-titulo">RECORRIDO</div><div class="aviso-descripcion">Avisar que los guardias están realizando recorrido por la colonia.</div></div><div class="flecha">›</div></button>
+  </div>
+  <div class="nota">Primera etapa: la página y la confirmación quedan listas. El envío real se conectará después, antes de agregar el botón AVISOS a la pantalla principal de guardias.</div>
+</div></div>
+<div id="modal" class="modal-fondo"><div class="modal"><div id="mIcono" class="modal-icono">🔔</div><h2 id="mTitulo">Confirmar aviso</h2><p id="mTexto"></p><div class="botones"><button class="confirmar" onclick="confirmarAviso()">CONFIRMAR</button><button class="cancelar" onclick="cerrarModal()">CANCELAR</button></div></div></div>
+<div id="mensaje" class="mensaje"></div>
+<script>
+let avisoSeleccionado="";
+const AVISOS={BASURA:{icono:"🚛",titulo:"BASURA",texto:"Se enviará a los residentes el aviso de que está entrando el camión recolector de basura."},RECORRIDO:{icono:"🛡️",titulo:"RECORRIDO",texto:"Se enviará a los residentes el aviso de que los guardias están realizando recorrido por la colonia."}};
+function prepararAviso(tipo){const a=AVISOS[tipo];if(!a)return;avisoSeleccionado=tipo;mIcono.textContent=a.icono;mTitulo.textContent="Enviar aviso: "+a.titulo;mTexto.textContent=a.texto;modal.style.display="flex"}
+function cerrarModal(){avisoSeleccionado="";modal.style.display="none"}
+function confirmarAviso(){if(!avisoSeleccionado)return;const a=AVISOS[avisoSeleccionado];cerrarModal();mensaje.textContent="Página lista. En el siguiente paso conectaremos el envío real de “"+a.titulo+"”.";mensaje.style.display="block";setTimeout(()=>mensaje.style.display="none",3200)}
+function volverGuardias(){location.href="guardias.html"}
+window.addEventListener("click",e=>{if(e.target===modal)cerrarModal()});
+</script>
+</body>
+</html>
