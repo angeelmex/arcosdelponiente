@@ -908,6 +908,14 @@
     <button onclick="abrirEntrada()">REGISTRAR ENTRADA</button>
     <button class="sec" onclick="abrirSalida()">REGISTRAR SALIDA</button>
     <button class="proveedor-menu" onclick="abrirProveedor()">REGISTRAR PROVEEDOR</button>
+
+    <button
+      type="button"
+      onclick="abrirAvisosGuardias()"
+    >
+      📢 AVISOS
+    </button>
+
     <button class="mensajes-menu" onclick="abrirMensajesGuardias()">
       💬 MENSAJES CON RESIDENTES
       <span
@@ -5778,6 +5786,15 @@ function configurarJalonActualizarChatsGuardiasV3_() {
         true
     }
   );
+
+}
+
+
+
+function abrirAvisosGuardias() {
+
+  window.location.href =
+    "avisos-guardias.html";
 
 }
 
