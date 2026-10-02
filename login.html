@@ -10,6 +10,14 @@
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
   >
 
+  <meta name="theme-color" content="#204d5d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Arcos del Poniente">
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
   <title>Acceso de residente</title>
 
   <style>
@@ -655,15 +663,50 @@ document.addEventListener(
 
 
 /*************************************************
+ * VALIDAR QUE SE ABRIÓ COMO APP INSTALADA
+ *************************************************/
+
+function estaAbiertaComoAppInstalada() {
+
+  try {
+
+    if (
+      window.matchMedia &&
+      window.matchMedia(
+        "(display-mode: standalone)"
+      ).matches
+    ) {
+
+      return true;
+
+    }
+
+
+    if (
+      window.navigator &&
+      window.navigator.standalone ===
+        true
+    ) {
+
+      return true;
+
+    }
+
+  }
+  catch (error) {}
+
+
+  return false;
+
+}
+
+
+/*************************************************
  * DATOS PÚBLICOS / LOGO
  *************************************************/
 
 function cargarDatosPublicos() {
 
-  /*
-   * Si el usuario viene de Inicio, el logo ya está guardado
-   * y aparece inmediatamente.
-   */
   const cache =
     leerCacheDatosPublicosLoginV3_();
 
@@ -705,11 +748,6 @@ function cargarDatosPublicos() {
     };
 
 
-  /*
-   * La comprobación contra Apps Script sigue ocurriendo en
-   * segundo plano cada vez. Si cambias el logo, se actualizará
-   * sin esperar a que venza el cache.
-   */
   const script =
     document.createElement(
       "script"
@@ -850,10 +888,6 @@ function iniciarSesion() {
       requestLoginActual;
 
 
-  /*
-   * Mandamos la contraseña una sola vez,
-   * mediante POST y dentro de un iframe oculto.
-   */
   document
     .getElementById(
       "formLogin"
@@ -891,11 +925,6 @@ function iniciarSesion() {
     );
 
 
-  /*
-   * Damos un pequeño margen para que el POST
-   * llegue al backend y después comenzamos
-   * a preguntar por el resultado.
-   */
   setTimeout(
     consultarEstadoLogin,
     700
@@ -1188,8 +1217,20 @@ function procesarResultadoLogin(
   setTimeout(
     function() {
 
-      window.location.href =
-        "menu.html?v=20260820-1120";
+      if (
+        estaAbiertaComoAppInstalada()
+      ) {
+
+        window.location.href =
+          "menu.html?v=20260820-1120";
+
+      }
+      else {
+
+        window.location.href =
+          "instalar-app.html";
+
+      }
 
     },
     350
