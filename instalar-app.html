@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <meta name="theme-color" content="#204d5d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Arcos del Poniente">
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <title>Instalar Arcos del Poniente</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #204d5d;
+    }
+
+    .pagina {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px 16px;
+    }
+
+    .tarjeta {
+      width: 100%;
+      max-width: 480px;
+      background: white;
+      border-radius: 26px;
+      padding: 28px 22px;
+      text-align: center;
+      box-shadow: 0 9px 30px rgba(20,55,95,.12);
+    }
+
+    .icono-app {
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 17px;
+      border-radius: 24px;
+      background: #e7f0f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 43px;
+    }
+
+    h1 {
+      margin: 0 0 9px;
+      font-size: 25px;
+      color: #204d5d;
+    }
+
+    .texto {
+      color: #718198;
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 19px;
+    }
+
+    .instrucciones {
+      text-align: left;
+      background: #f4f7fb;
+      border-radius: 18px;
+      padding: 16px;
+      margin: 16px 0;
+      color: #425b6b;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .instrucciones strong {
+      color: #204d5d;
+    }
+
+    .boton {
+      width: 100%;
+      min-height: 62px;
+      border: none;
+      border-radius: 18px;
+      background: #204d5d;
+      color: white;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .boton.secundario {
+      background: #edf3f6;
+      color: #204d5d;
+      margin-top: 10px;
+    }
+
+    .boton:disabled {
+      opacity: .55;
+    }
+
+    .nota {
+      margin-top: 16px;
+      color: #8996a4;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .ok {
+      display: none;
+      margin-top: 15px;
+      padding: 13px;
+      border-radius: 14px;
+      background: #e9f7ee;
+      color: #267245;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<div class="pagina">
+
+  <div class="tarjeta">
+
+    <div class="icono-app">
+      📱
+    </div>
+
+    <h1>
+      Instala Arcos del Poniente
+    </h1>
+
+    <div class="texto">
+      Tu contraseña ya fue validada.
+      Para utilizar el sistema de residentes,
+      abre Arcos del Poniente como aplicación instalada.
+    </div>
+
+    <div
+      id="instrucciones"
+      class="instrucciones"
+    ></div>
+
+    <button
+      id="btnInstalar"
+      type="button"
+      class="boton"
+      style="display:none;"
+      onclick="instalarAplicacion()"
+    >
+      INSTALAR APP
+    </button>
+
+    <button
+      type="button"
+      class="boton secundario"
+      onclick="comprobarInstalacion()"
+    >
+      YA LA INSTALÉ
+    </button>
+
+    <div
+      id="mensajeOk"
+      class="ok"
+    >
+      ✓ La app ya está instalada. Ábrela desde el icono de tu pantalla de inicio.
+    </div>
+
+    <div class="nota">
+      Después de instalarla, cierra esta página y abre
+      Arcos del Poniente desde el nuevo icono.
+      Es posible que debas ingresar tu contraseña nuevamente.
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let eventoInstalacion =
+  null;
+
+
+function esIOS() {
+
+  const ua =
+    navigator.userAgent || "";
+
+
+  return (
+    /iPad|iPhone|iPod/i.test(
+      ua
+    ) ||
+    (
+      navigator.platform ===
+        "MacIntel" &&
+      navigator.maxTouchPoints >
+        1
+    )
+  );
+
+}
+
+
+
+function estaAbiertaComoAppInstalada() {
+
+  try {
+
+    if (
+      window.matchMedia &&
+      window.matchMedia(
+        "(display-mode: standalone)"
+      ).matches
+    ) {
+
+      return true;
+
+    }
+
+
+    if (
+      navigator.standalone ===
+        true
+    ) {
+
+      return true;
+
+    }
+
+  }
+  catch (error) {}
+
+
+  return false;
+
+}
+
+
+
+function pintarInstrucciones() {
+
+  const caja =
+    document.getElementById(
+      "instrucciones"
+    );
+
+
+  if (
+    esIOS()
+  ) {
+
+    caja.innerHTML =
+      "<strong>En iPhone o iPad:</strong><br>" +
+      "1. Toca el botón <strong>Compartir</strong> de Safari.<br>" +
+      "2. Elige <strong>Agregar a pantalla de inicio</strong>.<br>" +
+      "3. Toca <strong>Agregar</strong>.<br>" +
+      "4. Cierra Safari y abre Arcos del Poniente desde el nuevo icono.";
+
+  }
+  else {
+
+    caja.innerHTML =
+      "<strong>En Android:</strong><br>" +
+      "Toca <strong>INSTALAR APP</strong> cuando aparezca disponible.<br><br>" +
+      "Si no aparece, abre el menú de Chrome (⋮) y elige " +
+      "<strong>Instalar aplicación</strong> o <strong>Agregar a pantalla principal</strong>.";
+
+  }
+
+}
+
+
+
+window.addEventListener(
+  "beforeinstallprompt",
+  function(evento) {
+
+    evento.preventDefault();
+
+
+    eventoInstalacion =
+      evento;
+
+
+    document
+      .getElementById(
+        "btnInstalar"
+      )
+      .style.display =
+        "block";
+
+  }
+);
+
+
+
+window.addEventListener(
+  "appinstalled",
+  function() {
+
+    eventoInstalacion =
+      null;
+
+
+    document
+      .getElementById(
+        "btnInstalar"
+      )
+      .style.display =
+        "none";
+
+
+    document
+      .getElementById(
+        "mensajeOk"
+      )
+      .style.display =
+        "block";
+
+  }
+);
+
+
+
+async function instalarAplicacion() {
+
+  if (
+    !eventoInstalacion
+  ) {
+
+    return;
+
+  }
+
+
+  const boton =
+    document.getElementById(
+      "btnInstalar"
+    );
+
+
+  boton.disabled =
+    true;
+
+
+  try {
+
+    await eventoInstalacion.prompt();
+
+
+    await eventoInstalacion
+      .userChoice;
+
+  }
+  catch (error) {}
+
+
+  eventoInstalacion =
+    null;
+
+
+  boton.disabled =
+    false;
+
+
+  boton.style.display =
+    "none";
+
+}
+
+
+
+function comprobarInstalacion() {
+
+  if (
+    estaAbiertaComoAppInstalada()
+  ) {
+
+    window.location.href =
+      "menu.html";
+
+    return;
+
+  }
+
+
+  document
+    .getElementById(
+      "mensajeOk"
+    )
+    .style.display =
+      "block";
+
+}
+
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    if (
+      estaAbiertaComoAppInstalada()
+    ) {
+
+      window.location.replace(
+        "menu.html"
+      );
+
+      return;
+
+    }
+
+
+    pintarInstrucciones();
+
+
+    if (
+      "serviceWorker" in navigator
+    ) {
+
+      navigator.serviceWorker
+        .register(
+          "./service-worker.js",
+          {
+            scope:
+              "./",
+
+            updateViaCache:
+              "none"
+          }
+        )
+        .catch(
+          function() {}
+        );
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+
+</html>
