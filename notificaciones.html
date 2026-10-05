@@ -159,6 +159,16 @@
         #d19a00;
     }
 
+    .notificacion.con-foto {
+      cursor:
+        pointer;
+    }
+
+    .notificacion.con-foto:active {
+      transform:
+        scale(.99);
+    }
+
     .titulo {
       font-size:
         16px;
@@ -198,6 +208,20 @@
         700;
     }
 
+    .ver-foto {
+      margin-top:
+        10px;
+
+      color:
+        #238c45;
+
+      font-size:
+        13px;
+
+      font-weight:
+        800;
+    }
+
     .estado {
       background:
         white;
@@ -230,6 +254,147 @@
     .error {
       color:
         #9b3333;
+    }
+
+    .modal-fondo {
+      display:
+        none;
+
+      position:
+        fixed;
+
+      inset:
+        0;
+
+      z-index:
+        10000;
+
+      padding:
+        18px;
+
+      background:
+        rgba(10,25,45,.62);
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+    }
+
+    .modal-foto {
+      width:
+        100%;
+
+      max-width:
+        430px;
+
+      background:
+        white;
+
+      border-radius:
+        24px;
+
+      padding:
+        20px;
+
+      text-align:
+        center;
+
+      box-shadow:
+        0 10px 32px
+        rgba(0,0,0,.20);
+    }
+
+    .modal-foto h2 {
+      margin:
+        0 0 8px;
+
+      font-size:
+        22px;
+    }
+
+    .modal-placas {
+      min-height:
+        20px;
+
+      margin-bottom:
+        12px;
+
+      color:
+        #425b6c;
+
+      font-size:
+        15px;
+
+      font-weight:
+        800;
+    }
+
+    .modal-estado {
+      padding:
+        22px 10px;
+
+      color:
+        #718198;
+
+      font-size:
+        14px;
+
+      line-height:
+        1.45;
+    }
+
+    .modal-imagen {
+      display:
+        none;
+
+      width:
+        100%;
+
+      max-height:
+        58vh;
+
+      object-fit:
+        contain;
+
+      border-radius:
+        16px;
+
+      background:
+        #f4f7fb;
+    }
+
+    .modal-cerrar {
+      width:
+        100%;
+
+      min-height:
+        52px;
+
+      margin-top:
+        14px;
+
+      border:
+        none;
+
+      border-radius:
+        15px;
+
+      background:
+        #204d5d;
+
+      color:
+        white;
+
+      font-size:
+        15px;
+
+      font-weight:
+        800;
+
+      cursor:
+        pointer;
     }
 
   </style>
@@ -285,6 +450,49 @@
 </div>
 
 
+<div
+  id="modalFotoPlacas"
+  class="modal-fondo"
+  onclick="cerrarModalFotoPlacasDesdeFondo(event)"
+>
+
+  <div class="modal-foto">
+
+    <h2>
+      📷 Foto de placas
+    </h2>
+
+    <div
+      id="modalPlacasTexto"
+      class="modal-placas"
+    ></div>
+
+    <div
+      id="modalFotoEstado"
+      class="modal-estado"
+    >
+      Cargando fotografía...
+    </div>
+
+    <img
+      id="modalFotoImagen"
+      class="modal-imagen"
+      alt="Foto de placas"
+    >
+
+    <button
+      type="button"
+      class="modal-cerrar"
+      onclick="cerrarModalFotoPlacas()"
+    >
+      CERRAR
+    </button>
+
+  </div>
+
+</div>
+
+
 <iframe
   id="frameOperacion"
   name="frameOperacion"
@@ -312,6 +520,11 @@
   <input
     id="campoToken"
     name="token"
+  >
+
+  <input
+    id="campoIdAcceso"
+    name="idAcceso"
   >
 
 </form>
@@ -815,14 +1028,15 @@ function ocultarIndicadorActualizandoV4_() {
 
 
 function ejecutarOperacion(
-  accion
+  accion,
+  idAcceso
 ) {
 
   if (
     operacionActual
   ) {
 
-    return;
+    return false;
 
   }
 
@@ -873,6 +1087,14 @@ function ejecutarOperacion(
 
   document
     .getElementById(
+      "campoIdAcceso"
+    )
+    .value =
+      idAcceso || "";
+
+
+  document
+    .getElementById(
       "formOperacion"
     )
     .submit();
@@ -882,6 +1104,9 @@ function ejecutarOperacion(
     consultarEstado,
     500
   );
+
+
+  return true;
 
 }
 
@@ -906,9 +1131,23 @@ function consultarEstado() {
       MAX_CONSULTAS
   ) {
 
-    mostrarError(
-      "El servidor está tardando. Intenta nuevamente."
-    );
+    if (
+      ACCION_ACTUAL ===
+        "notificacionFotoPlacas"
+    ) {
+
+      mostrarErrorFotoPlacas(
+        "El servidor está tardando. Intenta nuevamente."
+      );
+
+    }
+    else {
+
+      mostrarError(
+        "El servidor está tardando. Intenta nuevamente."
+      );
+
+    }
 
 
     operacionActual =
@@ -952,12 +1191,29 @@ function consultarEstado() {
         !resultado.ok
       ) {
 
-        mostrarError(
-          resultado &&
-          resultado.mensaje
-            ? resultado.mensaje
-            : "No fue posible cargar."
-        );
+        if (
+          ACCION_ACTUAL ===
+            "notificacionFotoPlacas"
+        ) {
+
+          mostrarErrorFotoPlacas(
+            resultado &&
+            resultado.mensaje
+              ? resultado.mensaje
+              : "No fue posible cargar."
+          );
+
+        }
+        else {
+
+          mostrarError(
+            resultado &&
+            resultado.mensaje
+              ? resultado.mensaje
+              : "No fue posible cargar."
+          );
+
+        }
 
 
         operacionActual =
@@ -992,9 +1248,23 @@ function consultarEstado() {
           "LISTO"
       ) {
 
-        mostrarError(
-          "No fue posible recuperar las notificaciones."
-        );
+        if (
+          ACCION_ACTUAL ===
+            "notificacionFotoPlacas"
+        ) {
+
+          mostrarErrorFotoPlacas(
+            "No fue posible recuperar la fotografía."
+          );
+
+        }
+        else {
+
+          mostrarError(
+            "No fue posible recuperar las notificaciones."
+          );
+
+        }
 
 
         operacionActual =
@@ -1069,8 +1339,6 @@ function consultarEstado() {
     };
 
 
-  
-
     /*
      * WATCHDOG DE CONSULTA DE ESTADO
      * Solo recupera una consulta JSONP colgada.
@@ -1133,6 +1401,23 @@ function procesarResultado(
     ocultarIndicadorActualizandoV4_();
 
 
+    if (
+      ACCION_ACTUAL ===
+        "notificacionFotoPlacas"
+    ) {
+
+      mostrarErrorFotoPlacas(
+        resultado &&
+        resultado.mensaje
+          ? resultado.mensaje
+          : "No fue posible cargar la fotografía de placas."
+      );
+
+      return;
+
+    }
+
+
     /*
      * Si ya teníamos bandeja en pantalla, un fallo
      * temporal al comprobar versión no la borra.
@@ -1151,6 +1436,20 @@ function procesarResultado(
       resultado.mensaje
         ? resultado.mensaje
         : "No fue posible cargar tus notificaciones."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    ACCION_ACTUAL ===
+      "notificacionFotoPlacas"
+  ) {
+
+    pintarFotoPlacas(
+      resultado.datos || {}
     );
 
     return;
@@ -1386,12 +1685,344 @@ function pintarNotificaciones(
       );
 
 
+      if (
+        tipo === "INGRESO" &&
+        item.idAcceso
+      ) {
+
+        tarjeta.classList.add(
+          "con-foto"
+        );
+
+
+        const verFoto =
+          document.createElement(
+            "div"
+          );
+
+
+        verFoto.className =
+          "ver-foto";
+
+
+        verFoto.textContent =
+          "📷 Ver foto de placas";
+
+
+        tarjeta.appendChild(
+          verFoto
+        );
+
+
+        tarjeta.setAttribute(
+          "role",
+          "button"
+        );
+
+
+        tarjeta.tabIndex =
+          0;
+
+
+        tarjeta.addEventListener(
+          "click",
+          function() {
+
+            abrirFotoPlacasNotificacion(
+              item.idAcceso
+            );
+
+          }
+        );
+
+
+        tarjeta.addEventListener(
+          "keydown",
+          function(evento) {
+
+            if (
+              evento.key === "Enter" ||
+              evento.key === " "
+            ) {
+
+              evento.preventDefault();
+
+
+              abrirFotoPlacasNotificacion(
+                item.idAcceso
+              );
+
+            }
+
+          }
+        );
+
+      }
+
+
       lista.appendChild(
         tarjeta
       );
 
     }
   );
+
+}
+
+
+
+function abrirFotoPlacasNotificacion(
+  idAcceso
+) {
+
+  idAcceso =
+    String(
+      idAcceso || ""
+    )
+    .trim();
+
+
+  if (
+    !idAcceso
+  ) {
+
+    return;
+
+  }
+
+
+  const modal =
+    document.getElementById(
+      "modalFotoPlacas"
+    );
+
+
+  const estado =
+    document.getElementById(
+      "modalFotoEstado"
+    );
+
+
+  const imagen =
+    document.getElementById(
+      "modalFotoImagen"
+    );
+
+
+  const placas =
+    document.getElementById(
+      "modalPlacasTexto"
+    );
+
+
+  placas.textContent =
+    "";
+
+
+  imagen.style.display =
+    "none";
+
+
+  imagen.removeAttribute(
+    "src"
+  );
+
+
+  estado.textContent =
+    "Cargando fotografía...";
+
+
+  estado.style.display =
+    "block";
+
+
+  modal.style.display =
+    "flex";
+
+
+  if (
+    !ejecutarOperacion(
+      "notificacionFotoPlacas",
+      idAcceso
+    )
+  ) {
+
+    estado.textContent =
+      "Espera un momento e intenta nuevamente.";
+
+  }
+
+}
+
+
+
+function pintarFotoPlacas(
+  datos
+) {
+
+  datos =
+    datos || {};
+
+
+  const estado =
+    document.getElementById(
+      "modalFotoEstado"
+    );
+
+
+  const imagen =
+    document.getElementById(
+      "modalFotoImagen"
+    );
+
+
+  const placas =
+    document.getElementById(
+      "modalPlacasTexto"
+    );
+
+
+  placas.textContent =
+    datos.placas
+      ? "Placas: " +
+        datos.placas
+      : "";
+
+
+  if (
+    !datos.fotoPlacas
+  ) {
+
+    imagen.style.display =
+      "none";
+
+
+    imagen.removeAttribute(
+      "src"
+    );
+
+
+    estado.textContent =
+      "Este acceso no cuenta con fotografía de placas.";
+
+
+    estado.style.display =
+      "block";
+
+    return;
+
+  }
+
+
+  estado.textContent =
+    "Cargando fotografía...";
+
+
+  estado.style.display =
+    "block";
+
+
+  imagen.onload =
+    function() {
+
+      estado.style.display =
+        "none";
+
+
+      imagen.style.display =
+        "block";
+
+    };
+
+
+  imagen.onerror =
+    function() {
+
+      imagen.style.display =
+        "none";
+
+
+      estado.textContent =
+        "No fue posible mostrar la fotografía.";
+
+
+      estado.style.display =
+        "block";
+
+    };
+
+
+  imagen.src =
+    datos.fotoPlacas;
+
+}
+
+
+
+function mostrarErrorFotoPlacas(
+  texto
+) {
+
+  const imagen =
+    document.getElementById(
+      "modalFotoImagen"
+    );
+
+
+  const estado =
+    document.getElementById(
+      "modalFotoEstado"
+    );
+
+
+  imagen.style.display =
+    "none";
+
+
+  imagen.removeAttribute(
+    "src"
+  );
+
+
+  estado.textContent =
+    texto ||
+    "No fue posible cargar la fotografía de placas.";
+
+
+  estado.style.display =
+    "block";
+
+}
+
+
+
+function cerrarModalFotoPlacas() {
+
+  document
+    .getElementById(
+      "modalFotoPlacas"
+    )
+    .style.display =
+      "none";
+
+}
+
+
+
+function cerrarModalFotoPlacasDesdeFondo(
+  evento
+) {
+
+  if (
+    evento.target ===
+      document.getElementById(
+        "modalFotoPlacas"
+      )
+  ) {
+
+    cerrarModalFotoPlacas();
+
+  }
 
 }
 
