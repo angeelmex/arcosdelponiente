@@ -1162,36 +1162,11 @@ function procesarResultadoLogin(
     resultado.datos || {};
 
 
-  /*
-   * RESIDENTE INACTIVO:
-   * No guardamos una sesión normal de residente.
-   * Solo conservamos la autorización y los datos
-   * necesarios para mostrar la pantalla de pagos.
-   */
   if (
-    String(
-      datos.modo || ""
-    ).toUpperCase() ===
-      "PAGOS"
+    datos.modo ===
+      "PAGOS" &&
+    datos.tokenPago
   ) {
-
-    if (
-      !datos.tokenPago ||
-      !datos.pagos
-    ) {
-
-      mostrarError(
-        "No fue posible abrir la ventana de pagos."
-      );
-
-
-      restaurarBoton();
-
-
-      return;
-
-    }
-
 
     sessionStorage.removeItem(
       "tokenResidente"
@@ -1204,7 +1179,7 @@ function procesarResultadoLogin(
 
 
     sessionStorage.setItem(
-      "tokenPago",
+      "tokenPagoResidente",
       datos.tokenPago
     );
 
@@ -1223,27 +1198,19 @@ function procesarResultadoLogin(
     }
 
 
-    sessionStorage.setItem(
-      "datosPago",
-      JSON.stringify(
-        datos.pagos
-      )
-    );
-
-
     mostrarCorrecto(
       "Acceso a pagos."
     );
 
 
-    const boton =
+    const botonPago =
       document.getElementById(
         "btnIngresar"
       );
 
 
-    boton.textContent =
-      "ABRIENDO PAGOS...";
+    botonPago.textContent =
+      "IR A PAGOS";
 
 
     setTimeout(
@@ -1277,6 +1244,16 @@ function procesarResultadoLogin(
     return;
 
   }
+
+
+  sessionStorage.removeItem(
+    "tokenPagoResidente"
+  );
+
+
+  sessionStorage.removeItem(
+    "residentePago"
+  );
 
 
   sessionStorage.setItem(
