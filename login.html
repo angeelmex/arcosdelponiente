@@ -1162,6 +1162,106 @@ function procesarResultadoLogin(
     resultado.datos || {};
 
 
+  /*
+   * RESIDENTE INACTIVO:
+   * No guardamos una sesión normal de residente.
+   * Solo conservamos la autorización y los datos
+   * necesarios para mostrar la pantalla de pagos.
+   */
+  if (
+    String(
+      datos.modo || ""
+    ).toUpperCase() ===
+      "PAGOS"
+  ) {
+
+    if (
+      !datos.tokenPago ||
+      !datos.pagos
+    ) {
+
+      mostrarError(
+        "No fue posible abrir la ventana de pagos."
+      );
+
+
+      restaurarBoton();
+
+
+      return;
+
+    }
+
+
+    sessionStorage.removeItem(
+      "tokenResidente"
+    );
+
+
+    sessionStorage.removeItem(
+      "residente"
+    );
+
+
+    sessionStorage.setItem(
+      "tokenPago",
+      datos.tokenPago
+    );
+
+
+    if (
+      datos.residente
+    ) {
+
+      sessionStorage.setItem(
+        "residentePago",
+        JSON.stringify(
+          datos.residente
+        )
+      );
+
+    }
+
+
+    sessionStorage.setItem(
+      "datosPago",
+      JSON.stringify(
+        datos.pagos
+      )
+    );
+
+
+    mostrarCorrecto(
+      "Acceso a pagos."
+    );
+
+
+    const boton =
+      document.getElementById(
+        "btnIngresar"
+      );
+
+
+    boton.textContent =
+      "ABRIENDO PAGOS...";
+
+
+    setTimeout(
+      function() {
+
+        window.location.href =
+          "pagos.html";
+
+      },
+      350
+    );
+
+
+    return;
+
+  }
+
+
   if (
     !datos.token
   ) {
