@@ -311,7 +311,7 @@
           id="clabeTexto"
           class="valor clabe"
         >
-          Pendiente de configurar
+          Cargando...
         </div>
       </div>
 
@@ -325,7 +325,7 @@
           id="bancoTexto"
           class="valor"
         >
-          Pendiente de configurar
+          Cargando...
         </div>
       </div>
 
@@ -339,7 +339,7 @@
           id="titularTexto"
           class="valor"
         >
-          Pendiente de configurar
+          Cargando...
         </div>
       </div>
 
@@ -390,8 +390,11 @@
 
       <div class="precio-recurrente">
 
-        <div class="precio">
-          $55
+        <div
+          id="precioTotal"
+          class="precio"
+        >
+          $0
         </div>
 
         <div class="periodo">
@@ -405,8 +408,8 @@
       </div>
 
       <div class="desglose">
-        <strong>$50</strong> cuota mensual<br>
-        <strong>$5</strong> cargo por procesamiento del pago
+        <strong id="desgloseCuota">$0</strong> cuota mensual<br>
+        <strong id="desgloseComision">$0</strong> cargo por procesamiento del pago
       </div>
 
 
@@ -424,7 +427,7 @@
         id="notaPagoRecurrente"
         class="nota"
       >
-        El enlace para activar el cobro recurrente se agregará aquí.
+        Cargando opciones de pago...
       </div>
 
     </div>
@@ -446,8 +449,11 @@
         También puedes realizar tu pago directamente en:
       </div>
 
-      <div class="efectivo-direccion">
-        Arco de Bruselas 107
+      <div
+        id="direccionEfectivo"
+        class="efectivo-direccion"
+      >
+        Cargando...
       </div>
 
       <div class="nota">
@@ -467,39 +473,75 @@
 ></div>
 
 
+
+<iframe
+  id="frameOperacion"
+  name="frameOperacion"
+  style="display:none;"
+></iframe>
+
+
+<form
+  id="formOperacion"
+  method="post"
+  target="frameOperacion"
+  style="display:none;"
+>
+
+  <input
+    id="campoAccion"
+    name="accion"
+  >
+
+  <input
+    id="campoRequestId"
+    name="requestId"
+  >
+
+  <input
+    id="campoToken"
+    name="token"
+  >
+
+  <input
+    id="campoTokenPago"
+    name="tokenPago"
+  >
+
+</form>
+
 <script>
 
-/*
- * DATOS PENDIENTES DE CONFIGURAR.
- *
- * Cuando tengamos los datos definitivos solo se llenan
- * estos campos; no es necesario rediseñar la página.
- */
-let DATOS_PAGO = {
-  clabe:
-    "",
+const URL_BACKEND =
+  "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
 
-  banco:
-    "",
 
-  titular:
-    "",
+const TOKEN =
+  sessionStorage.getItem(
+    "tokenResidente"
+  ) || "";
 
-  enlaceMercadoPago:
-    "",
 
-  cuotaMensual:
-    "",
+const TOKEN_PAGO =
+  sessionStorage.getItem(
+    "tokenPagoResidente"
+  ) || "";
 
-  comisionTarjeta:
-    "",
 
-  direccionEfectivo:
-    "",
+let ENLACE_PAGO_RECURRENTE =
+  "";
 
-  conceptoTransferencia:
-    ""
-};
+
+let requestActual =
+  "";
+
+
+let consultas =
+  0;
+
+
+const MAX_CONSULTAS =
+  30;
 
 
 document.addEventListener(
@@ -510,126 +552,304 @@ document.addEventListener(
 
 function iniciarPaginaPagos() {
 
+  if (
+    !TOKEN &&
+    !TOKEN_PAGO
+  ) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
   const parametros =
     new URLSearchParams(
       window.location.search
     );
 
 
-  const origenEstadoCuenta =
+  if (
+    TOKEN &&
     parametros.get(
       "origen"
     ) ===
-      "estado-cuenta";
-
-
-  if (
-    origenEstadoCuenta
+      "estado-cuenta"
   ) {
 
-    document
-      .getElementById(
+    const botonVolver =
+      document.getElementById(
         "btnVolver"
-      )
-      .style.display =
-        "block";
+      );
+
+
+    botonVolver.textContent =
+      "VOLVER";
+
+
+    botonVolver.style.display =
+      "block";
 
   }
 
 
-  /*
-   * Para el flujo de residente INACTIVO, login.html
-   * guarda únicamente datos de pago y una autorización
-   * especial. No crea tokenResidente.
-   */
-  let datosPagoTexto =
-    "";
+  cargarDatosPago();
+
+}
 
 
-  try {
+function cargarDatosPago() {
 
-    datosPagoTexto =
-      sessionStorage.getItem(
-        "datosPago"
-      ) || "";
+  requestActual =
+    generarRequestId();
 
-  }
-  catch (error) {}
 
+  consultas =
+    0;
+
+
+  document
+    .getElementById(
+      "formOperacion"
+    )
+    .action =
+      URL_BACKEND;
+
+
+  document
+    .getElementById(
+      "campoAccion"
+    )
+    .value =
+      "pagosDatos";
+
+
+  document
+    .getElementById(
+      "campoRequestId"
+    )
+    .value =
+      requestActual;
+
+
+  document
+    .getElementById(
+      "campoToken"
+    )
+    .value =
+      TOKEN;
+
+
+  document
+    .getElementById(
+      "campoTokenPago"
+    )
+    .value =
+      TOKEN_PAGO;
+
+
+  document
+    .getElementById(
+      "formOperacion"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarEstado,
+    500
+  );
+
+}
+
+
+function consultarEstado() {
 
   if (
-    !datosPagoTexto
+    !requestActual
   ) {
-
-    mostrarMensaje(
-      "No fue posible cargar la información de pago. Ingresa nuevamente."
-    );
-
-
-    deshabilitarPaginaPagos_();
-
 
     return;
 
   }
 
 
-  try {
+  consultas++;
 
-    DATOS_PAGO =
-      JSON.parse(
-        datosPagoTexto
-      ) || {};
 
-  }
-  catch (error) {
+  if (
+    consultas >
+      MAX_CONSULTAS
+  ) {
 
     mostrarMensaje(
-      "No fue posible cargar la información de pago. Ingresa nuevamente."
+      "El servidor está tardando más de lo normal."
     );
-
-
-    deshabilitarPaginaPagos_();
-
 
     return;
 
   }
 
 
-  const residenteTexto =
-    origenEstadoCuenta
-      ? (
-          sessionStorage.getItem(
-            "residente"
-          ) || ""
-        )
-      : (
-          sessionStorage.getItem(
-            "residentePago"
-          ) || ""
+  const callback =
+    "recibirPagosV3_" +
+    Date.now() +
+    "_" +
+    Math.floor(
+      Math.random() *
+      100000
+    );
+
+
+  window[
+    callback
+  ] =
+    function(resultado) {
+
+      try {
+        delete window[callback];
+      }
+      catch (error) {}
+
+
+      if (
+        !resultado ||
+        !resultado.ok
+      ) {
+
+        mostrarMensaje(
+          "No fue posible consultar la información."
         );
 
+        return;
 
-  let residente =
-    null;
+      }
 
+
+      const estado =
+        resultado.datos ||
+        {};
+
+
+      if (
+        estado.estado ===
+          "PENDIENTE"
+      ) {
+
+        setTimeout(
+          consultarEstado,
+          500
+        );
+
+        return;
+
+      }
+
+
+      if (
+        estado.estado !==
+          "LISTO" ||
+        !estado.resultado
+      ) {
+
+        mostrarMensaje(
+          "No fue posible recuperar la información."
+        );
+
+        return;
+
+      }
+
+
+      procesarDatosPago(
+        estado.resultado
+      );
+
+    };
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.src =
+    URL_BACKEND +
+    "?api=operacionEstado" +
+    "&requestId=" +
+    encodeURIComponent(
+      requestActual
+    ) +
+    "&callback=" +
+    encodeURIComponent(
+      callback
+    ) +
+    "&t=" +
+    Date.now();
+
+
+  script.onload =
+    function() {
+
+      try {
+        script.remove();
+      }
+      catch (error) {}
+
+  };
+
+
+  script.onerror =
+    function() {
+
+      try {
+        script.remove();
+      }
+      catch (error) {}
+
+
+      setTimeout(
+        consultarEstado,
+        650
+      );
+
+  };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function procesarDatosPago(
+  resultado
+) {
 
   if (
-    residenteTexto
+    !resultado ||
+    !resultado.ok ||
+    !resultado.datos
   ) {
 
-    try {
+    mostrarMensaje(
+      resultado &&
+      resultado.mensaje
+        ? resultado.mensaje
+        : "No fue posible cargar la información de pago."
+    );
 
-      residente =
-        JSON.parse(
-          residenteTexto
-        );
-
-    }
-    catch (error) {}
+    return;
 
   }
+
+
+  const datos =
+    resultado.datos;
 
 
   document
@@ -637,7 +857,7 @@ function iniciarPaginaPagos() {
       "clabeTexto"
     )
     .textContent =
-      DATOS_PAGO.clabe ||
+      datos.clabe ||
       "No configurada";
 
 
@@ -646,7 +866,7 @@ function iniciarPaginaPagos() {
       "bancoTexto"
     )
     .textContent =
-      DATOS_PAGO.banco ||
+      datos.banco ||
       "No configurado";
 
 
@@ -655,39 +875,8 @@ function iniciarPaginaPagos() {
       "titularTexto"
     )
     .textContent =
-      DATOS_PAGO.titular ||
+      datos.titular ||
       "No configurado";
-
-
-  let concepto =
-    String(
-      DATOS_PAGO.conceptoTransferencia ||
-      "CUOTA + DOMICILIO"
-    );
-
-
-  if (
-    residente &&
-    residente.calle &&
-    residente.numero
-  ) {
-
-    concepto =
-      concepto
-        .replace(
-          /\+\s*DOMICILIO/gi,
-          residente.calle +
-          " " +
-          residente.numero
-        )
-        .replace(
-          /DOMICILIO/gi,
-          residente.calle +
-          " " +
-          residente.numero
-        );
-
-  }
 
 
   document
@@ -695,158 +884,126 @@ function iniciarPaginaPagos() {
       "conceptoTexto"
     )
     .textContent =
-      concepto;
+      datos.conceptoTransferencia ||
+      "CUOTA + DOMICILIO";
+
+
+  const botonCopiar =
+    document.getElementById(
+      "btnCopiarClabe"
+    );
+
+
+  botonCopiar.disabled =
+    !datos.clabe;
+
+
+  botonCopiar.dataset.clabe =
+    datos.clabe || "";
 
 
   const cuota =
     Number(
-      DATOS_PAGO.cuotaMensual || 0
+      datos.cuotaMensual || 0
     );
 
 
   const comision =
     Number(
-      DATOS_PAGO.comisionTarjeta || 0
+      datos.comisionPagoTarjeta || 0
     );
 
 
   const total =
-    cuota +
-    comision;
-
-
-  const precio =
-    document.querySelector(
-      ".precio"
+    Number(
+      datos.totalPagoTarjeta || 0
     );
-
-
-  if (
-    precio
-  ) {
-
-    precio.textContent =
-      "$" +
-      total.toFixed(
-        0
-      );
-
-  }
-
-
-  const desglose =
-    document.querySelector(
-      ".desglose"
-    );
-
-
-  if (
-    desglose
-  ) {
-
-    desglose.innerHTML =
-      "<strong>$" +
-      cuota.toFixed(0) +
-      "</strong> cuota mensual<br>" +
-      "<strong>$" +
-      comision.toFixed(0) +
-      "</strong> cargo por procesamiento del pago";
-
-  }
-
-
-  const direccion =
-    document.querySelector(
-      ".efectivo-direccion"
-    );
-
-
-  if (
-    direccion
-  ) {
-
-    direccion.textContent =
-      DATOS_PAGO.direccionEfectivo ||
-      "Dirección no configurada";
-
-  }
 
 
   document
     .getElementById(
-      "btnCopiarClabe"
+      "precioTotal"
     )
-    .disabled =
-      !DATOS_PAGO.clabe;
+    .textContent =
+      "$" +
+      formatearImporte(
+        total
+      );
 
 
-  if (
-    DATOS_PAGO.enlaceMercadoPago
-  ) {
-
-    document
-      .getElementById(
-        "btnPagoRecurrente"
-      )
-      .disabled =
-        false;
-
-
-    document
-      .getElementById(
-        "notaPagoRecurrente"
-      )
-      .textContent =
-        "El cobro recurrente se gestionará mediante Mercado Pago.";
-
-  }
-  else {
-
-    document
-      .getElementById(
-        "btnPagoRecurrente"
-      )
-      .disabled =
-        true;
+  document
+    .getElementById(
+      "desgloseCuota"
+    )
+    .textContent =
+      "$" +
+      formatearImporte(
+        cuota
+      );
 
 
-    document
-      .getElementById(
-        "notaPagoRecurrente"
-      )
-      .textContent =
-        "El pago automático todavía no está disponible.";
+  document
+    .getElementById(
+      "desgloseComision"
+    )
+    .textContent =
+      "$" +
+      formatearImporte(
+        comision
+      );
 
-  }
 
-}
+  document
+    .getElementById(
+      "direccionEfectivo"
+    )
+    .textContent =
+      datos.direccionPagoEfectivo ||
+      "No configurada";
 
 
-function deshabilitarPaginaPagos_() {
+  ENLACE_PAGO_RECURRENTE =
+    String(
+      datos.enlacePagoRecurrente ||
+      ""
+    )
+    .trim();
 
-  const botones =
-    document.querySelectorAll(
-      ".boton"
+
+  const botonRecurrente =
+    document.getElementById(
+      "btnPagoRecurrente"
     );
 
 
-  botones.forEach(
-    function(boton) {
+  botonRecurrente.disabled =
+    !ENLACE_PAGO_RECURRENTE;
 
-      boton.disabled =
-        true;
 
-    }
-  );
+  document
+    .getElementById(
+      "notaPagoRecurrente"
+    )
+    .textContent =
+      ENLACE_PAGO_RECURRENTE
+        ? "El cobro recurrente se gestionará mediante Mercado Pago."
+        : "El pago automático todavía no está disponible.";
 
 }
 
 
 async function copiarClabe() {
 
+  const boton =
+    document.getElementById(
+      "btnCopiarClabe"
+    );
+
+
   const clabe =
     String(
-      DATOS_PAGO.clabe || ""
+      boton.dataset.clabe ||
+      ""
     )
     .trim();
 
@@ -879,10 +1036,6 @@ async function copiarClabe() {
   }
   catch (error) {
 
-    /*
-     * Respaldo para navegadores donde Clipboard API
-     * no esté disponible.
-     */
     const campo =
       document.createElement(
         "textarea"
@@ -940,15 +1093,8 @@ async function copiarClabe() {
 
 function abrirPagoRecurrente() {
 
-  const enlace =
-    String(
-      DATOS_PAGO.enlaceMercadoPago || ""
-    )
-    .trim();
-
-
   if (
-    !enlace
+    !ENLACE_PAGO_RECURRENTE
   ) {
 
     mostrarMensaje(
@@ -961,15 +1107,93 @@ function abrirPagoRecurrente() {
 
 
   window.location.href =
-    enlace;
+    ENLACE_PAGO_RECURRENTE;
 
 }
 
 
 function volverEstadoCuenta() {
 
+  if (
+    TOKEN
+  ) {
+
+    window.location.href =
+      "estado-cuenta.html";
+
+    return;
+
+  }
+
+
+  sessionStorage.removeItem(
+    "tokenPagoResidente"
+  );
+
+
+  sessionStorage.removeItem(
+    "residentePago"
+  );
+
+
   window.location.href =
-    "estado-cuenta.html";
+    "login.html";
+
+}
+
+
+function formatearImporte(
+  valor
+) {
+
+  const numero =
+    Number(
+      valor || 0
+    );
+
+
+  return numero.toLocaleString(
+    "es-MX",
+    {
+      minimumFractionDigits:
+        Number.isInteger(
+          numero
+        )
+          ? 0
+          : 2,
+
+      maximumFractionDigits:
+        2
+    }
+  );
+
+}
+
+
+function generarRequestId() {
+
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+
+  return (
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2) +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
 
 }
 
@@ -999,7 +1223,7 @@ function mostrarMensaje(
         "none";
 
     },
-    2500
+    3000
   );
 
 }
