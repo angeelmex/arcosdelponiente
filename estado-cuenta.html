@@ -72,6 +72,24 @@
       cursor: pointer;
     }
 
+    .pagar-mensualidad {
+      width: 100%;
+      min-height: 56px;
+      border: none;
+      border-radius: 17px;
+      background: #238c45;
+      color: white;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 20px rgba(20,55,95,.08);
+    }
+
+    .pagar-mensualidad:active {
+      transform: scale(.99);
+    }
+
     .tarjeta {
       background: white;
       border-radius: 22px;
@@ -380,6 +398,15 @@
     </div>
 
 
+    <button
+      class="pagar-mensualidad"
+      type="button"
+      onclick="abrirPagos()"
+    >
+      💳 PAGAR MENSUALIDAD
+    </button>
+
+
     <div
       id="contenido"
       class="tarjeta estado-carga"
@@ -481,216 +508,16 @@ function volverMenu() {
 
 
 
-const MINUTOS_CACHE_LOCAL_ESTADO_CUENTA_V3 =
-  10;
+function abrirPagos() {
 
-const MILISEGUNDOS_CACHE_LOCAL_ESTADO_CUENTA_V3 =
-  MINUTOS_CACHE_LOCAL_ESTADO_CUENTA_V3 *
-  60 *
-  1000;
-
-
-
-function obtenerClaveCacheLocalEstadoCuentaV3_() {
-
-  try {
-
-    const residenteTexto =
-      sessionStorage.getItem(
-        "residente"
-      );
-
-
-    if (
-      !residenteTexto
-    ) {
-
-      return "";
-
-    }
-
-
-    const residente =
-      JSON.parse(
-        residenteTexto
-      );
-
-
-    const idResidente =
-      residente &&
-      residente.idResidente
-        ? String(
-            residente.idResidente
-          )
-        : "";
-
-
-    if (
-      !idResidente
-    ) {
-
-      return "";
-
-    }
-
-
-    return (
-      "arcos_estado_cuenta_v3_" +
-      idResidente
-    );
-
-  }
-  catch (error) {
-
-    return "";
-
-  }
+  window.location.href =
+    "pagos.html?origen=estado-cuenta";
 
 }
 
 
 
-function obtenerCacheLocalEstadoCuentaV3_() {
-
-  try {
-
-    const clave =
-      obtenerClaveCacheLocalEstadoCuentaV3_();
-
-
-    if (
-      !clave
-    ) {
-
-      return null;
-
-    }
-
-
-    const cacheTexto =
-      localStorage.getItem(
-        clave
-      );
-
-
-    if (
-      !cacheTexto
-    ) {
-
-      return null;
-
-    }
-
-
-    const cache =
-      JSON.parse(
-        cacheTexto
-      );
-
-
-    if (
-      !cache ||
-      !cache.fecha ||
-      !cache.datos
-    ) {
-
-      return null;
-
-    }
-
-
-    return cache;
-
-  }
-  catch (error) {
-
-    return null;
-
-  }
-
-}
-
-
-
-function guardarCacheLocalEstadoCuentaV3_(
-  datos
-) {
-
-  try {
-
-    const clave =
-      obtenerClaveCacheLocalEstadoCuentaV3_();
-
-
-    if (
-      !clave
-    ) {
-
-      return;
-
-    }
-
-
-    localStorage.setItem(
-      clave,
-      JSON.stringify(
-        {
-          fecha:
-            Date.now(),
-
-          datos:
-            datos
-        }
-      )
-    );
-
-  }
-  catch (error) {
-
-    /*
-     * El caché local es solo una optimización.
-     * Si falla, la página funciona como antes.
-     */
-
-  }
-
-}
-
-
-
-function cargarEstadoCuenta(
-  forzarActualizacion
-) {
-
-  /*
-   * Para una entrada normal intentamos primero
-   * la copia local del teléfono.
-   */
-  if (
-    !forzarActualizacion
-  ) {
-
-    const cacheLocal =
-      obtenerCacheLocalEstadoCuentaV3_();
-
-
-    if (
-      cacheLocal &&
-      Date.now() -
-        cacheLocal.fecha <
-        MILISEGUNDOS_CACHE_LOCAL_ESTADO_CUENTA_V3
-    ) {
-
-      pintar(
-        cacheLocal.datos
-      );
-
-      return;
-
-    }
-
-  }
-
+function cargarEstadoCuenta() {
 
   mostrarCargando();
 
@@ -748,6 +575,7 @@ function cargarEstadoCuenta(
   );
 
 }
+
 
 
 function consultarEstado() {
@@ -886,17 +714,8 @@ function consultarEstado() {
       }
 
 
-      const datosEstadoCuenta =
-        respuesta.datos || {};
-
-
-      guardarCacheLocalEstadoCuentaV3_(
-        datosEstadoCuenta
-      );
-
-
       pintar(
-        datosEstadoCuenta
+        respuesta.datos || {}
       );
 
     };
@@ -951,50 +770,7 @@ function consultarEstado() {
     };
 
 
-  
-
-    /*
-     * WATCHDOG DE CONSULTA DE ESTADO
-     * Solo recupera una consulta JSONP colgada.
-     * NO reenvía el POST y NO cambia el requestId.
-     */
-    const timeoutConsultaEstadoV3 =
-      setTimeout(
-        function() {
-
-          if (
-            script &&
-            script.isConnected &&
-            typeof script.onerror ===
-              "function"
-          ) {
-
-            script.onerror();
-
-          }
-
-        },
-        8000
-      );
-
-
-    script.addEventListener(
-      "load",
-      function() {
-
-        clearTimeout(
-          timeoutConsultaEstadoV3
-        );
-
-      },
-      {
-        once:
-          true
-      }
-    );
-
-
-document.body.appendChild(
+  document.body.appendChild(
     script
   );
 
@@ -1805,18 +1581,6 @@ function normalizar(
   )
   .toLowerCase()
   .trim();
-
-}
-
-
-
-
-function volverMenuConRefrescoV3() {
-
-  window.location.replace(
-    "menu.html?refrescar=1&t=" +
-    Date.now()
-  );
 
 }
 
