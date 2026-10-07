@@ -440,7 +440,7 @@
 }
 
 
-  
+
     .barra-superior-menu {
 
       display: flex;
@@ -527,7 +527,7 @@
 
     }
 
-  
+
     .acciones-superiores {
 
       display: flex;
@@ -665,6 +665,19 @@
       <div></div>
 
       <div class="acciones-superiores">
+
+        <button
+          class="chat-superior"
+          type="button"
+          aria-label="Grupo de WhatsApp"
+          onclick="abrirGrupoWhatsApp()"
+        >
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+            alt="WhatsApp"
+            style="width:24px;height:24px;"
+          >
+        </button>
 
         <button
           class="chat-superior"
@@ -2422,7 +2435,7 @@ function consultarEstadoOperacionV3() {
     };
 
 
-  
+
 
     /*
      * WATCHDOG DE CONSULTA DE ESTADO
@@ -2977,7 +2990,7 @@ function cargarPendientesChatMenu() {
       };
 
 
-    
+
 
     /*
      * WATCHDOG DE CONSULTA DE ESTADO
@@ -3146,6 +3159,14 @@ function pintarPendientesChatMenu(
 
 }
 
+
+
+function abrirGrupoWhatsApp() {
+
+  window.location.href =
+    "https://chat.whatsapp.com/JHOfwf175QcEbW2JmQ8SJO?mode=gi_t";
+
+}
 
 
 function abrirChatCaseta() {
