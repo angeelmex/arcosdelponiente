@@ -391,7 +391,7 @@
       <div class="precio-recurrente">
 
         <div
-          id="precioTotal"
+          id="totalTarjetaTexto"
           class="precio"
         >
           $0
@@ -408,8 +408,8 @@
       </div>
 
       <div class="desglose">
-        <strong id="desgloseCuota">$0</strong> cuota mensual<br>
-        <strong id="desgloseComision">$0</strong> cargo por procesamiento del pago
+        <strong id="cuotaTexto">$0</strong> cuota mensual<br>
+        <strong id="comisionTexto">$0</strong> cargo por procesamiento del pago
       </div>
 
 
@@ -427,7 +427,7 @@
         id="notaPagoRecurrente"
         class="nota"
       >
-        Cargando opciones de pago...
+        El enlace para activar el cobro recurrente se agregará aquí.
       </div>
 
     </div>
@@ -450,7 +450,7 @@
       </div>
 
       <div
-        id="direccionEfectivo"
+        id="direccionEfectivoTexto"
         class="efectivo-direccion"
       >
         Cargando...
@@ -467,48 +467,50 @@
 </div>
 
 
+<form
+  id="formPagos"
+  method="post"
+  action="https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec"
+  target="iframePagos"
+  style="display:none;"
+>
+
+  <input
+    type="hidden"
+    name="accion"
+    value="pagosDatos"
+  >
+
+  <input
+    type="hidden"
+    id="pagosToken"
+    name="token"
+    value=""
+  >
+
+  <input
+    type="hidden"
+    id="pagosRequestId"
+    name="requestId"
+    value=""
+  >
+
+</form>
+
+
+<iframe
+  id="iframePagos"
+  name="iframePagos"
+  style="display:none;width:0;height:0;border:0;"
+  title="Cargando pagos"
+></iframe>
+
+
 <div
   id="mensaje"
   class="mensaje"
 ></div>
 
-
-
-<iframe
-  id="frameOperacion"
-  name="frameOperacion"
-  style="display:none;"
-></iframe>
-
-
-<form
-  id="formOperacion"
-  method="post"
-  target="frameOperacion"
-  style="display:none;"
->
-
-  <input
-    id="campoAccion"
-    name="accion"
-  >
-
-  <input
-    id="campoRequestId"
-    name="requestId"
-  >
-
-  <input
-    id="campoToken"
-    name="token"
-  >
-
-  <input
-    id="campoTokenPago"
-    name="tokenPago"
-  >
-
-</form>
 
 <script>
 
@@ -516,32 +518,52 @@ const URL_BACKEND =
   "https://script.google.com/macros/s/AKfycbz_3pO_96W-JNPCzXC7uPehAf9UbgUb1QiQsd9s5F1oiNwxvrS_FRiL0G07UVsxPZE4/exec";
 
 
-const TOKEN =
-  sessionStorage.getItem(
-    "tokenResidente"
-  ) || "";
-
-
-const TOKEN_PAGO =
-  sessionStorage.getItem(
-    "tokenPagoResidente"
-  ) || "";
-
-
-let ENLACE_PAGO_RECURRENTE =
+let TOKEN_PAGOS =
   "";
 
 
-let requestActual =
+let ORIGEN_ESTADO_CUENTA =
+  false;
+
+
+let DATOS_PAGO =
+  null;
+
+
+let REQUEST_PAGOS =
   "";
 
 
-let consultas =
+let CONSULTAS_PAGOS =
   0;
 
 
-const MAX_CONSULTAS =
+const MAX_CONSULTAS_PAGOS =
   30;
+
+
+/*
+ * CACHÉ LOCAL DE DATOS DE PAGO
+ *
+ * Estos datos cambian muy poco, por lo que se conservan
+ * durante 30 días en el dispositivo.
+ *
+ * Si el caché ya existe, la información se pinta de inmediato.
+ * Solo se consulta Apps Script cuando:
+ * - no existe caché;
+ * - el caché tiene más de 30 días; o
+ * - se abre pagos.html?actualizar=1
+ */
+const CLAVE_CACHE_PAGOS =
+  "arcos_pagos_datos_v1";
+
+
+const VIGENCIA_CACHE_PAGOS_MS =
+  30 *
+  24 *
+  60 *
+  60 *
+  1000;
 
 
 document.addEventListener(
@@ -552,123 +574,125 @@ document.addEventListener(
 
 function iniciarPaginaPagos() {
 
-  if (
-    !TOKEN &&
-    !TOKEN_PAGO
-  ) {
-
-    window.location.href =
-      "login.html";
-
-    return;
-
-  }
-
-
   const parametros =
     new URLSearchParams(
       window.location.search
     );
 
 
-  if (
-    TOKEN &&
+  ORIGEN_ESTADO_CUENTA =
     parametros.get(
       "origen"
     ) ===
-      "estado-cuenta"
+      "estado-cuenta";
+
+
+  const tokenResidente =
+    sessionStorage.getItem(
+      "tokenResidente"
+    ) || "";
+
+
+  const tokenLimitado =
+    sessionStorage.getItem(
+      "tokenPagos"
+    ) || "";
+
+
+  if (
+    ORIGEN_ESTADO_CUENTA &&
+    tokenResidente
   ) {
 
-    const botonVolver =
-      document.getElementById(
+    TOKEN_PAGOS =
+      tokenResidente;
+
+
+    document
+      .getElementById(
         "btnVolver"
-      );
+      )
+      .style.display =
+        "block";
+
+  }
+  else if (
+    tokenLimitado
+  ) {
+
+    TOKEN_PAGOS =
+      tokenLimitado;
 
 
-    botonVolver.textContent =
-      "VOLVER";
+    document
+      .getElementById(
+        "btnVolver"
+      )
+      .style.display =
+        "none";
 
+  }
+  else if (
+    tokenResidente
+  ) {
 
-    botonVolver.style.display =
-      "block";
+    TOKEN_PAGOS =
+      tokenResidente;
+
+  }
+  else {
+
+    volverLogin();
+
+    return;
 
   }
 
 
-  cargarDatosPago();
-
-}
-
-
-function cargarDatosPago() {
-
-  requestActual =
-    generarRequestId();
+  const forzarActualizacion =
+    parametros.get(
+      "actualizar"
+    ) ===
+      "1";
 
 
-  consultas =
-    0;
+  const cachePagos =
+    obtenerCachePagos();
 
-
-  document
-    .getElementById(
-      "formOperacion"
-    )
-    .action =
-      URL_BACKEND;
-
-
-  document
-    .getElementById(
-      "campoAccion"
-    )
-    .value =
-      "pagosDatos";
-
-
-  document
-    .getElementById(
-      "campoRequestId"
-    )
-    .value =
-      requestActual;
-
-
-  document
-    .getElementById(
-      "campoToken"
-    )
-    .value =
-      TOKEN;
-
-
-  document
-    .getElementById(
-      "campoTokenPago"
-    )
-    .value =
-      TOKEN_PAGO;
-
-
-  document
-    .getElementById(
-      "formOperacion"
-    )
-    .submit();
-
-
-  setTimeout(
-    consultarEstado,
-    500
-  );
-
-}
-
-
-function consultarEstado() {
 
   if (
-    !requestActual
+    cachePagos &&
+    cachePagos.datos
+  ) {
+
+    pintarDatosPagos(
+      cachePagos.datos
+    );
+
+  }
+
+
+  const cacheVigente =
+    cachePagos &&
+    cachePagos.datos &&
+    cachePagos.guardado &&
+    (
+      Date.now() -
+      Number(
+        cachePagos.guardado
+      )
+    ) <
+      VIGENCIA_CACHE_PAGOS_MS;
+
+
+  /*
+   * Con caché vigente no hacemos ninguna consulta.
+   * Así la pantalla abre instantáneamente y no toca
+   * Apps Script / Google Sheets cada vez.
+   */
+  if (
+    cacheVigente &&
+    !forzarActualizacion
   ) {
 
     return;
@@ -676,16 +700,156 @@ function consultarEstado() {
   }
 
 
-  consultas++;
+  /*
+   * Si no hay caché o ya venció, consultamos una sola vez.
+   * Si había caché vencido, el residente ya está viendo
+   * los datos anteriores mientras se actualizan.
+   */
+  cargarDatosPagos();
+
+}
+
+
+function obtenerCachePagos() {
+
+  try {
+
+    const textoCache =
+      localStorage.getItem(
+        CLAVE_CACHE_PAGOS
+      );
+
+
+    if (
+      !textoCache
+    ) {
+
+      return null;
+
+    }
+
+
+    const cache =
+      JSON.parse(
+        textoCache
+      );
+
+
+    if (
+      !cache ||
+      !cache.datos ||
+      !cache.guardado
+    ) {
+
+      return null;
+
+    }
+
+
+    return cache;
+
+  }
+  catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+function guardarCachePagos(
+  datos
+) {
+
+  try {
+
+    localStorage.setItem(
+      CLAVE_CACHE_PAGOS,
+      JSON.stringify({
+        guardado:
+          Date.now(),
+
+        datos:
+          datos
+      })
+    );
+
+  }
+  catch (error) {
+
+    /*
+     * Si localStorage no está disponible, la página
+     * sigue funcionando con la consulta normal.
+     */
+
+  }
+
+}
+
+
+function cargarDatosPagos() {
+
+  REQUEST_PAGOS =
+    generarRequestIdPagos();
+
+
+  CONSULTAS_PAGOS =
+    0;
+
+
+  document
+    .getElementById(
+      "pagosToken"
+    )
+    .value =
+      TOKEN_PAGOS;
+
+
+  document
+    .getElementById(
+      "pagosRequestId"
+    )
+    .value =
+      REQUEST_PAGOS;
+
+
+  document
+    .getElementById(
+      "formPagos"
+    )
+    .submit();
+
+
+  setTimeout(
+    consultarDatosPagos,
+    650
+  );
+
+}
+
+
+function consultarDatosPagos() {
+
+  if (
+    !REQUEST_PAGOS
+  ) {
+
+    return;
+
+  }
+
+
+  CONSULTAS_PAGOS++;
 
 
   if (
-    consultas >
-      MAX_CONSULTAS
+    CONSULTAS_PAGOS >
+      MAX_CONSULTAS_PAGOS
   ) {
 
     mostrarMensaje(
-      "El servidor está tardando más de lo normal."
+      "No fue posible cargar la información de pago."
     );
 
     return;
@@ -694,7 +858,7 @@ function consultarEstado() {
 
 
   const callback =
-    "recibirPagosV3_" +
+    "recibirDatosPagos_" +
     Date.now() +
     "_" +
     Math.floor(
@@ -720,7 +884,7 @@ function consultarEstado() {
       ) {
 
         mostrarMensaje(
-          "No fue posible consultar la información."
+          "No fue posible cargar la información de pago."
         );
 
         return;
@@ -729,8 +893,7 @@ function consultarEstado() {
 
 
       const estado =
-        resultado.datos ||
-        {};
+        resultado.datos || {};
 
 
       if (
@@ -739,8 +902,8 @@ function consultarEstado() {
       ) {
 
         setTimeout(
-          consultarEstado,
-          500
+          consultarDatosPagos,
+          650
         );
 
         return;
@@ -755,7 +918,7 @@ function consultarEstado() {
       ) {
 
         mostrarMensaje(
-          "No fue posible recuperar la información."
+          "No fue posible cargar la información de pago."
         );
 
         return;
@@ -763,7 +926,7 @@ function consultarEstado() {
       }
 
 
-      procesarDatosPago(
+      procesarDatosPagos(
         estado.resultado
       );
 
@@ -781,7 +944,7 @@ function consultarEstado() {
     "?api=operacionEstado" +
     "&requestId=" +
     encodeURIComponent(
-      requestActual
+      REQUEST_PAGOS
     ) +
     "&callback=" +
     encodeURIComponent(
@@ -799,7 +962,7 @@ function consultarEstado() {
       }
       catch (error) {}
 
-  };
+    };
 
 
   script.onerror =
@@ -812,11 +975,11 @@ function consultarEstado() {
 
 
       setTimeout(
-        consultarEstado,
-        650
+        consultarDatosPagos,
+        700
       );
 
-  };
+    };
 
 
   document.body.appendChild(
@@ -826,7 +989,7 @@ function consultarEstado() {
 }
 
 
-function procesarDatosPago(
+function procesarDatosPagos(
   resultado
 ) {
 
@@ -836,20 +999,68 @@ function procesarDatosPago(
     !resultado.datos
   ) {
 
-    mostrarMensaje(
+    const mensaje =
       resultado &&
       resultado.mensaje
         ? resultado.mensaje
-        : "No fue posible cargar la información de pago."
+        : "No fue posible cargar la información de pago.";
+
+
+    mostrarMensaje(
+      mensaje
     );
+
+
+    if (
+      /sesión/i.test(
+        mensaje
+      )
+    ) {
+
+      setTimeout(
+        volverLogin,
+        1000
+      );
+
+    }
+
 
     return;
 
   }
 
 
-  const datos =
+  DATOS_PAGO =
     resultado.datos;
+
+
+  guardarCachePagos(
+    DATOS_PAGO
+  );
+
+
+  pintarDatosPagos(
+    DATOS_PAGO
+  );
+
+}
+
+
+function pintarDatosPagos(
+  datos
+) {
+
+  if (
+    !datos
+  ) {
+
+    return;
+
+  }
+
+
+  DATOS_PAGO =
+    datos;
 
 
   document
@@ -857,7 +1068,7 @@ function procesarDatosPago(
       "clabeTexto"
     )
     .textContent =
-      datos.clabe ||
+      DATOS_PAGO.clabe ||
       "No configurada";
 
 
@@ -866,7 +1077,7 @@ function procesarDatosPago(
       "bancoTexto"
     )
     .textContent =
-      datos.banco ||
+      DATOS_PAGO.banco ||
       "No configurado";
 
 
@@ -875,7 +1086,7 @@ function procesarDatosPago(
       "titularTexto"
     )
     .textContent =
-      datos.titular ||
+      DATOS_PAGO.titular ||
       "No configurado";
 
 
@@ -884,90 +1095,55 @@ function procesarDatosPago(
       "conceptoTexto"
     )
     .textContent =
-      datos.conceptoTransferencia ||
-      "CUOTA + DOMICILIO";
+      DATOS_PAGO.conceptoTransferencia ||
+      "CUOTA";
 
 
-  const botonCopiar =
-    document.getElementById(
+  document
+    .getElementById(
+      "direccionEfectivoTexto"
+    )
+    .textContent =
+      DATOS_PAGO.direccionEfectivo ||
+      "Consulta con el comité";
+
+
+  document
+    .getElementById(
+      "cuotaTexto"
+    )
+    .textContent =
+      formatearMonedaPagos(
+        DATOS_PAGO.cuotaMensual
+      );
+
+
+  document
+    .getElementById(
+      "comisionTexto"
+    )
+    .textContent =
+      formatearMonedaPagos(
+        DATOS_PAGO.comisionTarjeta
+      );
+
+
+  document
+    .getElementById(
+      "totalTarjetaTexto"
+    )
+    .textContent =
+      formatearMonedaPagos(
+        DATOS_PAGO.totalPagoTarjeta
+      );
+
+
+  document
+    .getElementById(
       "btnCopiarClabe"
-    );
-
-
-  botonCopiar.disabled =
-    !datos.clabe;
-
-
-  botonCopiar.dataset.clabe =
-    datos.clabe || "";
-
-
-  const cuota =
-    Number(
-      datos.cuotaMensual || 0
-    );
-
-
-  const comision =
-    Number(
-      datos.comisionPagoTarjeta || 0
-    );
-
-
-  const total =
-    Number(
-      datos.totalPagoTarjeta || 0
-    );
-
-
-  document
-    .getElementById(
-      "precioTotal"
     )
-    .textContent =
-      "$" +
-      formatearImporte(
-        total
-      );
-
-
-  document
-    .getElementById(
-      "desgloseCuota"
-    )
-    .textContent =
-      "$" +
-      formatearImporte(
-        cuota
-      );
-
-
-  document
-    .getElementById(
-      "desgloseComision"
-    )
-    .textContent =
-      "$" +
-      formatearImporte(
-        comision
-      );
-
-
-  document
-    .getElementById(
-      "direccionEfectivo"
-    )
-    .textContent =
-      datos.direccionPagoEfectivo ||
-      "No configurada";
-
-
-  ENLACE_PAGO_RECURRENTE =
-    String(
-      datos.enlacePagoRecurrente ||
-      ""
-    )
-    .trim();
+    .disabled =
+      !DATOS_PAGO.clabe;
 
 
   const botonRecurrente =
@@ -977,7 +1153,7 @@ function procesarDatosPago(
 
 
   botonRecurrente.disabled =
-    !ENLACE_PAGO_RECURRENTE;
+    !DATOS_PAGO.enlacePagoRecurrente;
 
 
   document
@@ -985,8 +1161,8 @@ function procesarDatosPago(
       "notaPagoRecurrente"
     )
     .textContent =
-      ENLACE_PAGO_RECURRENTE
-        ? "El cobro recurrente se gestionará mediante Mercado Pago."
+      DATOS_PAGO.enlacePagoRecurrente
+        ? "El cobro recurrente se gestionará de forma segura mediante Mercado Pago."
         : "El pago automático todavía no está disponible.";
 
 }
@@ -994,18 +1170,14 @@ function procesarDatosPago(
 
 async function copiarClabe() {
 
-  const boton =
-    document.getElementById(
-      "btnCopiarClabe"
-    );
-
-
   const clabe =
-    String(
-      boton.dataset.clabe ||
-      ""
-    )
-    .trim();
+    DATOS_PAGO &&
+    DATOS_PAGO.clabe
+      ? String(
+          DATOS_PAGO.clabe
+        )
+        .trim()
+      : "";
 
 
   if (
@@ -1093,8 +1265,18 @@ async function copiarClabe() {
 
 function abrirPagoRecurrente() {
 
+  const enlace =
+    DATOS_PAGO &&
+    DATOS_PAGO.enlacePagoRecurrente
+      ? String(
+          DATOS_PAGO.enlacePagoRecurrente
+        )
+        .trim()
+      : "";
+
+
   if (
-    !ENLACE_PAGO_RECURRENTE
+    !enlace
   ) {
 
     mostrarMensaje(
@@ -1107,7 +1289,7 @@ function abrirPagoRecurrente() {
 
 
   window.location.href =
-    ENLACE_PAGO_RECURRENTE;
+    enlace;
 
 }
 
@@ -1115,24 +1297,29 @@ function abrirPagoRecurrente() {
 function volverEstadoCuenta() {
 
   if (
-    TOKEN
+    !ORIGEN_ESTADO_CUENTA
   ) {
-
-    window.location.href =
-      "estado-cuenta.html";
 
     return;
 
   }
 
 
+  window.location.href =
+    "estado-cuenta.html";
+
+}
+
+
+function volverLogin() {
+
   sessionStorage.removeItem(
-    "tokenPagoResidente"
+    "tokenPagos"
   );
 
 
   sessionStorage.removeItem(
-    "residentePago"
+    "residentePagos"
   );
 
 
@@ -1142,7 +1329,7 @@ function volverEstadoCuenta() {
 }
 
 
-function formatearImporte(
+function formatearMonedaPagos(
   valor
 ) {
 
@@ -1152,25 +1339,24 @@ function formatearImporte(
     );
 
 
-  return numero.toLocaleString(
-    "es-MX",
-    {
-      minimumFractionDigits:
-        Number.isInteger(
-          numero
-        )
-          ? 0
-          : 2,
+  return (
+    "$" +
+    numero.toLocaleString(
+      "es-MX",
+      {
+        minimumFractionDigits:
+          0,
 
-      maximumFractionDigits:
-        2
-    }
+        maximumFractionDigits:
+          2
+      }
+    )
   );
 
 }
 
 
-function generarRequestId() {
+function generarRequestIdPagos() {
 
   if (
     window.crypto &&
