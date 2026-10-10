@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <meta
+    name="theme-color"
+    content="#204d5d"
+  >
+
+  <title>Control de pluma</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #204d5d;
+    }
+
+    .pagina {
+      min-height: 100vh;
+      padding: 16px 14px 30px;
+    }
+
+    .contenedor {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .encabezado {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .volver {
+      width: 54px;
+      min-width: 54px;
+      height: 54px;
+      border: none;
+      border-radius: 16px;
+      background: white;
+      color: #204d5d;
+      font-size: 27px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 16px rgba(20,55,95,.09);
+    }
+
+    .encabezado-texto {
+      min-width: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.15;
+    }
+
+    .subtitulo {
+      margin-top: 5px;
+      color: #718198;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .tarjeta {
+      background: white;
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 7px 24px rgba(20,55,95,.10);
+    }
+
+    .titulo-tarjeta {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 13px;
+    }
+
+    .aviso-identidad {
+      background: #eaf3f6;
+      border: 1px solid #c8dce3;
+      color: #315d6c;
+      border-radius: 16px;
+      padding: 13px 14px;
+      font-size: 13px;
+      line-height: 1.45;
+      margin-bottom: 16px;
+    }
+
+    .campo {
+      margin-bottom: 14px;
+    }
+
+    .campo:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #5f7482;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #d9e1e7;
+      border-radius: 14px;
+      padding: 14px 13px;
+      font-size: 15px;
+      background: white;
+      color: #204d5d;
+      outline: none;
+      font-family: inherit;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #204d5d;
+    }
+
+    input[readonly] {
+      background: #f1f4f6;
+      color: #516774;
+      font-weight: 800;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .fila-doble {
+      display: grid;
+      grid-template-columns: 1fr 115px;
+      gap: 10px;
+    }
+
+    .boton {
+      width: 100%;
+      min-height: 56px;
+      border: none;
+      border-radius: 16px;
+      background: #204d5d;
+      color: white;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .boton:disabled {
+      opacity: .5;
+      cursor: default;
+    }
+
+    .boton-secundario {
+      background: white;
+      color: #204d5d;
+      border: 2px solid #204d5d;
+    }
+
+    .estado-carga {
+      display: none;
+      text-align: center;
+      color: #718198;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    .historial-vacio {
+      color: #7b8999;
+      font-size: 13px;
+      line-height: 1.45;
+      text-align: center;
+      padding: 12px 4px 2px;
+    }
+
+    .historial-item {
+      border-top: 1px solid #edf1f5;
+      padding: 12px 0;
+    }
+
+    .historial-item:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .historial-principal {
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .historial-detalle {
+      margin-top: 4px;
+      color: #718198;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .modal-fondo {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(10,25,35,.48);
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 480px;
+      background: white;
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.22);
+    }
+
+    .modal h2 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    .modal p {
+      margin: 0 0 14px;
+      color: #627988;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .resumen {
+      background: #f4f7fb;
+      border-radius: 15px;
+      padding: 13px 14px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .modal-acciones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .modal-acciones .boton {
+      margin: 0;
+      min-height: 52px;
+    }
+
+    .mensaje {
+      display: none;
+      position: fixed;
+      left: 18px;
+      right: 18px;
+      bottom: 24px;
+      z-index: 1500;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 14px 16px;
+      border-radius: 15px;
+      background: #204d5d;
+      color: white;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 7px 22px rgba(0,0,0,.16);
+    }
+
+    @media (max-width: 420px) {
+      .fila-doble {
+        grid-template-columns: 1fr 105px;
+      }
+
+      .modal-acciones {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="pagina">
+  <div class="contenedor">
+
+    <div class="encabezado">
+      <button
+        class="volver"
+        type="button"
+        onclick="volverMenu()"
+        aria-label="Volver"
+      >
+        ←
+      </button>
+
+      <div class="encabezado-texto">
+        <h1>Control de pluma</h1>
+        <div class="subtitulo">
+          Registra el acceso antes de solicitar la apertura.
+        </div>
+      </div>
+    </div>
+
+
+    <div class="tarjeta">
+
+      <div class="titulo-tarjeta">
+        Datos del domicilio
+      </div>
+
+      <div class="aviso-identidad">
+        Esta solicitud quedará registrada a nombre de este domicilio.
+        La apertura remota no es anónima.
+      </div>
+
+      <div class="campo">
+        <label for="nombreResidente">RESIDENTE</label>
+        <input
+          id="nombreResidente"
+          type="text"
+          readonly
+          value="Cargando..."
+        >
+      </div>
+
+      <div class="fila-doble">
+        <div class="campo">
+          <label for="calle">CALLE</label>
+          <input
+            id="calle"
+            type="text"
+            readonly
+            value=""
+          >
+        </div>
+
+        <div class="campo">
+          <label for="numero">NÚMERO</label>
+          <input
+            id="numero"
+            type="text"
+            readonly
+            value=""
+          >
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="tarjeta">
+
+      <div class="titulo-tarjeta">
+        Datos del acceso
+      </div>
+
+      <div class="campo">
+        <label for="tipoVisita">TIPO DE ACCESO *</label>
+        <select id="tipoVisita">
+          <option value="">Selecciona una opción</option>
+          <option value="FAMILIAR">Familiar</option>
+          <option value="UBER / DIDI">Uber / Didi</option>
+          <option value="PAQUETERIA">Paquetería</option>
+          <option value="SERVICIO">Servicio</option>
+          <option value="PROVEEDOR">Proveedor</option>
+          <option value="OTRO">Otro</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="nombreVisitante">NOMBRE O SERVICIO *</label>
+        <input
+          id="nombreVisitante"
+          type="text"
+          maxlength="80"
+          placeholder="Ej. Juan Pérez, Uber, Amazon..."
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="campo">
+        <label for="placas">PLACAS (OPCIONAL)</label>
+        <input
+          id="placas"
+          type="text"
+          maxlength="20"
+          placeholder="Ej. ABC123A"
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="campo">
+        <label for="observaciones">OBSERVACIONES (OPCIONAL)</label>
+        <textarea
+          id="observaciones"
+          maxlength="250"
+          placeholder="Algún dato adicional que quieras dejar registrado."
+        ></textarea>
+      </div>
+
+      <button
+        id="btnContinuar"
+        class="boton"
+        type="button"
+        onclick="prepararConfirmacion()"
+      >
+        CONTINUAR
+      </button>
+
+      <div
+        id="estadoCarga"
+        class="estado-carga"
+      >
+        Procesando solicitud...
+      </div>
+
+    </div>
+
+
+    <div class="tarjeta">
+
+      <div class="titulo-tarjeta">
+        Últimas aperturas remotas
+      </div>
+
+      <div id="historial">
+        <div class="historial-vacio">
+          Aquí aparecerán las últimas aperturas realizadas desde este domicilio.
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+<div
+  id="modalConfirmacion"
+  class="modal-fondo"
+>
+  <div class="modal">
+
+    <h2>Confirmar apertura</h2>
+
+    <p>
+      Revisa los datos antes de continuar. Esta acción quedará asociada a tu domicilio.
+    </p>
+
+    <div
+      id="resumenConfirmacion"
+      class="resumen"
+    ></div>
+
+    <div class="modal-acciones">
+
+      <button
+        class="boton boton-secundario"
+        type="button"
+        onclick="cerrarConfirmacion()"
+      >
+        CANCELAR
+      </button>
+
+      <button
+        id="btnAbrirPluma"
+        class="boton"
+        type="button"
+        onclick="confirmarApertura()"
+      >
+        ABRIR PLUMA
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+
+<div
+  id="mensaje"
+  class="mensaje"
+></div>
+
+
+<script>
+
+/*
+ * IMPORTANTE
+ *
+ * Esta página ya queda preparada visualmente y con la lógica
+ * del formulario/confirmación.
+ *
+ * La orden REAL al controlador de la pluma y el registro
+ * definitivo en Google Sheets se conectarán cuando tengamos
+ * definido el API/SDK del equipo.
+ */
+
+const CLAVE_HISTORIAL_LOCAL =
+  "arcos_pluma_historial_local_v1";
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  iniciarPaginaPluma
+);
+
+
+function iniciarPaginaPluma() {
+
+  cargarResidenteLocal();
+
+  cargarHistorialLocal();
+
+}
+
+
+function cargarResidenteLocal() {
+
+  const residenteTexto =
+    sessionStorage.getItem(
+      "residente"
+    );
+
+
+  if (
+    !residenteTexto
+  ) {
+
+    mostrarMensaje(
+      "No fue posible identificar tu sesión."
+    );
+
+    setTimeout(
+      function() {
+
+        window.location.href =
+          "login.html";
+
+      },
+      1200
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    const residente =
+      JSON.parse(
+        residenteTexto
+      );
+
+
+    document
+      .getElementById(
+        "nombreResidente"
+      )
+      .value =
+        String(
+          residente.nombre || ""
+        );
+
+
+    document
+      .getElementById(
+        "calle"
+      )
+      .value =
+        String(
+          residente.calle || ""
+        );
+
+
+    document
+      .getElementById(
+        "numero"
+      )
+      .value =
+        String(
+          residente.numero || ""
+        );
+
+  }
+  catch (error) {
+
+    mostrarMensaje(
+      "No fue posible cargar los datos del residente."
+    );
+
+  }
+
+}
+
+
+function prepararConfirmacion() {
+
+  const tipoVisita =
+    document
+      .getElementById(
+        "tipoVisita"
+      )
+      .value
+      .trim();
+
+
+  const nombreVisitante =
+    document
+      .getElementById(
+        "nombreVisitante"
+      )
+      .value
+      .trim();
+
+
+  const placas =
+    document
+      .getElementById(
+        "placas"
+      )
+      .value
+      .trim()
+      .toUpperCase();
+
+
+  const observaciones =
+    document
+      .getElementById(
+        "observaciones"
+      )
+      .value
+      .trim();
+
+
+  if (
+    !tipoVisita
+  ) {
+
+    mostrarMensaje(
+      "Selecciona el tipo de acceso."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !nombreVisitante
+  ) {
+
+    mostrarMensaje(
+      "Escribe el nombre de la persona o servicio."
+    );
+
+    return;
+
+  }
+
+
+  const calle =
+    document
+      .getElementById(
+        "calle"
+      )
+      .value;
+
+
+  const numero =
+    document
+      .getElementById(
+        "numero"
+      )
+      .value;
+
+
+  document
+    .getElementById(
+      "resumenConfirmacion"
+    )
+    .innerHTML =
+      "<strong>Domicilio:</strong> " +
+      escaparHtml(
+        calle +
+        " " +
+        numero
+      ) +
+      "<br>" +
+      "<strong>Tipo:</strong> " +
+      escaparHtml(
+        tipoVisita
+      ) +
+      "<br>" +
+      "<strong>Nombre / servicio:</strong> " +
+      escaparHtml(
+        nombreVisitante
+      ) +
+      (
+        placas
+          ? (
+              "<br><strong>Placas:</strong> " +
+              escaparHtml(
+                placas
+              )
+            )
+          : ""
+      ) +
+      (
+        observaciones
+          ? (
+              "<br><strong>Observaciones:</strong> " +
+              escaparHtml(
+                observaciones
+              )
+            )
+          : ""
+      );
+
+
+  document
+    .getElementById(
+      "modalConfirmacion"
+    )
+    .style.display =
+      "flex";
+
+}
+
+
+function cerrarConfirmacion() {
+
+  document
+    .getElementById(
+      "modalConfirmacion"
+    )
+    .style.display =
+      "none";
+
+}
+
+
+function confirmarApertura() {
+
+  /*
+   * Por ahora NO se manda ninguna orden al hardware.
+   *
+   * Esta función es el punto exacto donde después conectaremos:
+   *
+   * 1. registrar la solicitud en Apps Script / Google Sheets
+   * 2. validar que el registro se guardó correctamente
+   * 3. mandar la orden API/SDK al controlador de la pluma
+   * 4. guardar el resultado de la apertura
+   */
+
+  cerrarConfirmacion();
+
+
+  const registro =
+    construirRegistroActual();
+
+
+  guardarHistorialLocal(
+    registro
+  );
+
+
+  cargarHistorialLocal();
+
+
+  mostrarMensaje(
+    "Formulario listo. La apertura real se conectará cuando tengamos el controlador de la pluma."
+  );
+
+}
+
+
+function construirRegistroActual() {
+
+  const residenteTexto =
+    sessionStorage.getItem(
+      "residente"
+    );
+
+
+  let residente =
+    {};
+
+
+  try {
+
+    residente =
+      JSON.parse(
+        residenteTexto || "{}"
+      );
+
+  }
+  catch (error) {}
+
+
+  return {
+    fecha:
+      new Date().toISOString(),
+
+    idResidente:
+      String(
+        residente.idResidente || ""
+      ),
+
+    nombreResidente:
+      String(
+        residente.nombre || ""
+      ),
+
+    calle:
+      document
+        .getElementById(
+          "calle"
+        )
+        .value,
+
+    numero:
+      document
+        .getElementById(
+          "numero"
+        )
+        .value,
+
+    tipoVisita:
+      document
+        .getElementById(
+          "tipoVisita"
+        )
+        .value,
+
+    nombreVisitante:
+      document
+        .getElementById(
+          "nombreVisitante"
+        )
+        .value
+        .trim(),
+
+    placas:
+      document
+        .getElementById(
+          "placas"
+        )
+        .value
+        .trim()
+        .toUpperCase(),
+
+    observaciones:
+      document
+        .getElementById(
+          "observaciones"
+        )
+        .value
+        .trim(),
+
+    origen:
+      "APERTURA_REMOTA_PREPARACION"
+  };
+
+}
+
+
+function guardarHistorialLocal(
+  registro
+) {
+
+  /*
+   * Esto es solamente para poder visualizar la página
+   * durante la etapa de preparación.
+   *
+   * NO sustituye el registro real en Google Sheets.
+   */
+
+  let historial =
+    [];
+
+
+  try {
+
+    historial =
+      JSON.parse(
+        localStorage.getItem(
+          CLAVE_HISTORIAL_LOCAL
+        ) ||
+        "[]"
+      );
+
+  }
+  catch (error) {
+
+    historial =
+      [];
+
+  }
+
+
+  historial.unshift(
+    registro
+  );
+
+
+  historial =
+    historial.slice(
+      0,
+      5
+    );
+
+
+  localStorage.setItem(
+    CLAVE_HISTORIAL_LOCAL,
+    JSON.stringify(
+      historial
+    )
+  );
+
+}
+
+
+function cargarHistorialLocal() {
+
+  const contenedor =
+    document.getElementById(
+      "historial"
+    );
+
+
+  let historial =
+    [];
+
+
+  try {
+
+    historial =
+      JSON.parse(
+        localStorage.getItem(
+          CLAVE_HISTORIAL_LOCAL
+        ) ||
+        "[]"
+      );
+
+  }
+  catch (error) {
+
+    historial =
+      [];
+
+  }
+
+
+  if (
+    !historial.length
+  ) {
+
+    contenedor.innerHTML =
+      '<div class="historial-vacio">' +
+      'Aquí aparecerán las últimas aperturas realizadas desde este domicilio.' +
+      '</div>';
+
+    return;
+
+  }
+
+
+  contenedor.innerHTML =
+    historial
+      .map(
+        function(item) {
+
+          let fechaTexto =
+            "";
+
+
+          try {
+
+            fechaTexto =
+              new Date(
+                item.fecha
+              )
+              .toLocaleString(
+                "es-MX"
+              );
+
+          }
+          catch (error) {}
+
+
+          return (
+            '<div class="historial-item">' +
+              '<div class="historial-principal">' +
+                escaparHtml(
+                  item.tipoVisita || "Acceso"
+                ) +
+                " · " +
+                escaparHtml(
+                  item.nombreVisitante || ""
+                ) +
+              '</div>' +
+              '<div class="historial-detalle">' +
+                escaparHtml(
+                  fechaTexto
+                ) +
+                (
+                  item.placas
+                    ? (
+                        " · Placas " +
+                        escaparHtml(
+                          item.placas
+                        )
+                      )
+                    : ""
+                ) +
+              '</div>' +
+            '</div>'
+          );
+
+        }
+      )
+      .join("");
+
+}
+
+
+function volverMenu() {
+
+  window.location.href =
+    "menu.html";
+
+}
+
+
+function mostrarMensaje(
+  texto
+) {
+
+  const mensaje =
+    document.getElementById(
+      "mensaje"
+    );
+
+
+  mensaje.textContent =
+    texto;
+
+
+  mensaje.style.display =
+    "block";
+
+
+  setTimeout(
+    function() {
+
+      mensaje.style.display =
+        "none";
+
+    },
+    3200
+  );
+
+}
+
+
+function escaparHtml(
+  valor
+) {
+
+  return String(
+    valor == null
+      ? ""
+      : valor
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+</script>
+
+</body>
+</html>
