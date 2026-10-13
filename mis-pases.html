@@ -222,6 +222,25 @@
         1px solid #f2cccc;
     }
 
+    .btn-whatsapp {
+      width: 100%;
+      min-height: 50px;
+      margin-top: 9px;
+      border: none;
+      border-radius: 15px;
+      background: #25d366;
+      color: white;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-whatsapp:active {
+      transform: scale(.99);
+    }
+
+
     .sin-datos {
       background: white;
       border-radius: 20px;
@@ -420,7 +439,7 @@
 
       <a
         class="volver"
-        href="#" onclick="volverMenuConRefrescoV3(); return false;"
+        href="menu.html"
         aria-label="Volver al menú"
       >
         ←
@@ -981,7 +1000,11 @@ function crearTarjeta(
           'CANCELAR' +
         '</button>' +
 
-      '</div>';
+      '</div>' +
+
+      '<button type="button" class="btn-whatsapp" data-accion="whatsapp">' +
+        '🟢 COMPARTIR POR WHATSAPP' +
+      '</button>';
 
   }
   else {
@@ -1044,10 +1067,127 @@ function crearTarjeta(
   }
 
 
+  const botonWhatsApp =
+    tarjeta.querySelector(
+      '[data-accion="whatsapp"]'
+    );
+
+
+  if (
+    botonWhatsApp
+  ) {
+
+    botonWhatsApp.addEventListener(
+      "click",
+      function() {
+
+        compartirPaseWhatsApp(
+          pase
+        );
+
+      }
+    );
+
+  }
+
+
   return tarjeta;
 
 }
 
+
+
+/*************************************************
+ * COMPARTIR PASE POR WHATSAPP
+ *
+ * No vuelve a generar el QR ni consulta otra vez
+ * la base de datos.
+ *
+ * Usa la URL de imagen QR que ya llegó dentro
+ * del resultado de "pasesListar".
+ *************************************************/
+
+function compartirPaseWhatsApp(
+  pase
+) {
+
+  if (
+    !pase ||
+    !pase.imagenQr
+  ) {
+
+    mostrarMensaje(
+      "No fue posible encontrar la imagen de este QR."
+    );
+
+    return;
+
+  }
+
+
+  let mensaje =
+    "Pase de acceso a Arcos del Poniente" +
+    "\n\n" +
+    "Visitante: " +
+    (
+      pase.nombreVisitante ||
+      "Visitante"
+    ) +
+    "\n" +
+    "Tipo: " +
+    (
+      pase.tipoVisita ||
+      ""
+    );
+
+
+  if (
+    pase.placas
+  ) {
+
+    mensaje +=
+      "\nPlacas: " +
+      pase.placas;
+
+  }
+
+
+  mensaje +=
+    "\nFolio: " +
+    (
+      pase.idPase ||
+      ""
+    );
+
+
+  if (
+    pase.fechaExpiracion
+  ) {
+
+    mensaje +=
+      "\nExpira: " +
+      pase.fechaExpiracion;
+
+  }
+
+
+  mensaje +=
+    "\n\nQR de acceso:" +
+    "\n" +
+    pase.imagenQr;
+
+
+  const urlWhatsApp =
+    "https://wa.me/?text=" +
+    encodeURIComponent(
+      mensaje
+    );
+
+
+  window.location.href =
+    urlWhatsApp;
+
+}
 
 
 /*************************************************
@@ -1508,50 +1648,7 @@ function consultarEstadoPasesV3() {
     };
 
 
-  
-
-    /*
-     * WATCHDOG DE CONSULTA DE ESTADO
-     * Solo recupera una consulta JSONP colgada.
-     * NO reenvía el POST y NO cambia el requestId.
-     */
-    const timeoutConsultaEstadoV3 =
-      setTimeout(
-        function() {
-
-          if (
-            script &&
-            script.isConnected &&
-            typeof script.onerror ===
-              "function"
-          ) {
-
-            script.onerror();
-
-          }
-
-        },
-        8000
-      );
-
-
-    script.addEventListener(
-      "load",
-      function() {
-
-        clearTimeout(
-          timeoutConsultaEstadoV3
-        );
-
-      },
-      {
-        once:
-          true
-      }
-    );
-
-
-document.body.appendChild(
+  document.body.appendChild(
     script
   );
 
@@ -1819,18 +1916,6 @@ window.addEventListener(
   }
 );
 
-
-
-
-
-function volverMenuConRefrescoV3() {
-
-  window.location.replace(
-    "menu.html?refrescar=1&t=" +
-    Date.now()
-  );
-
-}
 
 </script>
 
