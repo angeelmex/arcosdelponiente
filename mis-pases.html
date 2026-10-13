@@ -222,7 +222,7 @@
         1px solid #f2cccc;
     }
 
-    .btn-whatsapp {
+    .btn-compartir {
       width: 100%;
       min-height: 50px;
       margin-top: 9px;
@@ -236,8 +236,13 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .btn-whatsapp:active {
+    .btn-compartir:active {
       transform: scale(.99);
+    }
+
+    .btn-compartir:disabled {
+      opacity: .55;
+      cursor: default;
     }
 
 
@@ -1002,8 +1007,8 @@ function crearTarjeta(
 
       '</div>' +
 
-      '<button type="button" class="btn-whatsapp" data-accion="whatsapp">' +
-        '🟢 COMPARTIR POR WHATSAPP' +
+      '<button type="button" class="btn-compartir" data-accion="compartir">' +
+        '📤 COMPARTIR QR' +
       '</button>';
 
   }
@@ -1067,22 +1072,23 @@ function crearTarjeta(
   }
 
 
-  const botonWhatsApp =
+  const botonCompartir =
     tarjeta.querySelector(
-      '[data-accion="whatsapp"]'
+      '[data-accion="compartir"]'
     );
 
 
   if (
-    botonWhatsApp
+    botonCompartir
   ) {
 
-    botonWhatsApp.addEventListener(
+    botonCompartir.addEventListener(
       "click",
       function() {
 
-        compartirPaseWhatsApp(
-          pase
+        compartirQrPase(
+          pase,
+          botonCompartir
         );
 
       }
@@ -1098,26 +1104,29 @@ function crearTarjeta(
 
 
 /*************************************************
- * COMPARTIR PASE POR WHATSAPP
+ * COMPARTIR QR COMO IMAGEN
  *
- * No vuelve a generar el QR ni consulta otra vez
- * la base de datos.
+ * Usa la acción qrCompartir que YA existe en el
+ * backend. El backend devuelve el PNG como data URL.
  *
- * Usa la URL de imagen QR que ya llegó dentro
- * del resultado de "pasesListar".
+ * Aquí NO se vuelve a dibujar el QR en canvas:
+ * se convierte directamente a archivo PNG y se
+ * entrega al menú nativo de compartir del teléfono.
  *************************************************/
 
-function compartirPaseWhatsApp(
-  pase
+function compartirQrPase(
+  pase,
+  boton
 ) {
 
   if (
     !pase ||
-    !pase.imagenQr
+    !pase.idPase
   ) {
 
     mostrarMensaje(
-      "No fue posible encontrar la imagen de este QR."
+      "No fue posible identificar este pase.",
+      "error"
     );
 
     return;
@@ -1125,67 +1134,328 @@ function compartirPaseWhatsApp(
   }
 
 
-  let mensaje =
-    "Pase de acceso a Arcos del Poniente" +
-    "\n\n" +
-    "Visitante: " +
-    (
-      pase.nombreVisitante ||
-      "Visitante"
-    ) +
-    "\n" +
-    "Tipo: " +
-    (
-      pase.tipoVisita ||
-      ""
-    );
+  const textoOriginal =
+    boton
+      ? boton.textContent
+      : "";
 
 
   if (
-    pase.placas
+    boton
   ) {
 
-    mensaje +=
-      "\nPlacas: " +
-      pase.placas;
+    boton.disabled =
+      true;
+
+    boton.textContent =
+      "PREPARANDO IMAGEN...";
 
   }
 
 
-  mensaje +=
-    "\nFolio: " +
-    (
-      pase.idPase ||
-      ""
+  ejecutarOperacionPasesV3(
+    "qrCompartir",
+    {
+      idPase:
+        pase.idPase
+    },
+    async function(resultado) {
+
+      try {
+
+        if (
+          !resultado ||
+          !resultado.ok ||
+          !resultado.datos ||
+          !resultado.datos.dataUrl
+        ) {
+
+          mostrarMensaje(
+            resultado &&
+            resultado.mensaje
+              ? resultado.mensaje
+              : "No fue posible preparar la imagen del QR.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        const archivo =
+          dataUrlAArchivoQr(
+            resultado.datos.dataUrl,
+            pase.idPase
+          );
+
+
+        if (
+          !archivo
+        ) {
+
+          mostrarMensaje(
+            "No fue posible preparar la imagen del QR.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        const puedeCompartir =
+          navigator.share &&
+          (
+            !navigator.canShare ||
+            navigator.canShare({
+              files:
+                [archivo]
+            })
+          );
+
+
+        if (
+          !puedeCompartir
+        ) {
+
+          descargarArchivoQr(
+            archivo
+          );
+
+          mostrarMensaje(
+            "Tu dispositivo no permite adjuntar la imagen directamente. Se guardó el QR para que puedas enviarlo por WhatsApp.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        await navigator.share({
+          files:
+            [archivo],
+
+          title:
+            "Pase de acceso",
+
+          text:
+            "Pase de acceso a Arcos del Poniente"
+        });
+
+      }
+      catch (error) {
+
+        if (
+          error &&
+          error.name ===
+            "AbortError"
+        ) {
+
+          return;
+
+        }
+
+
+        console.error(
+          error
+        );
+
+
+        mostrarMensaje(
+          "No fue posible abrir el menú para compartir la imagen.",
+          "error"
+        );
+
+      }
+      finally {
+
+        if (
+          boton
+        ) {
+
+          boton.disabled =
+            false;
+
+          boton.textContent =
+            textoOriginal ||
+            "📤 COMPARTIR QR";
+
+        }
+
+      }
+
+    },
+    function() {
+
+      if (
+        boton
+      ) {
+
+        boton.disabled =
+          false;
+
+        boton.textContent =
+          textoOriginal ||
+          "📤 COMPARTIR QR";
+
+      }
+
+
+      mostrarMensaje(
+        "No fue posible preparar la imagen del QR.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+function dataUrlAArchivoQr(
+  dataUrl,
+  idPase
+) {
+
+  try {
+
+    const partes =
+      String(
+        dataUrl || ""
+      ).split(
+        ","
+      );
+
+
+    if (
+      partes.length < 2
+    ) {
+
+      return null;
+
+    }
+
+
+    const coincidencia =
+      partes[0].match(
+        /data:([^;]+);base64/i
+      );
+
+
+    const tipoMime =
+      coincidencia &&
+      coincidencia[1]
+        ? coincidencia[1]
+        : "image/png";
+
+
+    const binario =
+      atob(
+        partes[1]
+      );
+
+
+    const bytes =
+      new Uint8Array(
+        binario.length
+      );
+
+
+    for (
+      let i = 0;
+      i < binario.length;
+      i++
+    ) {
+
+      bytes[i] =
+        binario.charCodeAt(
+          i
+        );
+
+    }
+
+
+    return new File(
+      [bytes],
+      "Pase_" +
+      String(
+        idPase || "QR"
+      ) +
+      ".png",
+      {
+        type:
+          tipoMime
+      }
     );
 
+  }
+  catch (error) {
+
+    console.error(
+      error
+    );
+
+    return null;
+
+  }
+
+}
+
+
+function descargarArchivoQr(
+  archivo
+) {
 
   if (
-    pase.fechaExpiracion
+    !archivo
   ) {
 
-    mensaje +=
-      "\nExpira: " +
-      pase.fechaExpiracion;
+    return;
 
   }
 
 
-  mensaje +=
-    "\n\nQR de acceso:" +
-    "\n" +
-    pase.imagenQr;
-
-
-  const urlWhatsApp =
-    "https://wa.me/?text=" +
-    encodeURIComponent(
-      mensaje
+  const url =
+    URL.createObjectURL(
+      archivo
     );
 
 
-  window.location.href =
-    urlWhatsApp;
+  const enlace =
+    document.createElement(
+      "a"
+    );
+
+
+  enlace.href =
+    url;
+
+  enlace.download =
+    archivo.name ||
+    "Pase_QR.png";
+
+
+  document.body.appendChild(
+    enlace
+  );
+
+  enlace.click();
+
+  enlace.remove();
+
+
+  setTimeout(
+    function() {
+
+      URL.revokeObjectURL(
+        url
+      );
+
+    },
+    1500
+  );
 
 }
 
