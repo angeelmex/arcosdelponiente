@@ -67,14 +67,22 @@
       min-width: 82px;
       height: 82px;
       border-radius: 50%;
-      background: #e7f0f4;
+      background: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 38px;
+      overflow: hidden;
       box-shadow:
         0 5px 16px
         rgba(20, 55, 95, 0.09);
+    }
+
+
+    .perfil-icono img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
 
@@ -739,7 +747,13 @@
     <div class="encabezado">
 
       <div class="perfil-icono">
-        👤
+        <img
+          src="logo-colonia.webp"
+          alt="Logo Arcos del Poniente"
+          width="82"
+          height="82"
+          decoding="async"
+        >
       </div>
 
       <div class="datos">
