@@ -1,6 +1,6 @@
 /*
- * Arcos del Poniente - Service Worker V4
- * Firebase Cloud Messaging + App Shell de arranque
+ * Arcos del Poniente - Service Worker V4.1
+ * Firebase Cloud Messaging + App Shell resistente
  *
  * CONSERVA:
  * - Evita notificaciones duplicadas.
@@ -9,9 +9,9 @@
  * - Mantiene URL de destino y badge.
  *
  * AGREGA:
- * - Caché del arranque de la app.
- * - index.html, login.html, manifest e iconos pueden abrir desde caché
- *   cuando GitHub Pages está lento o la conexión falla.
+ * - Caché de las pantallas esenciales de arranque.
+ * - Soporte para URLs con parámetros como menu.html?v=...
+ * - Apertura rápida desde caché con señal débil.
  */
 
 importScripts(
@@ -49,18 +49,31 @@ const URL_NOTIFICACIONES =
   "./notificaciones.html";
 
 const VERSION_SW =
-  "2026.10.27-app-shell-1";
+  "2026.10.27-app-shell-2";
+
+
+/*************************************************
+ * CACHÉ DE ARRANQUE
+ *************************************************/
 
 const CACHE_APP_SHELL_V4 =
-  "arcos-app-shell-v4";
+  "arcos-app-shell-v4-2";
 
 const ARCHIVOS_APP_SHELL_V4 = [
   "./",
   "./index.html",
   "./login.html",
+  "./menu.html",
+  "./instalar-app.html",
+  "./pagos.html",
   "./manifest.webmanifest",
   "./icon-192.png"
 ];
+
+
+/*************************************************
+ * FLAGS DE NOTIFICACIONES
+ *************************************************/
 
 const CACHE_FLAGS_NOTIFICACIONES_V3 =
   "arcos-flags-v3";
@@ -68,17 +81,24 @@ const CACHE_FLAGS_NOTIFICACIONES_V3 =
 const FLAG_NUEVA_NOTIFICACION_V3 =
   "./flag-nueva-notificacion";
 
+
+
 async function marcarNuevaNotificacionV3_() {
+
   try {
+
     const cache =
       await caches.open(
         CACHE_FLAGS_NOTIFICACIONES_V3
       );
 
+
     await cache.put(
       FLAG_NUEVA_NOTIFICACION_V3,
       new Response(
-        String(Date.now()),
+        String(
+          Date.now()
+        ),
         {
           headers: {
             "Content-Type":
@@ -87,15 +107,20 @@ async function marcarNuevaNotificacionV3_() {
         }
       )
     );
+
   }
   catch (error) {
+
     console.log(
       "No fue posible marcar nueva notificación:",
       error
     );
+
   }
 
+
   try {
+
     const clientes =
       await self.clients.matchAll(
         {
@@ -107,28 +132,41 @@ async function marcarNuevaNotificacionV3_() {
         }
       );
 
+
     clientes.forEach(
       function(cliente) {
+
         cliente.postMessage(
           {
             tipo:
               "NUEVA_NOTIFICACION"
           }
         );
+
       }
     );
+
   }
   catch (errorClientes) {
+
     console.log(
       "No fue posible avisar a las ventanas abiertas:",
       errorClientes
     );
+
   }
+
 }
+
+
+/*************************************************
+ * INSTALACIÓN
+ *************************************************/
 
 self.addEventListener(
   "install",
   function(event) {
+
     event.waitUntil(
       caches
         .open(
@@ -136,9 +174,11 @@ self.addEventListener(
         )
         .then(
           function(cache) {
+
             return Promise.allSettled(
               ARCHIVOS_APP_SHELL_V4.map(
                 function(url) {
+
                   return cache.add(
                     new Request(
                       url,
@@ -148,23 +188,34 @@ self.addEventListener(
                       }
                     )
                   );
+
                 }
               )
             );
+
           }
         )
         .then(
           function() {
+
             return self.skipWaiting();
+
           }
         )
     );
+
   }
 );
+
+
+/*************************************************
+ * ACTIVACIÓN
+ *************************************************/
 
 self.addEventListener(
   "activate",
   function(event) {
+
     event.waitUntil(
       Promise.all([
         self.clients.claim(),
@@ -173,9 +224,11 @@ self.addEventListener(
           .keys()
           .then(
             function(claves) {
+
               return Promise.all(
                 claves.map(
                   function(clave) {
+
                     if (
                       clave.indexOf(
                         "arcos-app-shell-"
@@ -183,168 +236,337 @@ self.addEventListener(
                       clave !==
                         CACHE_APP_SHELL_V4
                     ) {
+
                       return caches.delete(
                         clave
                       );
+
                     }
 
                     return Promise.resolve(
                       false
                     );
+
                   }
                 )
               );
+
             }
           )
       ])
     );
+
   }
 );
+
+
+/*************************************************
+ * BUSCAR PÁGINA LOCAL EN CACHÉ
+ *
+ * ignoreSearch permite que:
+ * menu.html?v=20260820-1120
+ *
+ * encuentre:
+ * menu.html
+ *************************************************/
+
+async function buscarPaginaCacheV4_(
+  request,
+  url
+) {
+
+  let respuesta =
+    await caches.match(
+      request,
+      {
+        ignoreSearch:
+          true
+      }
+    );
+
+
+  if (
+    respuesta
+  ) {
+
+    return respuesta;
+
+  }
+
+
+  const nombreArchivo =
+    url.pathname
+      .split("/")
+      .pop();
+
+
+  if (
+    nombreArchivo
+  ) {
+
+    respuesta =
+      await caches.match(
+        "./" +
+        nombreArchivo,
+        {
+          ignoreSearch:
+            true
+        }
+      );
+
+  }
+
+
+  if (
+    respuesta
+  ) {
+
+    return respuesta;
+
+  }
+
+
+  if (
+    url.pathname.endsWith(
+      "/arcosdelponiente/"
+    ) ||
+    url.pathname.endsWith(
+      "/arcosdelponiente/index.html"
+    )
+  ) {
+
+    return caches.match(
+      "./index.html",
+      {
+        ignoreSearch:
+          true
+      }
+    );
+
+  }
+
+
+  return null;
+
+}
+
+
+/*************************************************
+ * FETCH
+ *************************************************/
 
 self.addEventListener(
   "fetch",
   function(event) {
+
     const request =
       event.request;
+
 
     if (
       !request ||
       request.method !==
         "GET"
     ) {
+
       return;
+
     }
+
 
     let url;
 
     try {
+
       url =
         new URL(
           request.url
         );
+
     }
     catch (error) {
+
       return;
+
     }
 
+
+    /*
+     * Apps Script, Firebase, QuickChart,
+     * WhatsApp y demás externos siguen
+     * funcionando directamente por red.
+     */
     if (
       url.origin !==
         self.location.origin
     ) {
+
       return;
+
     }
 
+
+    /*
+     * NAVEGACIÓN HTML:
+     *
+     * 1. Si existe copia local, abre de inmediato.
+     * 2. En segundo plano intenta actualizarla.
+     * 3. Si no existe copia, usa la red.
+     */
     if (
       request.mode ===
         "navigate"
     ) {
+
       event.respondWith(
-        caches
-          .match(
-            request
-          )
-          .then(
-            async function(respuestaCache) {
-              if (
-                !respuestaCache &&
-                (
-                  url.pathname.endsWith(
-                    "/arcosdelponiente/"
-                  ) ||
-                  url.pathname.endsWith(
-                    "/arcosdelponiente/index.html"
-                  )
-                )
-              ) {
-                respuestaCache =
-                  await caches.match(
-                    "./index.html"
+        (async function() {
+
+          const respuestaCache =
+            await buscarPaginaCacheV4_(
+              request,
+              url
+            );
+
+
+          const actualizar =
+            fetch(
+              request
+            )
+            .then(
+              async function(respuestaRed) {
+
+                if (
+                  respuestaRed &&
+                  respuestaRed.ok
+                ) {
+
+                  const cache =
+                    await caches.open(
+                      CACHE_APP_SHELL_V4
+                    );
+
+
+                  /*
+                   * Guardamos sin query string para
+                   * no crear versiones duplicadas.
+                   */
+                  const urlLimpia =
+                    new URL(
+                      request.url
+                    );
+
+
+                  urlLimpia.search =
+                    "";
+
+
+                  await cache.put(
+                    new Request(
+                      urlLimpia.toString()
+                    ),
+                    respuestaRed.clone()
                   );
-              }
 
-              const actualizar =
-                fetch(
-                  request
-                )
-                .then(
-                  async function(respuestaRed) {
-                    if (
-                      respuestaRed &&
-                      respuestaRed.ok
-                    ) {
-                      const cache =
-                        await caches.open(
-                          CACHE_APP_SHELL_V4
-                        );
-
-                      await cache.put(
-                        request,
-                        respuestaRed.clone()
-                      );
-                    }
-
-                    return respuestaRed;
-                  }
-                )
-                .catch(
-                  function() {
-                    return null;
-                  }
-                );
-
-              if (
-                respuestaCache
-              ) {
-                actualizar.catch(
-                  function() {}
-                );
-
-                return respuestaCache;
-              }
-
-              const respuestaRed =
-                await actualizar;
-
-              if (
-                respuestaRed
-              ) {
-                return respuestaRed;
-              }
-
-              const fallback =
-                await caches.match(
-                  "./index.html"
-                );
-
-              if (
-                fallback
-              ) {
-                return fallback;
-              }
-
-              return new Response(
-                "No fue posible cargar Arcos del Poniente. Verifica tu conexión e intenta nuevamente.",
-                {
-                  status:
-                    503,
-
-                  headers: {
-                    "Content-Type":
-                      "text/plain; charset=UTF-8"
-                  }
                 }
-              );
+
+
+                return respuestaRed;
+
+              }
+            )
+            .catch(
+              function() {
+
+                return null;
+
+              }
+            );
+
+
+          if (
+            respuestaCache
+          ) {
+
+            /*
+             * Ya tenemos pantalla local:
+             * no esperamos a GitHub.
+             */
+            actualizar.catch(
+              function() {}
+            );
+
+            return respuestaCache;
+
+          }
+
+
+          const respuestaRed =
+            await actualizar;
+
+
+          if (
+            respuestaRed
+          ) {
+
+            return respuestaRed;
+
+          }
+
+
+          /*
+           * Último recurso:
+           * al menos mostrar el inicio
+           * en vez de pantalla blanca.
+           */
+          const fallback =
+            await caches.match(
+              "./index.html",
+              {
+                ignoreSearch:
+                  true
+              }
+            );
+
+
+          if (
+            fallback
+          ) {
+
+            return fallback;
+
+          }
+
+
+          return new Response(
+            "No fue posible cargar Arcos del Poniente. Verifica tu conexión e intenta nuevamente.",
+            {
+              status:
+                503,
+
+              headers: {
+                "Content-Type":
+                  "text/plain; charset=UTF-8"
+              }
             }
-          )
+          );
+
+        })()
       );
 
+
       return;
+
     }
 
+
+    /*
+     * RECURSOS LOCALES ESENCIALES
+     */
     const archivo =
       url.pathname
         .split("/")
         .pop();
+
 
     const esRecursoEsencial =
       archivo ===
@@ -352,33 +574,46 @@ self.addEventListener(
       archivo ===
         "icon-192.png";
 
+
     if (
       esRecursoEsencial
     ) {
+
       event.respondWith(
         caches
           .match(
-            request
+            request,
+            {
+              ignoreSearch:
+                true
+            }
           )
           .then(
             function(respuestaCache) {
+
               if (
                 respuestaCache
               ) {
+
                 return respuestaCache;
+
               }
+
 
               return fetch(
                 request
               )
               .then(
                 function(respuestaRed) {
+
                   if (
                     respuestaRed &&
                     respuestaRed.ok
                   ) {
+
                     const copia =
                       respuestaRed.clone();
+
 
                     caches
                       .open(
@@ -386,32 +621,48 @@ self.addEventListener(
                       )
                       .then(
                         function(cache) {
+
                           cache.put(
                             request,
                             copia
                           );
+
                         }
                       );
+
                   }
 
+
                   return respuestaRed;
+
                 }
               );
+
             }
           )
       );
+
     }
+
   }
 );
 
+
+/*************************************************
+ * FIREBASE CLOUD MESSAGING
+ *************************************************/
+
 messaging.onBackgroundMessage(
   async function(payload) {
+
     console.log(
       "Notificación recibida:",
       payload
     );
 
+
     await marcarNuevaNotificacionV3_();
+
 
     if (
       payload &&
@@ -477,18 +728,22 @@ messaging.onBackgroundMessage(
     };
 
     try {
+
       if (
         self.navigator &&
         "setAppBadge" in self.navigator
       ) {
         await self.navigator.setAppBadge(1);
       }
+
     }
     catch (errorBadge) {
+
       console.log(
         "No fue posible actualizar badge:",
         errorBadge
       );
+
     }
 
     return self.registration.showNotification(
@@ -498,9 +753,15 @@ messaging.onBackgroundMessage(
   }
 );
 
+
+/*************************************************
+ * CLICK EN NOTIFICACIÓN
+ *************************************************/
+
 self.addEventListener(
   "notificationclick",
   function(event) {
+
     event.notification.close();
 
     const destino =
@@ -522,23 +783,28 @@ self.addEventListener(
       )
       .then(
         function(clientes) {
+
           for (
             const cliente of clientes
           ) {
+
             if (
               "navigate" in cliente
             ) {
+
               return cliente
                 .navigate(
                   destino
                 )
                 .then(
                   function() {
+
                     if (
                       "focus" in cliente
                     ) {
                       return cliente.focus();
                     }
+
                   }
                 );
             }
@@ -549,6 +815,7 @@ self.addEventListener(
           ) {
             return self.clients.openWindow(destino);
           }
+
         }
       )
     );
