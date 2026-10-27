@@ -1,17 +1,11 @@
 /*
- * Arcos del Poniente - Service Worker V4.1
- * Firebase Cloud Messaging + App Shell resistente
+ * Arcos del Poniente - Service Worker V3
+ * Firebase Cloud Messaging
  *
- * CONSERVA:
  * - Evita notificaciones duplicadas.
  * - Los mensajes con payload.notification los muestra FCM/iOS.
  * - Los mensajes DATA-ONLY (chat/accesos) los muestra este Service Worker.
  * - Mantiene URL de destino y badge.
- *
- * AGREGA:
- * - Caché de las pantallas esenciales de arranque.
- * - Soporte para URLs con parámetros como menu.html?v=...
- * - Apertura rápida desde caché con señal débil.
  */
 
 importScripts(
@@ -49,31 +43,8 @@ const URL_NOTIFICACIONES =
   "./notificaciones.html";
 
 const VERSION_SW =
-  "2026.10.27-app-shell-2";
+  "2026.08.27-notificaciones-inteligentes-1";
 
-
-/*************************************************
- * CACHÉ DE ARRANQUE
- *************************************************/
-
-const CACHE_APP_SHELL_V4 =
-  "arcos-app-shell-v4-2";
-
-const ARCHIVOS_APP_SHELL_V4 = [
-  "./",
-  "./index.html",
-  "./login.html",
-  "./menu.html",
-  "./instalar-app.html",
-  "./pagos.html",
-  "./manifest.webmanifest",
-  "./icon-192.png"
-];
-
-
-/*************************************************
- * FLAGS DE NOTIFICACIONES
- *************************************************/
 
 const CACHE_FLAGS_NOTIFICACIONES_V3 =
   "arcos-flags-v3";
@@ -158,499 +129,28 @@ async function marcarNuevaNotificacionV3_() {
 
 }
 
-
-/*************************************************
- * INSTALACIÓN
- *************************************************/
-
 self.addEventListener(
   "install",
-  function(event) {
-
-    event.waitUntil(
-      caches
-        .open(
-          CACHE_APP_SHELL_V4
-        )
-        .then(
-          function(cache) {
-
-            return Promise.allSettled(
-              ARCHIVOS_APP_SHELL_V4.map(
-                function(url) {
-
-                  return cache.add(
-                    new Request(
-                      url,
-                      {
-                        cache:
-                          "reload"
-                      }
-                    )
-                  );
-
-                }
-              )
-            );
-
-          }
-        )
-        .then(
-          function() {
-
-            return self.skipWaiting();
-
-          }
-        )
-    );
-
+  function() {
+    self.skipWaiting();
   }
 );
-
-
-/*************************************************
- * ACTIVACIÓN
- *************************************************/
 
 self.addEventListener(
   "activate",
   function(event) {
-
     event.waitUntil(
-      Promise.all([
-        self.clients.claim(),
-
-        caches
-          .keys()
-          .then(
-            function(claves) {
-
-              return Promise.all(
-                claves.map(
-                  function(clave) {
-
-                    if (
-                      clave.indexOf(
-                        "arcos-app-shell-"
-                      ) === 0 &&
-                      clave !==
-                        CACHE_APP_SHELL_V4
-                    ) {
-
-                      return caches.delete(
-                        clave
-                      );
-
-                    }
-
-                    return Promise.resolve(
-                      false
-                    );
-
-                  }
-                )
-              );
-
-            }
-          )
-      ])
+      self.clients.claim()
     );
-
   }
 );
-
-
-/*************************************************
- * BUSCAR PÁGINA LOCAL EN CACHÉ
- *
- * ignoreSearch permite que:
- * menu.html?v=20260820-1120
- *
- * encuentre:
- * menu.html
- *************************************************/
-
-async function buscarPaginaCacheV4_(
-  request,
-  url
-) {
-
-  let respuesta =
-    await caches.match(
-      request,
-      {
-        ignoreSearch:
-          true
-      }
-    );
-
-
-  if (
-    respuesta
-  ) {
-
-    return respuesta;
-
-  }
-
-
-  const nombreArchivo =
-    url.pathname
-      .split("/")
-      .pop();
-
-
-  if (
-    nombreArchivo
-  ) {
-
-    respuesta =
-      await caches.match(
-        "./" +
-        nombreArchivo,
-        {
-          ignoreSearch:
-            true
-        }
-      );
-
-  }
-
-
-  if (
-    respuesta
-  ) {
-
-    return respuesta;
-
-  }
-
-
-  if (
-    url.pathname.endsWith(
-      "/arcosdelponiente/"
-    ) ||
-    url.pathname.endsWith(
-      "/arcosdelponiente/index.html"
-    )
-  ) {
-
-    return caches.match(
-      "./index.html",
-      {
-        ignoreSearch:
-          true
-      }
-    );
-
-  }
-
-
-  return null;
-
-}
-
-
-/*************************************************
- * FETCH
- *************************************************/
 
 self.addEventListener(
   "fetch",
   function(event) {
-
-    const request =
-      event.request;
-
-
-    if (
-      !request ||
-      request.method !==
-        "GET"
-    ) {
-
-      return;
-
-    }
-
-
-    let url;
-
-    try {
-
-      url =
-        new URL(
-          request.url
-        );
-
-    }
-    catch (error) {
-
-      return;
-
-    }
-
-
-    /*
-     * Apps Script, Firebase, QuickChart,
-     * WhatsApp y demás externos siguen
-     * funcionando directamente por red.
-     */
-    if (
-      url.origin !==
-        self.location.origin
-    ) {
-
-      return;
-
-    }
-
-
-    /*
-     * NAVEGACIÓN HTML:
-     *
-     * 1. Si existe copia local, abre de inmediato.
-     * 2. En segundo plano intenta actualizarla.
-     * 3. Si no existe copia, usa la red.
-     */
-    if (
-      request.mode ===
-        "navigate"
-    ) {
-
-      event.respondWith(
-        (async function() {
-
-          const respuestaCache =
-            await buscarPaginaCacheV4_(
-              request,
-              url
-            );
-
-
-          const actualizar =
-            fetch(
-              request
-            )
-            .then(
-              async function(respuestaRed) {
-
-                if (
-                  respuestaRed &&
-                  respuestaRed.ok
-                ) {
-
-                  const cache =
-                    await caches.open(
-                      CACHE_APP_SHELL_V4
-                    );
-
-
-                  /*
-                   * Guardamos sin query string para
-                   * no crear versiones duplicadas.
-                   */
-                  const urlLimpia =
-                    new URL(
-                      request.url
-                    );
-
-
-                  urlLimpia.search =
-                    "";
-
-
-                  await cache.put(
-                    new Request(
-                      urlLimpia.toString()
-                    ),
-                    respuestaRed.clone()
-                  );
-
-                }
-
-
-                return respuestaRed;
-
-              }
-            )
-            .catch(
-              function() {
-
-                return null;
-
-              }
-            );
-
-
-          if (
-            respuestaCache
-          ) {
-
-            /*
-             * Ya tenemos pantalla local:
-             * no esperamos a GitHub.
-             */
-            actualizar.catch(
-              function() {}
-            );
-
-            return respuestaCache;
-
-          }
-
-
-          const respuestaRed =
-            await actualizar;
-
-
-          if (
-            respuestaRed
-          ) {
-
-            return respuestaRed;
-
-          }
-
-
-          /*
-           * Último recurso:
-           * al menos mostrar el inicio
-           * en vez de pantalla blanca.
-           */
-          const fallback =
-            await caches.match(
-              "./index.html",
-              {
-                ignoreSearch:
-                  true
-              }
-            );
-
-
-          if (
-            fallback
-          ) {
-
-            return fallback;
-
-          }
-
-
-          return new Response(
-            "No fue posible cargar Arcos del Poniente. Verifica tu conexión e intenta nuevamente.",
-            {
-              status:
-                503,
-
-              headers: {
-                "Content-Type":
-                  "text/plain; charset=UTF-8"
-              }
-            }
-          );
-
-        })()
-      );
-
-
-      return;
-
-    }
-
-
-    /*
-     * RECURSOS LOCALES ESENCIALES
-     */
-    const archivo =
-      url.pathname
-        .split("/")
-        .pop();
-
-
-    const esRecursoEsencial =
-      archivo ===
-        "manifest.webmanifest" ||
-      archivo ===
-        "icon-192.png";
-
-
-    if (
-      esRecursoEsencial
-    ) {
-
-      event.respondWith(
-        caches
-          .match(
-            request,
-            {
-              ignoreSearch:
-                true
-            }
-          )
-          .then(
-            function(respuestaCache) {
-
-              if (
-                respuestaCache
-              ) {
-
-                return respuestaCache;
-
-              }
-
-
-              return fetch(
-                request
-              )
-              .then(
-                function(respuestaRed) {
-
-                  if (
-                    respuestaRed &&
-                    respuestaRed.ok
-                  ) {
-
-                    const copia =
-                      respuestaRed.clone();
-
-
-                    caches
-                      .open(
-                        CACHE_APP_SHELL_V4
-                      )
-                      .then(
-                        function(cache) {
-
-                          cache.put(
-                            request,
-                            copia
-                          );
-
-                        }
-                      );
-
-                  }
-
-
-                  return respuestaRed;
-
-                }
-              );
-
-            }
-          )
-      );
-
-    }
-
+    return;
   }
 );
-
-
-/*************************************************
- * FIREBASE CLOUD MESSAGING
- *************************************************/
 
 messaging.onBackgroundMessage(
   async function(payload) {
@@ -661,9 +161,19 @@ messaging.onBackgroundMessage(
     );
 
 
+    /*
+     * Marcamos que hay información nueva ANTES de decidir
+     * cómo se mostrará el push. Así la bandeja sabrá que
+     * debe actualizarse la próxima vez que se abra.
+     */
     await marcarNuevaNotificacionV3_();
 
 
+    /*
+     * Si FCM/iOS ya recibió un payload.notification,
+     * lo presenta automáticamente. Salimos aquí para
+     * evitar mostrarla por segunda vez.
+     */
     if (
       payload &&
       payload.notification
@@ -752,11 +262,6 @@ messaging.onBackgroundMessage(
     );
   }
 );
-
-
-/*************************************************
- * CLICK EN NOTIFICACIÓN
- *************************************************/
 
 self.addEventListener(
   "notificationclick",
