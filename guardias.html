@@ -859,7 +859,7 @@
   class="version-guardias"
   id="versionGuardias"
 >
-  v 2026.11.06-memoria-utf8-2
+  v 2026.11.06-envio-sin-iframe-3
 </div>
 
 
@@ -1447,7 +1447,7 @@ const URL_BACKEND =
 
 
 const VERSION_GUARDIAS =
-  "2026.11.06-guardias-memoria-utf8-2";
+  "2026.11.06-guardias-envio-sin-iframe-3";
 
 
 function asegurarVersionGuardias() {
@@ -1550,20 +1550,6 @@ function apiGuardias(
     generarRequestIdGuardias();
 
 
-  const form =
-    document.getElementById(
-      "formApiGuardias"
-    );
-
-
-  form.action =
-    URL_BACKEND;
-
-
-  form.innerHTML =
-    "";
-
-
   const datos =
     Object.assign(
       {},
@@ -1571,10 +1557,8 @@ function apiGuardias(
       {
         accion:
           accion,
-
         requestId:
           requestId,
-
         claveGuardias:
           opciones.sinClave
             ? (
@@ -1587,82 +1571,105 @@ function apiGuardias(
       }
     );
 
-
-  Object.keys(
-    datos
-  )
-  .forEach(
-    function(nombre) {
-
-      const input =
-        document.createElement(
-          "input"
-        );
-
-
-      input.type =
-        "hidden";
-
-
-      input.name =
-        nombre;
-
-
-      input.value =
-        datos[nombre] == null
-          ? ""
-          : String(
-              datos[nombre]
-            );
-
-
-      form.appendChild(
-        input
-      );
-
-    }
-  );
-
-
-  form.submit();
-
-
-  /*
-   * El formulario ya inició el POST. Sus campos grandes de
-   * foto no deben seguir ocupando memoria durante el sondeo
-   * de resultado. La copia original reducida sigue en memoria
-   * JS para que el guardia pueda recuperar el registro si falla.
-   * Nunca borramos campos de otra solicitud concurrente.
-   */
-  if (
+  const registroConFotos =
     accion === "guardiasEntrada" ||
-    accion === "guardiasProveedor"
-  ) {
+    accion === "guardiasProveedor";
 
-    const camposFotoEnviados =
-      Array.from(form.elements).filter(
-        function(campo) {
-          return (
-            campo.name === "fotoPlacasBase64" ||
-            campo.name === "fotoIdentificacionBase64"
-          );
-        }
-      );
+  if (registroConFotos) {
 
-    setTimeout(
-      function() {
-        camposFotoEnviados.forEach(
-          function(campo) {
-            if (campo.form === form) {
-              campo.value = "";
-              campo.remove();
-            }
-          }
+    /*
+     * V3: Envío de fotos SIN crear campos HTML gigantes ni
+     * cargar una nueva página dentro de un iframe oculto.
+     * La carga y los nombres de parámetros permanecen idénticos.
+     * Apps Script los recibe en doPost(e).parameter.
+     *
+     * IMPORTANTE: una respuesta no-cors es opaca, por eso NO
+     * consideramos un fetch resuelto como registro confirmado.
+     * La confirmación sigue siendo la consulta existente
+     * a operacionEstado con el MISMO requestId.
+     */
+    let cuerpo;
+
+    try {
+      cuerpo = new URLSearchParams();
+
+      Object.keys(datos).forEach(function(nombre) {
+        cuerpo.append(
+          nombre,
+          datos[nombre] == null
+            ? ""
+            : String(datos[nombre])
         );
-      },
-      1000
-    );
+      });
 
+      /*
+       * Disparamos exactamente UNA solicitud POST.
+       * Nunca hacemos un fallback POST por error de red:
+       * la solicitud original podría haber llegado al servidor.
+       */
+      fetch(
+        URL_BACKEND,
+        {
+          method: "POST",
+          mode: "no-cors",
+          credentials: "include",
+          redirect: "follow",
+          cache: "no-store",
+          keepalive: false,
+          body: cuerpo
+        }
+      )
+      .catch(function(falloEnvio) {
+        /*
+         * Un rechazo de fetch no demuestra que el POST no llegó.
+         * Dejamos que el sondeo por requestId decida el estado;
+         * NO repetimos el envío.
+         */
+        console.warn(
+          "El POST de fotos no pudo confirmarse en el navegador. " +
+          "Se revisará el requestId antes de permitir otro registro.",
+          falloEnvio
+        );
+      });
+    }
+    catch (falloPreparacion) {
+      console.error(
+        "No fue posible preparar el POST sin iframe:",
+        falloPreparacion
+      );
+      if (typeof error === "function") {
+        error(
+          "No fue posible preparar el registro. " +
+          "Verifica si quedó guardado antes de volver a intentarlo."
+        );
+      }
+      return;
+    }
+
+  }
+  else {
+
+    /*
+     * Todas las acciones SIN fotografías mantienen exactamente
+     * el transporte original: formulario + iframe.
+     */
+    const form =
+      document.getElementById("formApiGuardias");
+
+    form.action = URL_BACKEND;
+    form.innerHTML = "";
+
+    Object.keys(datos).forEach(function(nombre) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = nombre;
+      input.value = datos[nombre] == null
+        ? ""
+        : String(datos[nombre]);
+      form.appendChild(input);
+    });
+
+    form.submit();
   }
 
 
