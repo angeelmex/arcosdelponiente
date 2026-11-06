@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
@@ -858,7 +859,7 @@
   class="version-guardias"
   id="versionGuardias"
 >
-  v 2026.08.26-1328
+  v 2026.11.06-memoria-utf8-2
 </div>
 
 
@@ -1446,7 +1447,7 @@ const URL_BACKEND =
 
 
 const VERSION_GUARDIAS =
-  "2026.08.27-chat-cache-envio-recuperable";
+  "2026.11.06-guardias-memoria-utf8-2";
 
 
 function asegurarVersionGuardias() {
@@ -1624,6 +1625,45 @@ function apiGuardias(
 
 
   form.submit();
+
+
+  /*
+   * El formulario ya inició el POST. Sus campos grandes de
+   * foto no deben seguir ocupando memoria durante el sondeo
+   * de resultado. La copia original reducida sigue en memoria
+   * JS para que el guardia pueda recuperar el registro si falla.
+   * Nunca borramos campos de otra solicitud concurrente.
+   */
+  if (
+    accion === "guardiasEntrada" ||
+    accion === "guardiasProveedor"
+  ) {
+
+    const camposFotoEnviados =
+      Array.from(form.elements).filter(
+        function(campo) {
+          return (
+            campo.name === "fotoPlacasBase64" ||
+            campo.name === "fotoIdentificacionBase64"
+          );
+        }
+      );
+
+    setTimeout(
+      function() {
+        camposFotoEnviados.forEach(
+          function(campo) {
+            if (campo.form === form) {
+              campo.value = "";
+              campo.remove();
+            }
+          }
+        );
+      },
+      1000
+    );
+
+  }
 
 
   let intentos =
@@ -1829,6 +1869,19 @@ function apiGuardias(
 
     script.onerror =
       function() {
+
+        /*
+         * IMPORTANTE: antes se quitaba el <script>, pero la
+         * función window[callback] quedaba viva para siempre.
+         * Si la señal falla muchas veces, se acumulan cierres
+         * y memoria en el dispositivo.
+         */
+        try {
+          delete window[callback];
+        }
+        catch (e) {
+          window[callback] = null;
+        }
 
         try {
           script.remove();
@@ -6844,221 +6897,218 @@ function normalizarPlacasInput(input) {
 }
 
 
+/*
+ * Las previsualizaciones ahora utilizan URLs temporales de
+ * archivos JPEG pequeños. Antes se colocaban data:Base64 muy
+ * grandes directamente en los <img>, además de conservar otra
+ * copia Base64 para el formulario.
+ */
+function mostrarVistaPreviaGuardias_(idImagen, urlNueva) {
+
+  const imagen = document.getElementById(idImagen);
+
+  if (!imagen) {
+    try { URL.revokeObjectURL(urlNueva); } catch (e) {}
+    return;
+  }
+
+  const urlAnterior = imagen.dataset.urlTemporalGuardias || "";
+
+  if (urlAnterior) {
+    try { URL.revokeObjectURL(urlAnterior); } catch (e) {}
+  }
+
+  imagen.dataset.urlTemporalGuardias = urlNueva;
+  imagen.src = urlNueva;
+
+}
+
+
+function liberarVistaPreviaGuardias_(idImagen) {
+
+  const imagen = document.getElementById(idImagen);
+
+  if (!imagen) return;
+
+  const url = imagen.dataset.urlTemporalGuardias || "";
+
+  imagen.removeAttribute("src");
+  delete imagen.dataset.urlTemporalGuardias;
+
+  if (url) {
+    try { URL.revokeObjectURL(url); } catch (e) {}
+  }
+
+}
+
+
 function procesarImagenGuardiaConMenosMemoria_(
   archivo,
   maximo,
   calidad,
   alTerminar,
-  alFallar
+  alFallar,
+  limiteBytes
 ) {
 
   /*
-   * No convertimos la foto original completa a Base64.
-   * La abrimos con una URL temporal, la reducimos y recién
-   * entonces convertimos la copia pequeña a Base64.
+   * Solo codificamos a Base64 la foto YA REDUCIDA.
+   * También limitamos el peso de las fotos antes del POST.
    */
-  const urlTemporal =
-    URL.createObjectURL(
-      archivo
-    );
+  let urlTemporal = "";
+  const imagen = new Image();
+  let terminado = false;
 
-
-  const imagen =
-    new Image();
-
-
-  let originalLiberado =
-    false;
-
-
-  function liberarOriginal() {
-
-    if (
-      originalLiberado
-    ) {
-
-      return;
-
+  function fallo() {
+    if (terminado) return;
+    terminado = true;
+    if (urlTemporal) {
+      try { URL.revokeObjectURL(urlTemporal); } catch (e) {}
+      urlTemporal = "";
     }
-
-
-    originalLiberado =
-      true;
-
-
-    try {
-
-      URL.revokeObjectURL(
-        urlTemporal
-      );
-
-    }
-    catch (error) {}
-
-
-    imagen.onload =
-      null;
-
-    imagen.onerror =
-      null;
-
+    imagen.onload = null;
+    imagen.onerror = null;
+    if (typeof alFallar === "function") alFallar();
   }
 
+  try {
+    urlTemporal = URL.createObjectURL(archivo);
+  }
+  catch (error) {
+    fallo();
+    return;
+  }
 
-  imagen.onload =
-    function() {
+  imagen.onload = function() {
 
-      let ancho =
-        imagen.naturalWidth ||
-        imagen.width;
+    let canvas;
 
-      let alto =
-        imagen.naturalHeight ||
-        imagen.height;
+    try {
+      let ancho = imagen.naturalWidth || imagen.width;
+      let alto = imagen.naturalHeight || imagen.height;
 
-
-      if (
-        ancho > maximo ||
-        alto > maximo
-      ) {
-
-        const escala =
-          Math.min(
-            maximo / ancho,
-            maximo / alto
-          );
-
-
-        ancho =
-          Math.max(
-            1,
-            Math.round(
-              ancho *
-              escala
-            )
-          );
-
-
-        alto =
-          Math.max(
-            1,
-            Math.round(
-              alto *
-              escala
-            )
-          );
-
+      if (!ancho || !alto) {
+        fallo();
+        return;
       }
 
+      if (ancho > maximo || alto > maximo) {
+        const escala = Math.min(maximo / ancho, maximo / alto);
+        ancho = Math.max(1, Math.round(ancho * escala));
+        alto = Math.max(1, Math.round(alto * escala));
+      }
 
-      const canvas =
-        document.createElement(
-          "canvas"
-        );
+      canvas = document.createElement("canvas");
+      canvas.width = ancho;
+      canvas.height = alto;
 
+      const contexto = canvas.getContext("2d", {alpha:false});
+      if (!contexto) {
+        fallo();
+        return;
+      }
 
-      canvas.width =
-        ancho;
+      contexto.drawImage(imagen, 0, 0, ancho, alto);
 
-      canvas.height =
-        alto;
+      /* La foto original de cámara ya no se necesita. */
+      URL.revokeObjectURL(urlTemporal);
+      urlTemporal = "";
+      imagen.onload = null;
+      imagen.onerror = null;
 
+      function comprimir(calidadActual) {
+        try {
+          canvas.toBlob(
+            function(blob) {
+              if (!blob) {
+                canvas.width = 1;
+                canvas.height = 1;
+                fallo();
+                return;
+              }
 
-      canvas
-        .getContext(
-          "2d",
-          {
-            alpha:
-              false
-          }
-        )
-        .drawImage(
-          imagen,
-          0,
-          0,
-          ancho,
-          alto
-        );
+              /* Un intento de compresión adicional si sigue grande. */
+              if (
+                limiteBytes &&
+                blob.size > limiteBytes &&
+                calidadActual > 0.53
+              ) {
+                comprimir(0.53);
+                return;
+              }
 
+              canvas.width = 1;
+              canvas.height = 1;
 
-      liberarOriginal();
+              let urlVista = "";
+              try {
+                urlVista = URL.createObjectURL(blob);
+                const lector = new FileReader();
 
+                lector.onload = function(evento) {
+                  if (terminado) {
+                    URL.revokeObjectURL(urlVista);
+                    return;
+                  }
 
-      canvas.toBlob(
-        function(blob) {
+                  const dataUrl = String(evento.target.result || "");
+                  const coma = dataUrl.indexOf(",");
 
-          canvas.width =
-            1;
+                  if (coma < 0) {
+                    URL.revokeObjectURL(urlVista);
+                    fallo();
+                    return;
+                  }
 
-          canvas.height =
-            1;
+                  terminado = true;
+                  alTerminar(
+                    urlVista,
+                    dataUrl.slice(coma + 1),
+                    "image/jpeg"
+                  );
+                };
 
+                lector.onerror = function() {
+                  URL.revokeObjectURL(urlVista);
+                  fallo();
+                };
 
-          if (
-            !blob
-          ) {
-
-            alFallar();
-
-            return;
-
-          }
-
-
-          const lectorReducido =
-            new FileReader();
-
-
-          lectorReducido.onload =
-            function(evento) {
-
-              const dataUrl =
-                evento.target.result;
-
-
-              alTerminar(
-                dataUrl,
-                dataUrl
-                  .split(
-                    ","
-                  )[1],
-                "image/jpeg"
-              );
-
-            };
-
-
-          lectorReducido.onerror =
-            alFallar;
-
-
-          lectorReducido.readAsDataURL(
-            blob
+                lector.readAsDataURL(blob);
+              }
+              catch (error) {
+                if (urlVista) {
+                  try { URL.revokeObjectURL(urlVista); } catch (e) {}
+                }
+                fallo();
+              }
+            },
+            "image/jpeg",
+            calidadActual
           );
+        }
+        catch (error) {
+          if (canvas) {
+            canvas.width = 1;
+            canvas.height = 1;
+          }
+          fallo();
+        }
+      }
 
-        },
-        "image/jpeg",
-        calidad
-      );
+      comprimir(calidad);
+    }
+    catch (error) {
+      if (canvas) {
+        canvas.width = 1;
+        canvas.height = 1;
+      }
+      fallo();
+    }
+  };
 
-    };
-
-
-  imagen.onerror =
-    function() {
-
-      liberarOriginal();
-
-      alFallar();
-
-    };
-
-
-  imagen.src =
-    urlTemporal;
-
+  imagen.onerror = fallo;
+  imagen.src = urlTemporal;
 }
-
 
 
 function procesarFoto(input, destino) {
@@ -7078,13 +7128,14 @@ function procesarFoto(input, destino) {
 
 
   /*
-   * Conservamos EXACTAMENTE los parámetros que ya tenía
-   * esta versión: máximo 1280 px y JPEG .75.
+   * Identificación: hasta 1280 px para conservar legibilidad.
+   * Placas: hasta 1024 px porque ocupan menos detalle.
+   * Reducimos peso para evitar picos de memoria al registrar.
    */
   procesarImagenGuardiaConMenosMemoria_(
     archivo,
-    1280,
-    .75,
+    destino === "placas" ? 1024 : 1280,
+    destino === "placas" ? .65 : .70,
     function(
       dataUrl,
       base64,
@@ -7102,12 +7153,7 @@ function procesarFoto(input, destino) {
         fotoPlacasMime =
           mime;
 
-        document
-          .getElementById(
-            "imgPlacas"
-          )
-          .src =
-            dataUrl;
+          mostrarVistaPreviaGuardias_("imgPlacas", dataUrl);
 
         document
           .getElementById(
@@ -7125,12 +7171,7 @@ function procesarFoto(input, destino) {
         fotoIdentificacionMime =
           mime;
 
-        document
-          .getElementById(
-            "imgIdentificacion"
-          )
-          .src =
-            dataUrl;
+          mostrarVistaPreviaGuardias_("imgIdentificacion", dataUrl);
 
         document
           .getElementById(
@@ -7152,12 +7193,14 @@ function procesarFoto(input, destino) {
     },
     function() {
 
+      input.value = "";
       mensaje(
         "No fue posible procesar la foto. Intenta tomarla nuevamente.",
         "error"
       );
 
-    }
+    },
+    destino === "placas" ? 250 * 1024 : 450 * 1024
   );
 
 }
@@ -7583,13 +7626,13 @@ function procesarFotoProveedor(
 
 
   /*
-   * Conservamos EXACTAMENTE los parámetros que ya tenía
-   * proveedor: máximo 1600 px y JPEG .82.
+   * Proveedor: mantenemos identificaciones legibles y
+   * reducimos las placas para evitar envíos excesivos.
    */
   procesarImagenGuardiaConMenosMemoria_(
     archivo,
-    1600,
-    .82,
+    destino === "placas" ? 1024 : 1280,
+    destino === "placas" ? .65 : .70,
     function(
       dataUrl,
       base64,
@@ -7607,12 +7650,7 @@ function procesarFotoProveedor(
         fotoPlacasProveedorMime =
           mime;
 
-        document
-          .getElementById(
-            "imgPlacasProveedor"
-          )
-          .src =
-            dataUrl;
+          mostrarVistaPreviaGuardias_("imgPlacasProveedor", dataUrl);
 
         document
           .getElementById(
@@ -7630,12 +7668,7 @@ function procesarFotoProveedor(
         fotoIdentificacionProveedorMime =
           mime;
 
-        document
-          .getElementById(
-            "imgIdentificacionProveedor"
-          )
-          .src =
-            dataUrl;
+          mostrarVistaPreviaGuardias_("imgIdentificacionProveedor", dataUrl);
 
         document
           .getElementById(
@@ -7653,12 +7686,14 @@ function procesarFotoProveedor(
     },
     function() {
 
+      input.value = "";
       mensaje(
         "No fue posible procesar la foto. Intenta tomarla nuevamente.",
         "error"
       );
 
-    }
+    },
+    destino === "placas" ? 250 * 1024 : 450 * 1024
   );
 
 }
@@ -7883,6 +7918,9 @@ function limpiarProveedor() {
       "";
 
 
+  liberarVistaPreviaGuardias_("imgPlacasProveedor");
+  liberarVistaPreviaGuardias_("imgIdentificacionProveedor");
+
   document
     .getElementById(
       "previewPlacasProveedor"
@@ -7977,8 +8015,8 @@ function limpiarEntrada() {
   document.getElementById("fotoIdentificacion").value = "";
   document.getElementById("previewPlacas").style.display = "none";
   document.getElementById("previewIdentificacion").style.display = "none";
-  document.getElementById("imgPlacas").src = "";
-  document.getElementById("imgIdentificacion").src = "";
+  liberarVistaPreviaGuardias_("imgPlacas");
+  liberarVistaPreviaGuardias_("imgIdentificacion");
   fotoPlacasBase64 = "";
   fotoPlacasMime = "";
   fotoIdentificacionBase64 = "";
